@@ -29,15 +29,8 @@ export const STATS = [
   { value: 98,   suffix: "%", label: "Успешных виз" },
 ] as const;
 
-// WhatsApp URL builder
-export function waUrl(message: string): string {
-  return `https://wa.me/${SITE.phoneClean}?text=${encodeURIComponent(message)}`;
-}
-
-// Format price
-export function formatPrice(amount: number, currency = "$"): string {
-  return `${currency}${amount.toLocaleString("ru-RU")}`;
-}
+// Отдельный номер WhatsApp для модуля образования
+export const EDUCATION_PHONE = "77470382914";
 
 // Tailwind color map for service cards
 export const SERVICE_COLORS: Record<string, { bg: string; border: string; text: string; badge: string }> = {

@@ -6,25 +6,45 @@ export interface EducationCountry {
   id: string;
   slug: string;
   name: string;
+  nameEn: string;
   flag: string;
+  continent: string;
   cities: string[];
   description: string;
+  longDescription: string;
   badgeColor: "blue" | "red" | "amber" | "green" | "purple";
   imageUrl: string;
+  heroImageUrl: string;
+  universityCount: number;
+  features: string[];
   isActive: boolean;
   sortOrder: number;
 }
 
 export interface University {
   id: string;
-  countrySlug: string;
+  countryId: string;
+  slug: string;
   name: string;
+  nameLocal: string;
   city: string;
+  type: "public" | "private";
   programs: string[];
   languages: string[];
   tuitionFrom: number;
+  tuitionTo: number;
   hasGrant: boolean;
+  grantDetails: string;
+  hasDormitory: boolean;
+  dormitoryCost: number;
+  requirements: string[];
+  description: string;
   imageUrl: string;
+  websiteUrl: string;
+  rankingNational: number | null;
+  rankingWorld: number | null;
+  isActive: boolean;
+  sortOrder: number;
 }
 
 export interface Tour {

@@ -5,9 +5,10 @@
 import { SITE } from "./constants";
 
 // ---- WhatsApp ----
-// Генерирует ссылку на WhatsApp с готовым текстом
-export function waUrl(message: string): string {
-  return `https://wa.me/${SITE.phoneClean}?text=${encodeURIComponent(message)}`;
+// Генерирует ссылку на WhatsApp с готовым текстом.
+// phone позволяет переопределить номер (например, отдельный номер для education).
+export function waUrl(message: string, phone: string = SITE.phoneClean): string {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 // Формирует текст заявки для WhatsApp из квиза
@@ -84,7 +85,7 @@ export function slugify(text: string): string {
 export const fadeInUp = {
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: "easeOut" },
+  transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
 export const staggerContainer = {

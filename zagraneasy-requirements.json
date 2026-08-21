@@ -1,0 +1,89 @@
+{
+  "savedAt": "21.08.2026, 17:13",
+  "answers": {
+    "analytics": "Да, настроена",
+    "logo": "Нет, нужно создать",
+    "colors": "Синий (#1A56DB) как сейчас",
+    "tone": "Профессиональный и серьёзный",
+    "slogan": "Предложите варианты",
+    "brandbook": "Да",
+    "age": "35-50 (родители студентов)",
+    "geo": "Весь Казахстан",
+    "lang": "Казахский",
+    "source": "Instagram",
+    "device": "90% телефон",
+    "main_services": [
+      "Обучение за рубежом"
+    ],
+    "edu_countries": [
+      "Турция",
+      "Китай"
+    ],
+    "tour_countries": [
+      "Китай"
+    ],
+    "work_countries": [
+      "Другие",
+      "Турция"
+    ],
+    "installment": "Kaspi рассрочка",
+    "photos_count": "20-50",
+    "video_storage": "Instagram Reels",
+    "reviews": [
+      "Текстовые (скрины из WhatsApp)"
+    ],
+    "copywriting": "Напишет ваша команда",
+    "contact_channel": [
+      "WhatsApp"
+    ],
+    "calc_public": "Нет, цены по запросу",
+    "booking": "Да, с выбором даты/времени",
+    "client_portal": "Нет, пока не нужно",
+    "quiz": "Не нужен",
+    "blog": "Да, будем вести",
+    "languages": "Русский + Казахский",
+    "darkmode": "Нет, только светлая",
+    "staff_count": "Более 10",
+    "calc_types": [
+      "Стоимость обучения"
+    ],
+    "directory": [
+      "Список университетов",
+      "Партнёры в странах"
+    ],
+    "content_update": "Я сам (технический специалист)",
+    "app_needed": "Да, обязательно",
+    "app_platform": "iOS + Android",
+    "app_features": [
+      "Все функции сайта",
+      "Push-уведомления о статусе",
+      "Только каталог услуг + заявка"
+    ],
+    "app_priority": "Сначала сайт, потом приложение",
+    "domain": "Знаю регистратора и пароль",
+    "github": "Да",
+    "email": "Да (info@zagraneasy.kz)",
+    "integrations": [
+      "WhatsApp Business API",
+      "Instagram Feed"
+    ],
+    "deadline": "Как можно скорее (2-3 недели)",
+    "references": [
+      "Kaspi.kz"
+    ],
+    "decision_maker": "Директор",
+    "update_freq": "Каждый день",
+    "competitors": "Есть конкретные (назвать)",
+    "goals": "Увеличение узнаваемости бренда"
+  },
+  "notes": {
+    "colors": "#66CCFF",
+    "slogan": "",
+    "brandbook": "Мантия + самолет ",
+    "age": "студенты ",
+    "source": "Threads",
+    "installment": "Hal",
+    "pricing": "600000 - 1,5 млн",
+    "crm_features": "Дожим система "
+  }
+}
