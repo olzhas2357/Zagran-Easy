@@ -1,66 +1,44 @@
 import type { Metadata } from "next";
-import { fetchEducationCountries } from "@/lib/data";
-import { EducationHero } from "@/components/education/EducationHero";
-import { CountryGrid } from "@/components/education/CountryGrid";
-import { EnrollmentSteps } from "@/components/education/EnrollmentSteps";
-import { StudentDay } from "@/components/education/StudentDay";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { waUrl } from "@/lib/utils";
-import { EDUCATION_PHONE } from "@/lib/constants";
+import { fetchAllUniversities, fetchEducationCountries } from "@/lib/data";
+import { buildCatalog } from "@/lib/education-catalog";
+import { Catalog } from "@/components/education/Catalog";
 
 export const metadata: Metadata = {
   title: "Обучение за рубежом — ZagranEasy",
   description:
-    "3200+ зачислений в 67 университетов 9 стран мира. Турция, Китай, Италия, Малайзия, Германия, Австрия, США, Канада, Великобритания.",
+    "3200+ зачислений в университеты Турции, Китая, Италии и Малайзии. Поиск по цене, дедлайну, специальности и шансу поступления.",
   openGraph: {
     title: "Обучение за рубежом — ZagranEasy",
-    description: "Каталог университетов, программ, стоимости и грантов.",
+    description: "Каталог университетов с фильтрами, сравнением и подбором.",
     url: "https://zagraneasy.kz/education",
   },
 };
 
 export default async function EducationPage() {
-  const countries = await fetchEducationCountries();
-  const universityCount = countries.reduce((sum, c) => sum + c.universityCount, 0);
+  const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
+  const catalog = buildCatalog(universities, countries);
+  const totalPrograms = catalog.reduce((sum, u) => sum + u.programsCount, 0);
 
   return (
-    <main>
-      <EducationHero countryCount={countries.length} universityCount={universityCount} />
-      <CountryGrid countries={countries} />
-      <EnrollmentSteps />
-      <StudentDay />
-
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <FadeIn>
-          <div className="rounded-3xl bg-slate-900 p-8 text-center sm:p-12">
-            <h2 className="text-2xl font-semibold text-white">
-              Перед оплатой вы должны понимать весь план
-            </h2>
-            <ul className="mx-auto mt-6 grid max-w-xl grid-cols-1 gap-3 text-left text-sm text-slate-300 sm:grid-cols-2">
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> Персональный подбор
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> Честный бюджет
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> Никаких ложных гарантий
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> Поддержка на всех этапах
-              </li>
-            </ul>
-            <a
-              href={waUrl("Здравствуйте! Хочу получить персональную стратегию поступления.", EDUCATION_PHONE)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-block rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
-            >
-              Получить стратегию →
-            </a>
+    <div className="bg-gradient-to-b from-[#F3F7FE] to-white">
+      <div className="border-b border-ze-border">
+        <div className="mx-auto max-w-6xl px-4 py-9 sm:px-10 sm:py-11">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#DDE4F0] bg-white py-1.5 pl-1.5 pr-3 text-[12.5px] font-medium text-slate-700">
+            <span className="rounded-full bg-emerald-500 px-1.5 py-0.5 text-[11px] font-bold text-white">БАЗА</span>
+            {totalPrograms.toLocaleString("ru-RU")} программ · {catalog.length} вузов
           </div>
-        </FadeIn>
-      </section>
-    </main>
+          <h1 className="mt-4 max-w-[760px] text-[28px] font-extrabold leading-[1.04] tracking-tight text-balance sm:text-[46px]">
+            Найдите свой университет за 3 минуты
+          </h1>
+          <p className="mt-3.5 max-w-[600px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[17px]">
+            Все программы Турции, Китая, Италии и Малайзии с ценами, дедлайнами и шансом поступления.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-10">
+        <Catalog universities={catalog} />
+      </div>
+    </div>
   );
 }

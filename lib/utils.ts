@@ -49,7 +49,7 @@ export function formatPrice(
   amount: number,
   currency: "$" | "€" | "₸" = "$"
 ): string {
-  return `от ${currency}${amount.toLocaleString("ru-RU")}`;
+  return `от ${currency}${(amount ?? 0).toLocaleString("ru-RU")}`;
 }
 
 export function formatArea(sqm: number): string {

@@ -2,25 +2,40 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+
+  /* ZagranEasy brand tokens — из дизайна ZagranEasy Landing/Platform.dc.html */
+  --ze-primary: #1a56db;
+  --ze-primary-dark: #123fa6;
+  --ze-accent: #12b76a; /* зелёный CTA */
+  --ze-accent-dark: #0e9b58;
+  --ze-whatsapp: #25d366;
+  --ze-whatsapp-dark: #1ebe5a;
+  --ze-navy: #0d1526; /* тёмные поверхности: футер, сайдбар кабинета менеджера */
+  --ze-ink: #0f172a;
+  --ze-muted: #5a6779;
+  --ze-border: #e8ebf0;
+  --ze-surface: #fafbfd;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-ze-primary: var(--ze-primary);
+  --color-ze-primary-dark: var(--ze-primary-dark);
+  --color-ze-accent: var(--ze-accent);
+  --color-ze-accent-dark: var(--ze-accent-dark);
+  --color-ze-whatsapp: var(--ze-whatsapp);
+  --color-ze-whatsapp-dark: var(--ze-whatsapp-dark);
+  --color-ze-navy: var(--ze-navy);
+  --color-ze-ink: var(--ze-ink);
+  --color-ze-muted: var(--ze-muted);
+  --color-ze-border: var(--ze-border);
+  --color-ze-surface: var(--ze-surface);
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

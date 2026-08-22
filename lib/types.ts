@@ -21,6 +21,18 @@ export interface EducationCountry {
   sortOrder: number;
 }
 
+export interface UniversityProgram {
+  name: string;
+  meta: string;
+  price: string;
+}
+
+export interface AdmissionStory {
+  name: string;
+  meta: string;
+  text: string;
+}
+
 export interface University {
   id: string;
   countryId: string;
@@ -29,8 +41,9 @@ export interface University {
   nameLocal: string;
   city: string;
   type: "public" | "private";
-  programs: string[];
+  programs: string[]; // уровни: "Бакалавр", "Магистр", "PhD"...
   languages: string[];
+  specialties: string[]; // специальности: "IT", "Инженерия", "Медицина"... (фильтр каталога)
   tuitionFrom: number;
   tuitionTo: number;
   hasGrant: boolean;
@@ -43,6 +56,19 @@ export interface University {
   websiteUrl: string;
   rankingNational: number | null;
   rankingWorld: number | null;
+  ieltsRequired: boolean;
+  isPartner: boolean;
+  admissionChance: number | null; // редакторская оценка шанса поступления, %
+  deadlineLabel: string;
+  deadlineDate: string | null;
+  ratingStars: number;
+  reviewsCount: number;
+  programsCount: number;
+  presentationUrl: string | null;
+  presentationPages: number | null;
+  lastVerifiedAt: string | null;
+  programList: UniversityProgram[];
+  stories: AdmissionStory[];
   isActive: boolean;
   sortOrder: number;
 }
@@ -88,13 +114,67 @@ export interface Property {
 
 export interface Lead {
   id: string;
-  source: "quiz" | "form" | "whatsapp";
-  service: "education" | "tours" | "work" | "visa" | "realestate";
-  name: string;
-  phone: string;
-  message: string;
-  quizAnswers?: { goal: string; budget: string; timeline: string };
+  source: "quiz" | "form" | "whatsapp" | "callback";
+  service: string;
+  name: string | null;
+  phone: string | null;
+  message: string | null;
+  quizAnswers?: { goal: string; budget: string; timeline: string } | null;
   status: "new" | "in_progress" | "done";
+  assignedTo: string | null;
+  createdAt: string;
+}
+
+export interface LeadActivity {
+  id: string;
+  leadId: string;
+  authorId: string | null;
+  note: string;
+  createdAt: string;
+}
+
+export interface Profile {
+  id: string;
+  fullName: string | null;
+  role: "admin" | "manager";
+  phone: string | null;
+  regions: string[];
+  createdAt: string;
+}
+
+export interface ApplicationStep {
+  label: string;
+  date: string;
+  state: "done" | "now" | "wait";
+}
+
+export interface ApplicationDocument {
+  name: string;
+  note: string;
+  ok: boolean;
+}
+
+export interface ApplicationDeadline {
+  title: string;
+  date: string;
+  urgent: boolean;
+}
+
+export interface Application {
+  id: string;
+  userId: string;
+  universityId: string | null;
+  programName: string | null;
+  status: "submitted" | "documents" | "review" | "decision" | "visa";
+  steps: ApplicationStep[];
+  documents: ApplicationDocument[];
+  deadlines: ApplicationDeadline[];
+  paymentTotal: number | null;
+  paymentCurrency: string;
+  installmentsTotal: number;
+  installmentsPaid: number;
+  nextPaymentDate: string | null;
+  managerId: string | null;
   createdAt: string;
 }
 
