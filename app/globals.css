@@ -7,8 +7,9 @@
   /* ZagranEasy brand tokens — из дизайна ZagranEasy Landing/Platform.dc.html */
   --ze-primary: #1a56db;
   --ze-primary-dark: #123fa6;
-  --ze-accent: #12b76a; /* зелёный CTA */
-  --ze-accent-dark: #0e9b58;
+  /* Единый синий CTA — все кнопки в брендовом синем (см. zagraneasy-requirements.json → colors) */
+  --ze-accent: #1a56db;
+  --ze-accent-dark: #123fa6;
   --ze-whatsapp: #25d366;
   --ze-whatsapp-dark: #1ebe5a;
   --ze-navy: #0d1526; /* тёмные поверхности: футер, сайдбар кабинета менеджера */
@@ -16,6 +17,11 @@
   --ze-muted: #5a6779;
   --ze-border: #e8ebf0;
   --ze-surface: #fafbfd;
+
+  /* Футер — светлая поверхность в голубой гамме бренда (см. notes.colors: #66CCFF) */
+  --ze-footer-bg: #eaf4ff;
+  --ze-footer-border: #cfe6fa;
+  --ze-footer-accent: #66ccff;
 }
 
 @theme inline {
@@ -32,6 +38,9 @@
   --color-ze-muted: var(--ze-muted);
   --color-ze-border: var(--ze-border);
   --color-ze-surface: var(--ze-surface);
+  --color-ze-footer-bg: var(--ze-footer-bg);
+  --color-ze-footer-border: var(--ze-footer-border);
+  --color-ze-footer-accent: var(--ze-footer-accent);
   --font-sans: var(--font-inter);
 }
 

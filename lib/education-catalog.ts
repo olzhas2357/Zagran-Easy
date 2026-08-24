@@ -22,7 +22,7 @@ export interface CatalogUniversity {
   hasGrant: boolean;
   hasDormitory: boolean;
   isPartner: boolean;
-  admissionChance: number;
+  imageUrl: string;
   deadlineLabel: string;
   deadlineSoon: boolean;
   rankingNational: number | null;
@@ -75,7 +75,7 @@ export function buildCatalog(universities: University[], countries: EducationCou
         hasGrant: u.hasGrant,
         hasDormitory: u.hasDormitory,
         isPartner: u.isPartner,
-        admissionChance: u.admissionChance ?? 50,
+        imageUrl: u.imageUrl,
         deadlineLabel: u.deadlineLabel,
         deadlineSoon: isDeadlineSoon(u.deadlineDate),
         rankingNational: u.rankingNational,
@@ -106,10 +106,4 @@ const KZT_RATE = 490;
 export function formatMonthlyInstallment(tuitionFromUsd: number): string {
   const monthly = Math.round((tuitionFromUsd * KZT_RATE) / 12 / 1000);
   return `от ${monthly} 000 ₸ / мес`;
-}
-
-export function chanceColor(chance: number): { text: string; bar: string } {
-  if (chance >= 75) return { text: "text-emerald-600", bar: "bg-emerald-500" };
-  if (chance >= 50) return { text: "text-blue-700", bar: "bg-blue-600" };
-  return { text: "text-amber-700", bar: "bg-amber-500" };
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchAllUniversities, fetchUniversityBySlug, fetchEducationCountries } from "@/lib/data";
 import { UniversitySidebar } from "@/components/education/UniversityDetail";
+import { CoverPhoto } from "@/components/ui/CoverPhoto";
 
 export async function generateStaticParams() {
   const universities = await fetchAllUniversities();
@@ -35,8 +36,8 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
           ← Назад в каталог
         </Link>
 
-        <div className="flex aspect-16/10 items-center justify-center rounded-[18px] border border-ze-border bg-[repeating-linear-gradient(135deg,#EDF0F5_0_12px,#E4E9F1_12px_24px)] font-mono text-[11px] text-slate-400 sm:aspect-[21/7]">
-          фото кампуса — {university.name}
+        <div className="aspect-16/10 overflow-hidden rounded-[18px] border border-ze-border sm:aspect-[21/7]">
+          <CoverPhoto src={university.imageUrl} alt={university.name} label={`фото кампуса — ${university.name}`} />
         </div>
 
         <div className="mt-6 flex flex-col items-start gap-6 sm:flex-row">
@@ -73,7 +74,7 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
             )}
 
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-              <Stat label="Шанс поступления" value={`${university.admissionChance ?? "—"}%`} note="по вашему аттестату" />
+              <Stat label="IELTS" value={university.ieltsRequired ? "Требуется" : "Не нужен"} note="для поступления" />
               <Stat label="Дедлайн" value={university.deadlineLabel || "—"} note="ближайший набор" />
               <Stat label="Рейтинг в стране" value={university.rankingNational ? `#${university.rankingNational}` : "—"} note="национальный рейтинг" />
               <Stat label="Программ" value={String(university.programsCount)} note="бакалавриат и магистратура" />

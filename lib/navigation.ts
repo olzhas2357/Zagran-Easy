@@ -14,11 +14,12 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: "Главная", href: "/" },
   { label: "Обучение", href: "/education", icon: "🎓" },
-  { label: "Туры", href: "/tours", icon: "✈️" },
-  { label: "Работа", href: "/work", icon: "💼" },
-  { label: "Виза USA", href: "/visa-usa", icon: "🗽" },
-  { label: "Недвижимость", href: "/realestate", icon: "🏠" },
-  { label: "О нас", href: "/about" },
+  // Временно скрыто — фокус на обучении, см. zagraneasy-requirements.json (main_services)
+  // { label: "Туры", href: "/tours", icon: "✈️" },
+  // { label: "Работа", href: "/work", icon: "💼" },
+  // { label: "Виза USA", href: "/visa-usa", icon: "🗽" },
+  // { label: "Недвижимость", href: "/realestate", icon: "🏠" },
+  // { label: "О нас", href: "/about" },
   { label: "FAQ", href: "/faq" },
 ];
 

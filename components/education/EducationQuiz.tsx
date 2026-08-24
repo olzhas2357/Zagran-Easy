@@ -36,7 +36,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
 
   const matches = useMemo(() => {
     const country = answers[0] !== null ? questions[0].opts[answers[0]] : null;
-    let list = universities.filter((u) => !u.needsVerification).sort((a, b) => b.admissionChance - a.admissionChance);
+    let list = universities.filter((u) => !u.needsVerification).sort((a, b) => b.ratingStars - a.ratingStars);
     if (country && country !== "Пока не решил") list = list.filter((u) => u.country === country);
     if (answers[2] === 2) list = list.filter((u) => !u.ieltsRequired);
     return list.slice(0, 3);
@@ -151,7 +151,9 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
                 </span>
                 <span className="flex-none text-right">
                   <span className="block text-[14.5px] font-bold">{formatTuition(m.tuitionFrom)}</span>
-                  <span className="mt-0.5 block text-[12px] font-semibold text-emerald-600">шанс {m.admissionChance}%</span>
+                  <span className="mt-0.5 block text-[12px] font-semibold text-ze-muted">
+                    ★ {m.ratingStars.toFixed(1)}
+                  </span>
                 </span>
               </Link>
             ))}

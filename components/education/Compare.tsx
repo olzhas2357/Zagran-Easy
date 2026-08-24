@@ -5,7 +5,7 @@ import type { CatalogUniversity } from "@/lib/education-catalog";
 import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 
-const ROW_LABELS = ["Цена за год", "Рассрочка", "Дедлайн", "Шанс", "IELTS", "Грант", "Общежитие", "Язык"];
+const ROW_LABELS = ["Цена за год", "Рассрочка", "Дедлайн", "IELTS", "Грант", "Общежитие", "Язык"];
 
 export function Compare({ universities }: { universities: CatalogUniversity[] }) {
   const { ids, remove } = useCompareList();
@@ -49,7 +49,6 @@ export function Compare({ universities }: { universities: CatalogUniversity[] })
               formatTuition(u.tuitionFrom),
               formatMonthlyInstallment(u.tuitionFrom),
               u.deadlineLabel,
-              `${u.admissionChance}%`,
               u.ieltsRequired ? "Нужен 6.0" : "Не нужен",
               u.hasGrant ? "Есть" : "Нет",
               u.hasDormitory ? "Есть" : "Нет",

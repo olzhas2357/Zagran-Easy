@@ -10,10 +10,10 @@ const QUESTIONS = [
     key: "goal" as const,
     opts: [
       { label: "Обучение за рубежом", value: "education" },
-      { label: "Туры и отдых", value: "tours" },
-      { label: "Работа по контракту", value: "work" },
-      { label: "Виза в США", value: "visa" },
-      { label: "Недвижимость", value: "realestate" },
+      // { label: "Туры и отдых", value: "tours" },
+      // { label: "Работа по контракту", value: "work" },
+      // { label: "Виза в США", value: "visa" },
+      // { label: "Недвижимость", value: "realestate" },
     ],
   },
   {

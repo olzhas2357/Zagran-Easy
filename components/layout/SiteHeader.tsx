@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navigation";
 import { waUrl } from "@/lib/utils";
 
@@ -31,6 +32,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          {/*
+            Личный кабинет клиента временно не используется — см. app/account.
+            Вернуть ссылку, когда кабинет снова понадобится.
+
           <Link
             href="/account"
             className="flex items-center gap-2 rounded-[11px] border border-ze-border bg-white py-1.5 pl-1.5 pr-3 text-[13.5px] font-semibold text-ze-ink transition-colors hover:border-ze-primary"
@@ -40,6 +45,7 @@ export function SiteHeader() {
             </span>
             Кабинет
           </Link>
+          */}
           <a
             href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
             target="_blank"
@@ -53,7 +59,7 @@ export function SiteHeader() {
         <button
           onClick={() => setOpen((v) => !v)}
           aria-label="Меню"
-          className="ml-auto flex h-10 w-10 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border border-ze-border bg-white md:hidden"
+          className="ml-auto flex h-11 w-11 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border border-ze-border bg-white md:hidden"
         >
           <span className="h-0.5 w-4 rounded-full bg-ze-ink" />
           <span className="h-0.5 w-4 rounded-full bg-ze-ink" />
@@ -61,35 +67,45 @@ export function SiteHeader() {
         </button>
       </div>
 
-      {open && (
-        <div className="flex flex-col gap-1 border-t border-ze-border px-4 pb-4 pt-2 md:hidden">
-          {NAV_ITEMS.filter((item) => item.href !== "/").map((item) => (
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            className="flex flex-col gap-1 border-t border-ze-border px-4 pb-4 pt-2 md:hidden"
+          >
+            {NAV_ITEMS.filter((item) => item.href !== "/").map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="rounded-[10px] px-2.5 py-3 text-[16px] font-medium text-ze-ink"
+              >
+                {item.label}
+              </Link>
+            ))}
+            {/* Кабинет клиента временно не используется — см. app/account
             <Link
-              key={item.href}
-              href={item.href}
+              href="/account"
               onClick={() => setOpen(false)}
               className="rounded-[10px] px-2.5 py-3 text-[16px] font-medium text-ze-ink"
             >
-              {item.label}
+              Кабинет
             </Link>
-          ))}
-          <Link
-            href="/account"
-            onClick={() => setOpen(false)}
-            className="rounded-[10px] px-2.5 py-3 text-[16px] font-medium text-ze-ink"
-          >
-            Кабинет
-          </Link>
-          <a
-            href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 rounded-xl bg-ze-primary px-5 py-3.5 text-center text-[15px] font-semibold text-white"
-          >
-            Оставить заявку
-          </a>
-        </div>
-      )}
+            */}
+            <a
+              href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 rounded-xl bg-ze-primary px-5 py-3.5 text-center text-[15px] font-semibold text-white"
+            >
+              Оставить заявку
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

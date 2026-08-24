@@ -1,9 +1,10 @@
 import { getUniversitiesForAdmin } from "@/lib/staff-data";
-import { UniversityRow } from "@/components/staff/UniversityRow";
+import { UniversitiesBoard } from "@/components/staff/UniversitiesBoard";
 import { isVerificationStale } from "@/lib/education-catalog";
+import { fetchEducationCountries } from "@/lib/data";
 
 export default async function StaffUniversitiesPage() {
-  const universities = await getUniversitiesForAdmin();
+  const [universities, countries] = await Promise.all([getUniversitiesForAdmin(), fetchEducationCountries()]);
   const staleCount = universities.filter((u) => isVerificationStale(u.lastVerifiedAt)).length;
   const noPresentation = universities.filter((u) => !u.presentationUrl).length;
   const active = universities.filter((u) => u.isActive).length;
@@ -24,23 +25,7 @@ export default async function StaffUniversitiesPage() {
         <Stat label="Без презентации" value={noPresentation} color="#DC2626" />
       </div>
 
-      <div className="mt-4.5 overflow-hidden rounded-2xl border border-ze-border bg-white">
-        <div className="overflow-x-auto">
-          <div className="min-w-[820px]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_140px] gap-3 border-b border-[#EEF1F6] px-4 py-3 text-[11.5px] font-bold uppercase tracking-wide text-ze-muted">
-              <div>Университет</div>
-              <div>Цена / год</div>
-              <div>Дедлайн</div>
-              <div>Презентация</div>
-              <div>Проверено</div>
-              <div />
-            </div>
-            {universities.map((u) => (
-              <UniversityRow key={u.id} university={u} />
-            ))}
-          </div>
-        </div>
-      </div>
+      <UniversitiesBoard universities={universities} countries={countries} />
 
       {staleCount > 0 && (
         <div className="mt-4 flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-[13.5px] text-amber-800">

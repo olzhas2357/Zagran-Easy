@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { CatalogUniversity } from "@/lib/education-catalog";
-import { formatTuition, formatMonthlyInstallment, chanceColor } from "@/lib/education-catalog";
+import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
+import { CoverPhoto } from "@/components/ui/CoverPhoto";
 
-type Sort = "chance" | "price" | "rating";
+type Sort = "price" | "rating";
 
 function uniqueSorted(values: string[]): string[] {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, "ru"));
@@ -37,7 +38,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
   const [dormOnly, setDormOnly] = useState(false);
   const [partnerOnly, setPartnerOnly] = useState(false);
   const [deadlineSoonOnly, setDeadlineSoonOnly] = useState(false);
-  const [sort, setSort] = useState<Sort>("chance");
+  const [sort, setSort] = useState<Sort>("price");
 
   const { ids: compareIds, toggle: toggleCompare } = useCompareList();
 
@@ -80,9 +81,8 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
       if (deadlineSoonOnly && !u.deadlineSoon) return false;
       return true;
     });
-    if (sort === "price") list = [...list].sort((a, b) => a.tuitionFrom - b.tuitionFrom);
-    else if (sort === "rating") list = [...list].sort((a, b) => (a.rankingNational ?? 999) - (b.rankingNational ?? 999));
-    else list = [...list].sort((a, b) => b.admissionChance - a.admissionChance);
+    if (sort === "rating") list = [...list].sort((a, b) => (a.rankingNational ?? 999) - (b.rankingNational ?? 999));
+    else list = [...list].sort((a, b) => a.tuitionFrom - b.tuitionFrom);
     return list;
   }, [universities, query, countries, cities, specialties, languages, price, noIelts, grantOnly, dormOnly, partnerOnly, deadlineSoonOnly, sort]);
 
@@ -204,7 +204,6 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
             <div className="flex gap-1.5 rounded-[11px] border border-ze-border bg-[#F4F6FA] p-0.5">
               {(
                 [
-                  ["chance", "По шансу"],
                   ["price", "По цене"],
                   ["rating", "По рейтингу"],
                 ] as const
@@ -272,11 +271,10 @@ function UniversityCard({
   inCompare: boolean;
   onToggleCompare: () => void;
 }) {
-  const chance = chanceColor(u.admissionChance);
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_12px_30px_rgba(15,23,42,0.1)]">
-      <div className="relative flex aspect-16/10 items-center justify-center bg-[repeating-linear-gradient(135deg,#EDF0F5_0_10px,#E4E9F1_10px_20px)] font-mono text-[10.5px] text-slate-400">
-        фото кампуса — {u.city}
+      <div className="relative aspect-16/10">
+        <CoverPhoto src={u.imageUrl} alt={u.city} label={`фото кампуса — ${u.city}`} />
         <div className="absolute left-2.5 top-2.5 flex gap-1.5">
           <span className="rounded-lg bg-white/94 px-2 py-1 text-[11.5px] font-semibold text-ze-ink">
             {u.flag} {u.country}
@@ -300,12 +298,6 @@ function UniversityCard({
           <div className="mt-1 text-[12.5px] text-ze-muted">
             {u.city} · {u.programsCount} программ {u.rankingNational ? `· #${u.rankingNational} в стране` : ""}
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF1F6]">
-            <div className={`h-full rounded-full ${chance.bar}`} style={{ width: `${u.admissionChance}%` }} />
-          </div>
-          <div className={`flex-none text-[12px] font-bold ${chance.text}`}>Шанс {u.admissionChance}%</div>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {[u.languages[0], u.hasDormitory ? "Общежитие" : "Без общежития", u.ieltsRequired ? "IELTS нужен" : "Без IELTS"]

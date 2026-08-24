@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { fetchAllUniversities, fetchEducationCountries, fetchTours, fetchReviews } from "@/lib/data";
-import { formatPrice, formatDuration, waUrl } from "@/lib/utils";
-import { SITE, STATS, SERVICES } from "@/lib/constants";
+import { fetchAllUniversities, fetchEducationCountries, fetchReviews } from "@/lib/data";
+import { formatPrice, waUrl } from "@/lib/utils";
+import { SITE, STATS, ABOUT, MEDIA_REEL_ITEMS } from "@/lib/constants";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { LandingQuiz } from "@/components/home/LandingQuiz";
 import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
+import { HeroPlane } from "@/components/home/HeroPlane";
+import { MediaReel } from "@/components/home/MediaReel";
 
 export default async function HomePage() {
-  const [countries, universities, tours, reviews] = await Promise.all([
+  const [countries, universities, reviews] = await Promise.all([
     fetchEducationCountries(),
     fetchAllUniversities(),
-    fetchTours(),
     fetchReviews(),
   ]);
 
@@ -27,16 +29,17 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
+      <section className="relative border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
+        <HeroPlane />
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#DDE4F0] bg-white py-1.5 pl-2 pr-3 text-[13px] font-medium text-slate-700 shadow-sm">
+            {/* <div className="inline-flex items-center gap-1.5 rounded-full border border-[#DDE4F0] bg-white py-1.5 pl-2 pr-3 text-[13px] font-medium text-slate-700 shadow-sm">
               <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#EBF1FE] text-[10px]">
                 📍
               </span>
               {SITE.address}
-            </div>
-            <h1 className="mt-4.5 text-[34px] font-extrabold leading-[1.05] tracking-tight text-balance sm:text-[58px]">
+            </div> */}
+            <h1 className="mt-4.5 text-[35px] font-extrabold leading-[1.05] tracking-tight text-balance sm:text-[60px]">
               Весь мир —
               <br />в одном месте
             </h1>
@@ -48,7 +51,7 @@ export default async function HomePage() {
                 href={waUrl("Здравствуйте! Хочу получить консультацию.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_6px_18px_rgba(18,183,106,0.28)] transition-colors hover:bg-ze-accent-dark"
+                className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_6px_18px_rgba(26,86,219,0.28)] transition-colors hover:bg-ze-accent-dark"
               >
                 Получить консультацию
               </a>
@@ -69,14 +72,44 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="w-full min-w-0 flex-1">
-            <div className="flex aspect-4/3 items-center justify-center rounded-[20px] border border-ze-border bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] px-4 text-center font-mono text-[11px] text-slate-400">
-              фото — студенты / аэропорт
+            <div className="group relative aspect-4/3 overflow-hidden rounded-[20px] border border-ze-border bg-slate-100 shadow-sm">
+              <img
+                src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto:eco,f_auto/v1776028170/a4te_opwrjk.png"
+                alt="Hustwork project preview"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+
+              {/* subtle overlay */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Hub — 5 модулей */}
+      {/* О компании + реел-лента */}
+      <section className="py-11 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-10">
+          <FadeIn>
+            <div className="max-w-[640px]">
+              <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">
+                {ABOUT.eyebrow}
+              </div>
+              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[36px]">{ABOUT.heading}</h2>
+              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">{ABOUT.body}</p>
+            </div>
+          </FadeIn>
+        </div>
+        <div className="mt-8 sm:mt-10">
+          <MediaReel items={MEDIA_REEL_ITEMS} />
+        </div>
+      </section>
+
+      {/*
+        Hub — модули направлений. Пока на сайте активно только "Обучение" —
+        см. zagraneasy-requirements.json (main_services). Раздел вернём,
+        когда запустятся туры/работа/виза/недвижимость.
+
       <section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10">
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5 sm:gap-4">
           {SERVICES.map((s) => (
@@ -94,6 +127,7 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+      */}
 
       {/* Статистика */}
       <section className="px-4 py-5 sm:px-10">
@@ -134,8 +168,8 @@ export default async function HomePage() {
                   href="/education"
                   className="block overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_10px_26px_rgba(15,23,42,0.09)]"
                 >
-                  <div className="flex aspect-4/3 items-center justify-center bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] font-mono text-[10.5px] text-slate-400">
-                    фото — {c.name}
+                  <div className="aspect-4/3">
+                    <CoverPhoto src={c.imageUrl} alt={c.name} />
                   </div>
                   <div className="p-3.5 sm:p-4">
                     <div className="flex items-center justify-between gap-2">
@@ -157,7 +191,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Туры */}
+      {/*
+        Туры — временно скрыты с сайта вместе с остальными направлениями,
+        см. lib/navigation.ts. Данные и логика остаются в data/tours.ts —
+        секцию вернём, когда туры станут приоритетом.
+
       <section id="tours" className="py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Туры</div>
@@ -195,6 +233,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Рассрочка */}
       <section className="px-4 sm:px-10">

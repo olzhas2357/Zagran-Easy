@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import type { University } from "@/lib/types";
-import { formatTuitionAmount, formatMonthlyInstallment, chanceColor } from "@/lib/education-catalog";
+import { formatTuitionAmount, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { createLead } from "@/lib/actions";
 import { waUrl } from "@/lib/utils";
@@ -76,16 +76,18 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
         </div>
       </div>
 
-      <div className="mt-3.5 rounded-[18px] bg-ze-navy p-4.5 text-white">
+     <div className="mt-3.5 rounded-[18px] border border-ze-border bg-white p-4.5 text-ze-navy shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
         <div className="text-[14px] font-bold">Ваш менеджер</div>
-        <p className="mt-2 text-[13px] leading-snug text-white/60">
+
+        <p className="mt-2 text-[13px] leading-snug text-ze-navy/60">
           Закрепляется за вами после заявки — ведёт от документов до вылета.
         </p>
-        <a
+
+       <a
           href={waUrl(`Здравствуйте! Хочу узнать про поступление в ${university.name}.`)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3.5 block rounded-[11px] bg-ze-whatsapp py-3 text-center text-[14px] font-bold text-ze-navy hover:bg-ze-whatsapp-dark"
+          className="mt-3.5 block rounded-[11px] border border-[#BFE8CE] bg-[#F3FBF6] py-3 text-center text-[14px] font-bold text-[#168A45] transition-all duration-200 hover:border-[#9DDDB5] hover:bg-[#E8F8EE] hover:text-[#11783B]"
         >
           Написать в WhatsApp
         </a>
@@ -101,9 +103,4 @@ function Fact({ k, v }: { k: string; v: string }) {
       <span className="text-right font-semibold">{v}</span>
     </div>
   );
-}
-
-export function AdmissionChanceBadge({ chance }: { chance: number }) {
-  const c = chanceColor(chance);
-  return <span className={`font-bold ${c.text}`}>{chance}%</span>;
 }
