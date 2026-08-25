@@ -6,7 +6,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { LandingQuiz } from "@/components/home/LandingQuiz";
 import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
-import { HeroPlane } from "@/components/home/HeroPlane";
+import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
 
 export default async function HomePage() {
@@ -30,7 +30,6 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       <section className="relative border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
-        <HeroPlane />
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
           <div className="min-w-0 flex-1">
             {/* <div className="inline-flex items-center gap-1.5 rounded-full border border-[#DDE4F0] bg-white py-1.5 pl-2 pr-3 text-[13px] font-medium text-slate-700 shadow-sm">
@@ -75,10 +74,11 @@ export default async function HomePage() {
             <div className="group relative aspect-4/3 overflow-hidden rounded-[20px] border border-ze-border bg-slate-100 shadow-sm">
               <img
                 src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto:eco,f_auto/v1776028170/a4te_opwrjk.png"
-                alt="Hustwork project preview"
+                alt="Студенты ZagranEasy — Стамбул"
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 loading="lazy"
               />
+              <HeroCelebration />
 
               {/* subtle overlay */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
