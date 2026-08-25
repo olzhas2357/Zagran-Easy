@@ -8,6 +8,7 @@ import { LandingQuiz } from "@/components/home/LandingQuiz";
 import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 
 export default async function HomePage() {
   const [countries, universities, reviews] = await Promise.all([
@@ -274,6 +275,8 @@ export default async function HomePage() {
           <ReviewsCarousel reviews={reviews} />
         </div>
       </section>
+
+      <SiteFooter />
     </>
   );
 }

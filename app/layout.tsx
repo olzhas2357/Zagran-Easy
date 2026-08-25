@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { SITE } from "@/lib/constants";
 
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col font-sans text-ze-ink">
         <SiteHeader />
         <main className="flex flex-1 flex-col">{children}</main>
-        <SiteFooter />
         <WhatsAppButton />
       </body>
     </html>
