@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navigation";
@@ -12,10 +13,15 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-ze-border bg-white/92 backdrop-blur-md">
       <div className="mx-auto flex h-[62px] max-w-6xl items-center gap-3 px-4 sm:h-[72px] sm:px-10">
-        <Link href="/" className="flex flex-none items-center gap-2.5" onClick={() => setOpen(false)}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-ze-primary text-[14px] font-extrabold tracking-wide text-white">
-            ZE
-          </span>
+        <Link href="/" className="flex flex-none items-center gap-2" onClick={() => setOpen(false)}>
+          <Image
+            src="/logo-icon.png"
+            alt="ZagranEasy"
+            width={669}
+            height={477}
+            priority
+            className="h-8 w-auto sm:h-10"
+          />
           <span className="text-[17px] font-bold tracking-tight text-ze-ink">ZagranEasy</span>
         </Link>
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/navigation";
@@ -10,10 +11,8 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 pt-14 sm:px-10 sm:pt-16">
         <div className="grid grid-cols-1 gap-9 sm:grid-cols-[1.4fr_1fr_1.2fr_1fr] sm:gap-10">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-ze-primary text-[14px] font-extrabold tracking-wide text-white">
-                ZE
-              </span>
+            <div className="flex items-center gap-2">
+              <Image src="/logo-icon.png" alt={SITE.name} width={669} height={477} className="h-9 w-auto" />
               <span className="text-[16px] font-bold">{SITE.name}</span>
             </div>
             <p className="mt-3.5 max-w-[280px] text-[13.5px] leading-relaxed text-ze-muted">
