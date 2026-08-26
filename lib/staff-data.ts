@@ -58,50 +58,64 @@ export async function getCurrentProfile(): Promise<Profile | null> {
   return mapProfileRow(data);
 }
 
+function mapAdminUniversityRow(row: Record<string, unknown>): University {
+  return {
+    id: row.id as string,
+    countryId: row.country_id as string,
+    slug: row.slug as string,
+    name: row.name as string,
+    nameLocal: (row.name_local as string) || "",
+    city: row.city as string,
+    type: (row.type as University["type"]) || "public",
+    programs: (row.degree_levels as string[]) || [],
+    languages: (row.languages as string[]) || [],
+    specialties: (row.specialties as string[]) || [],
+    tuitionFrom: (row.tuition_from as number) ?? 0,
+    tuitionTo: (row.tuition_to as number) ?? 0,
+    hasGrant: Boolean(row.has_grant),
+    grantDetails: (row.grant_details as string) || "",
+    hasDormitory: Boolean(row.has_dormitory),
+    dormitoryCost: (row.dormitory_cost as number) ?? 0,
+    requirements: (row.requirements as string[]) || [],
+    description: (row.description as string) || "",
+    imageUrl: (row.image_url as string) || "",
+    galleryImages: (row.gallery_images as string[]) || [],
+    dormitoryImages: (row.dormitory_images as string[]) || [],
+    websiteUrl: (row.website_url as string) || "",
+    rankingNational: (row.ranking_national as number) ?? null,
+    rankingWorld: (row.ranking_world as number) ?? null,
+    ieltsRequired: Boolean(row.ielts_required),
+    isPartner: Boolean(row.is_partner),
+    admissionChance: (row.admission_chance as number) ?? null,
+    deadlineLabel: (row.deadline_label as string) || "",
+    deadlineDate: (row.deadline_date as string) ?? null,
+    ratingStars: (row.rating_stars as number) ?? 4.5,
+    reviewsCount: (row.reviews_count as number) ?? 0,
+    programsCount: (row.programs_count as number) ?? 0,
+    presentationUrl: (row.presentation_url as string) ?? null,
+    presentationPages: (row.presentation_pages as number) ?? null,
+    lastVerifiedAt: (row.last_verified_at as string) ?? null,
+    programList: (row.program_list as University["programList"]) || [],
+    stories: (row.stories as University["stories"]) || [],
+    isActive: row.is_active === undefined ? true : Boolean(row.is_active),
+    sortOrder: (row.sort_order as number) ?? 0,
+  };
+}
+
 // Все вузы (включая неактивные черновики) — для CMS в /staff/universities.
 export async function getUniversitiesForAdmin(): Promise<University[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("universities").select("*").order("sort_order");
   if (error || !data) return [];
-  return data.map((row) => ({
-    id: row.id,
-    countryId: row.country_id,
-    slug: row.slug,
-    name: row.name,
-    nameLocal: row.name_local || "",
-    city: row.city,
-    type: row.type || "public",
-    programs: row.degree_levels || [],
-    languages: row.languages || [],
-    specialties: row.specialties || [],
-    tuitionFrom: row.tuition_from ?? 0,
-    tuitionTo: row.tuition_to ?? 0,
-    hasGrant: Boolean(row.has_grant),
-    grantDetails: row.grant_details || "",
-    hasDormitory: Boolean(row.has_dormitory),
-    dormitoryCost: row.dormitory_cost ?? 0,
-    requirements: row.requirements || [],
-    description: row.description || "",
-    imageUrl: row.image_url || "",
-    websiteUrl: row.website_url || "",
-    rankingNational: row.ranking_national ?? null,
-    rankingWorld: row.ranking_world ?? null,
-    ieltsRequired: Boolean(row.ielts_required),
-    isPartner: Boolean(row.is_partner),
-    admissionChance: row.admission_chance ?? null,
-    deadlineLabel: row.deadline_label || "",
-    deadlineDate: row.deadline_date ?? null,
-    ratingStars: row.rating_stars ?? 4.5,
-    reviewsCount: row.reviews_count ?? 0,
-    programsCount: row.programs_count ?? 0,
-    presentationUrl: row.presentation_url ?? null,
-    presentationPages: row.presentation_pages ?? null,
-    lastVerifiedAt: row.last_verified_at ?? null,
-    programList: row.program_list || [],
-    stories: row.stories || [],
-    isActive: row.is_active === undefined ? true : Boolean(row.is_active),
-    sortOrder: row.sort_order ?? 0,
-  }));
+  return data.map(mapAdminUniversityRow);
+}
+
+// Один вуз по id (включая неактивные) — для формы редактирования.
+export async function getUniversityForAdmin(id: string): Promise<University | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.from("universities").select("*").eq("id", id).maybeSingle();
+  if (error || !data) return null;
+  return mapAdminUniversityRow(data);
 }
 
 export async function getLeadsForAdmin(): Promise<Lead[]> {

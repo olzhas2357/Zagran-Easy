@@ -14,6 +14,12 @@
    вуза Турции на полный список из 8 (источник: `turkey_education_data.json`,
    тот же список уже перенесён в `data/education.ts`). Применять один раз,
    после 0001+0002.
+4. `migrations/0004_university_photos.sql` — добавляет колонки
+   `gallery_images` и `dormitory_images` (фото кампуса и общежития на
+   странице вуза, редактируются в /staff/universities).
+5. `migrations/0005_university_media_storage.sql` — создаёт бакет
+   `university-media` (публичный) для загрузки фото/презентаций прямо
+   из кабинета менеджера, с политиками доступа (запись — только staff).
 
 После применения:
 

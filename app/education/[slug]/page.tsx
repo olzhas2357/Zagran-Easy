@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { fetchAllUniversities, fetchUniversityBySlug, fetchEducationCountries } from "@/lib/data";
 import { UniversitySidebar } from "@/components/education/UniversityDetail";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
+import { PhotoGallery } from "@/components/ui/PhotoGallery";
 
 export async function generateStaticParams() {
   const universities = await fetchAllUniversities();
@@ -28,6 +29,9 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
 
   const country = countries.find((c) => c.id === university.countryId);
   const countryName = country?.name || "";
+
+  const campusGallery = Array.from(new Set([university.imageUrl, ...(university.galleryImages ?? [])].filter(Boolean)));
+  const dormitoryGallery = university.dormitoryImages ?? [];
 
   return (
     <div className="bg-ze-surface">
@@ -106,6 +110,12 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
               </div>
             </Section>
 
+            {campusGallery.length > 1 && (
+              <Section title="Фото кампуса">
+                <PhotoGallery images={campusGallery} alt={`фото кампуса — ${university.name}`} />
+              </Section>
+            )}
+
             <Section title="Презентация университета">
               {university.presentationUrl ? (
                 <div className="flex items-center justify-between gap-3">
@@ -118,6 +128,16 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
                 <div className="text-[13.5px] text-ze-muted">Презентация пока не загружена — уточните у менеджера в WhatsApp.</div>
               )}
             </Section>
+
+            {university.hasDormitory && (
+              <Section title="Общежитие">
+                {dormitoryGallery.length > 0 ? (
+                  <PhotoGallery images={dormitoryGallery} alt={`фото общежития — ${university.name}`} />
+                ) : (
+                  <div className="text-[13.5px] text-ze-muted">Фото общежития пока не загружены — уточните у менеджера в WhatsApp.</div>
+                )}
+              </Section>
+            )}
 
             {university.stories.length > 0 && (
               <Section title="Истории поступивших">

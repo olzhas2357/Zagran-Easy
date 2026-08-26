@@ -53,6 +53,8 @@ export interface University {
   requirements: string[];
   description: string;
   imageUrl: string;
+  galleryImages?: string[]; // доп. фото кампуса — под галерею на странице вуза
+  dormitoryImages?: string[]; // фото общежития
   websiteUrl: string;
   rankingNational: number | null;
   rankingWorld: number | null;

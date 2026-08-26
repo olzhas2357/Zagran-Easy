@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import type { University } from "@/lib/types";
 import { formatTuitionAmount, isVerificationStale } from "@/lib/education-catalog";
 import { markUniversityVerified, toggleUniversityActive } from "@/lib/staff-actions";
@@ -17,7 +18,7 @@ export function UniversityRow({ university }: { university: University }) {
   const stale = isVerificationStale(university.lastVerifiedAt);
 
   return (
-    <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_140px] items-center gap-3 border-b border-[#F4F6FA] px-4 py-3.5 text-[13.5px] last:border-0">
+    <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_190px] items-center gap-3 border-b border-[#F4F6FA] px-4 py-3.5 text-[13.5px] last:border-0">
       <div className="min-w-0">
         <div className={`font-semibold ${university.isActive ? "" : "text-slate-400"}`}>{university.name}</div>
         <div className="mt-0.5 text-[12px] text-slate-400">
@@ -40,7 +41,13 @@ export function UniversityRow({ university }: { university: University }) {
           {daysAgoLabel(university.lastVerifiedAt)}
         </span>
       </div>
-      <div className="flex gap-1.5">
+      <div className="flex flex-wrap justify-end gap-1.5">
+        <Link
+          href={`/staff/universities/${university.id}/edit`}
+          className="rounded-[9px] border border-ze-border bg-white px-2.5 py-1.5 text-[12px] font-semibold text-slate-700 hover:border-ze-primary hover:text-ze-primary"
+        >
+          Редактировать
+        </Link>
         <button
           disabled={isPending}
           onClick={() =>

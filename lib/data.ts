@@ -63,6 +63,8 @@ function mapUniversityRow(row: Record<string, unknown>): University {
     requirements: (row.requirements as string[]) || [],
     description: (row.description as string) || "",
     imageUrl: (row.image_url as string) || "",
+    galleryImages: (row.gallery_images as string[]) || [],
+    dormitoryImages: (row.dormitory_images as string[]) || [],
     websiteUrl: (row.website_url as string) || "",
     rankingNational: (row.ranking_national as number) ?? null,
     rankingWorld: (row.ranking_world as number) ?? null,

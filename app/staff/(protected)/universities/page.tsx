@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getUniversitiesForAdmin } from "@/lib/staff-data";
 import { UniversitiesBoard } from "@/components/staff/UniversitiesBoard";
 import { isVerificationStale } from "@/lib/education-catalog";
@@ -16,6 +17,12 @@ export default async function StaffUniversitiesPage() {
           <h1 className="text-[25px] font-extrabold tracking-tight sm:text-[34px]">База университетов</h1>
           <p className="mt-2 text-[14px] text-ze-muted">Один источник правды: карточка, цены и презентация меняются здесь и сразу на сайте.</p>
         </div>
+        <Link
+          href="/staff/universities/new"
+          className="rounded-xl bg-ze-accent px-4 py-2.5 text-[13.5px] font-semibold text-white hover:bg-ze-accent-dark"
+        >
+          + Добавить университет
+        </Link>
       </div>
 
       <div className="mt-4.5 grid grid-cols-2 gap-3 sm:grid-cols-4">

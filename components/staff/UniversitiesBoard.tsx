@@ -60,8 +60,8 @@ export function UniversitiesBoard({
 
       <div className="mt-3.5 overflow-hidden rounded-2xl border border-ze-border bg-white">
         <div className="overflow-x-auto">
-          <div className="min-w-[820px]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_140px] gap-3 border-b border-[#EEF1F6] px-4 py-3 text-[11.5px] font-bold uppercase tracking-wide text-ze-muted">
+          <div className="min-w-[880px]">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_190px] gap-3 border-b border-[#EEF1F6] px-4 py-3 text-[11.5px] font-bold uppercase tracking-wide text-ze-muted">
               <div>Университет</div>
               <div>Цена / год</div>
               <div>Дедлайн</div>
