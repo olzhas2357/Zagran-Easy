@@ -144,6 +144,19 @@ export interface Profile {
   createdAt: string;
 }
 
+// Учитель — расширение profiles строкой в teachers (id = profiles.id).
+// "Учительство" определяется наличием этой строки, а не profiles.role
+// (там check ограничен 'admin'|'manager').
+export interface TeacherProfile {
+  id: string;
+  fullName: string | null;
+  phone: string | null;
+  specializations: string[];
+  bio: string | null;
+  maxStudents: number | null;
+  hourlyRate: number | null;
+}
+
 export interface ApplicationStep {
   label: string;
   date: string;

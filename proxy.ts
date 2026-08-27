@@ -35,9 +35,10 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isStaffArea = pathname.startsWith("/staff") && pathname !== "/staff/login";
   const isAccountArea = pathname.startsWith("/account") && pathname !== "/account/login";
+  const isTeacherArea = pathname.startsWith("/teacher") && pathname !== "/teacher/login";
 
-  if ((isStaffArea || isAccountArea) && !user) {
-    const loginPath = isStaffArea ? "/staff/login" : "/account/login";
+  if ((isStaffArea || isAccountArea || isTeacherArea) && !user) {
+    const loginPath = isStaffArea ? "/staff/login" : isTeacherArea ? "/teacher/login" : "/account/login";
     const url = request.nextUrl.clone();
     url.pathname = loginPath;
     url.searchParams.set("next", pathname);
@@ -48,5 +49,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/staff/:path*", "/account/:path*"],
+  matcher: ["/staff/:path*", "/account/:path*", "/teacher/:path*"],
 };
