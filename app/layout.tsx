@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { AppShell } from "@/components/layout/AppShell";
 import { SITE } from "@/lib/constants";
 
 const inter = Inter({
@@ -24,9 +23,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans text-ze-ink">
-        <SiteHeader />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <WhatsAppButton />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
