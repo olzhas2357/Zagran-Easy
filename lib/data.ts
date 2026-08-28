@@ -10,7 +10,7 @@
 import { supabase, USE_DB } from "./db";
 import { educationCountries, universities, getCountryBySlug, getUniversitiesByCountryId } from "@/data/education";
 import { tours, getTourBySlug } from "@/data/tours";
-import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions } from "@/data/content";
+import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions, faqItems } from "@/data/content";
 import type { EducationCountry, University, Tour, WorkCountry, Property, Review } from "./types";
 
 // Логируем ошибку один раз за запрос — не даём БД молча "работать" на пустых данных.
@@ -275,4 +275,8 @@ export function getVisaServices() {
 
 export function getRealEstateRegions() {
   return realEstateRegions;
+}
+
+export function getFaqItems() {
+  return faqItems;
 }

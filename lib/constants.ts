@@ -15,13 +15,12 @@ export const SITE = {
   url: "https://zagraneasy.kz",
 } as const;
 
-// Временно только обучение — остальные направления скрыты, см. zagraneasy-requirements.json (main_services)
 export const SERVICES = [
   { id: "education", icon: "🎓", title: "Обучение", subtitle: "за рубежом", color: "emerald", href: "/education" },
-  // { id: "tours",     icon: "✈️", title: "Туры",     subtitle: "по миру",     color: "sky",     href: "/tours" },
-  // { id: "work",      icon: "💼", title: "Работа",   subtitle: "за границей", color: "violet",  href: "/work" },
-  // { id: "visa",      icon: "🗽", title: "Виза USA", subtitle: "B1/B2, F-1",  color: "blue",    href: "/visa-usa" },
-  // { id: "realestate",icon: "🏠", title: "Жильё",    subtitle: "за рубежом",  color: "amber",   href: "/realestate" },
+  { id: "tours", icon: "✈️", title: "Туры", subtitle: "по миру", color: "sky", href: "/tours" },
+  { id: "work", icon: "💼", title: "Работа", subtitle: "за границей", color: "violet", href: "/work" },
+  { id: "visa", icon: "🗽", title: "Виза USA", subtitle: "B1/B2, F-1", color: "blue", href: "/visa-usa" },
+  { id: "realestate", icon: "🏠", title: "Жильё", subtitle: "за рубежом", color: "amber", href: "/realestate" },
 ] as const;
 
 export const STATS = [
@@ -63,6 +62,30 @@ export const MEDIA_REEL_ITEMS = [
   { id: "reel-18", type: "photo", label: "Момент со студентами", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763271/WhatsApp_Image_2026-04-09_at_14.44.21_vsvy0d.jpg` },
   { id: "reel-19", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761724/543_w1xzjf.jpg` },
 ] as const;
+
+// Только фото (без видео-постеров) — для плотных фото-лент и коллажей,
+// где нужна именно фотография, а не превью видео.
+export const REEL_PHOTOS_ONLY = MEDIA_REEL_ITEMS.filter((i) => i.type === "photo");
+
+// Коллаж плавающих фото в hero — 5 карточек с разной фазой анимации
+export const HERO_COLLAGE = [
+  REEL_PHOTOS_ONLY[3],
+  REEL_PHOTOS_ONLY[4],
+  REEL_PHOTOS_ONLY[6],
+  REEL_PHOTOS_ONLY[8],
+  REEL_PHOTOS_ONLY[1],
+] as const;
+
+// Лента "писем о зачислении" — используем реальные фото документов из Cloudinary
+export const ACCEPTANCE_LETTER_PHOTOS = MEDIA_REEL_ITEMS.filter((i) => i.label === "Документы о зачислении").map(
+  (i) => ({ src: i.src, alt: i.label })
+);
+
+// Лента "моменты со студентами" — второй ряд, едет в обратную сторону
+export const CAMPUS_LIFE_PHOTOS = REEL_PHOTOS_ONLY.filter((i) => i.label !== "Документы о зачислении").map((i) => ({
+  src: i.src,
+  alt: i.label,
+}));
 
 // Отдельный номер WhatsApp для модуля образования
 export const EDUCATION_PHONE = "77470382914";

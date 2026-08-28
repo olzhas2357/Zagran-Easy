@@ -2,9 +2,9 @@ import { WorkCountry, Property, Review } from "@/lib/types";
 
 // ============ WORK ============
 export const workCountries: WorkCountry[] = [
-  { id: "w-tr", slug: "turkey", name: "Турция", flag: "🇹🇷", industries: ["Отельный бизнес", "IT", "Строительство"], description: "Вакансии в отельном бизнесе, IT и строительстве.", salaryRange: "$800 — $2 000", imageUrl: "/images/work-turkey.jpg" },
-  { id: "w-pl", slug: "poland", name: "Польша", flag: "🇵🇱", industries: ["Производство", "Логистика", "IT"], description: "Лидер в производстве и логистике.", salaryRange: "$1 200 — $3 000", imageUrl: "/images/work-poland.jpg" },
-  { id: "w-de", slug: "germany", name: "Германия", flag: "🇩🇪", industries: ["Инженерия", "Медицина", "IT"], description: "Работа для инженеров и медиков.", salaryRange: "$2 500 — $5 000", imageUrl: "/images/work-germany.jpg" },
+  { id: "w-tr", slug: "turkey", name: "Турция", flag: "🇹🇷", industries: ["Отельный бизнес", "IT", "Строительство"], description: "Вакансии в отельном бизнесе, IT и строительстве.", salaryRange: "$800 — $2 000", imageUrl: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1200&q=80" },
+  { id: "w-pl", slug: "poland", name: "Польша", flag: "🇵🇱", industries: ["Производство", "Логистика", "IT"], description: "Лидер в производстве и логистике.", salaryRange: "$1 200 — $3 000", imageUrl: "https://images.unsplash.com/photo-1607427293702-036933bbe97d?w=1200&q=80" },
+  { id: "w-de", slug: "germany", name: "Германия", flag: "🇩🇪", industries: ["Инженерия", "Медицина", "IT"], description: "Работа для инженеров и медиков.", salaryRange: "$2 500 — $5 000", imageUrl: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80" },
 ];
 
 // ============ VISA STEPS ============
@@ -26,17 +26,17 @@ export const visaServices = [
 
 // ============ REAL ESTATE ============
 export const properties: Property[] = [
-  { id: "p-1", title: "Вилла с видом на горы", location: "Анталия, Коньяалты", city: "Анталия", rooms: 3, areaSqm: 180, priceUsd: 285000, features: ["Бассейн", "Парковка", "Сад"], isHotDeal: true, imageUrl: "/images/prop-villa.jpg" },
-  { id: "p-2", title: "Пентхаус в центре", location: "Стамбул, Бешикташ", city: "Стамбул", rooms: 4, areaSqm: 220, priceUsd: 450000, features: ["Вид на Босфор", "Терраса"], isHotDeal: false, imageUrl: "/images/prop-penthouse.jpg" },
-  { id: "p-3", title: "Апартаменты 1+1 у моря", location: "Алания, Махмутлар", city: "Алания", rooms: 1, areaSqm: 65, priceUsd: 85000, features: ["1 линия", "Мебель"], isHotDeal: false, imageUrl: "/images/prop-alanya.jpg" },
-  { id: "p-4", title: "Вилла Prime Residence", location: "Кипр, Кирения", city: "Кипр", rooms: 4, areaSqm: 210, priceUsd: 380000, features: ["Sea View", "Бассейн", "Гараж"], isHotDeal: false, imageUrl: "/images/prop-cyprus.jpg" },
+  { id: "p-1", title: "Вилла с видом на горы", location: "Анталия, Коньяалты", city: "Анталия", rooms: 3, areaSqm: 180, priceUsd: 285000, features: ["Бассейн", "Парковка", "Сад"], isHotDeal: true, imageUrl: "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&q=80" },
+  { id: "p-2", title: "Пентхаус в центре", location: "Стамбул, Бешикташ", city: "Стамбул", rooms: 4, areaSqm: 220, priceUsd: 450000, features: ["Вид на Босфор", "Терраса"], isHotDeal: false, imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80" },
+  { id: "p-3", title: "Апартаменты 1+1 у моря", location: "Алания, Махмутлар", city: "Алания", rooms: 1, areaSqm: 65, priceUsd: 85000, features: ["1 линия", "Мебель"], isHotDeal: false, imageUrl: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&q=80" },
+  { id: "p-4", title: "Вилла Prime Residence", location: "Кипр, Кирения", city: "Кипр", rooms: 4, areaSqm: 210, priceUsd: 380000, features: ["Sea View", "Бассейн", "Гараж"], isHotDeal: false, imageUrl: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1200&q=80" },
 ];
 
 export const realEstateRegions = [
-  { name: "Стамбул", desc: "Центр мировых инвестиций", imageUrl: "/images/re-istanbul.jpg" },
-  { name: "Анталия", desc: "Лучшие виллы на побережье", imageUrl: "/images/re-antalya.jpg" },
-  { name: "Алания", desc: "Доступное жильё у моря", imageUrl: "/images/re-alanya.jpg" },
-  { name: "Кипр", desc: "Налоговые льготы и европейский уровень жизни", imageUrl: "/images/re-cyprus.jpg" },
+  { name: "Стамбул", desc: "Центр мировых инвестиций", imageUrl: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1200&q=80" },
+  { name: "Анталия", desc: "Лучшие виллы на побережье", imageUrl: "https://images.unsplash.com/photo-1600240644455-3edc55c375fe?w=1200&q=80" },
+  { name: "Алания", desc: "Доступное жильё у моря", imageUrl: "https://images.unsplash.com/photo-1499346552081-e94e4b195e97?w=1200&q=80" },
+  { name: "Кипр", desc: "Налоговые льготы и европейский уровень жизни", imageUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80" },
 ];
 
 // ============ REVIEWS ============
@@ -46,4 +46,25 @@ export const reviews: Review[] = [
   { id: "r-3", name: "Мадина С.", service: "Виза USA", text: "С первого раза получила визу B1/B2! Подготовили к собеседованию так, что чувствовала себя уверенно.", avatar: "М", rating: 5 },
   { id: "r-4", name: "Арман Т.", service: "Тур в Таиланд", text: "Летали семьёй в Таиланд. Подобрали отличный отель, трансфер, экскурсии. Всё на высоте!", avatar: "А", rating: 5 },
   { id: "r-5", name: "Жанна Б.", service: "Обучение в Китае", text: "Получила грант на обучение в Китае на 100%! Спасибо команде за поддержку на каждом этапе.", avatar: "Ж", rating: 5 },
+];
+
+// ============ FAQ ============
+export interface FaqItem {
+  id: string;
+  category: string;
+  question: string;
+  answer: string;
+}
+
+export const faqItems: FaqItem[] = [
+  { id: "f-1", category: "Обучение", question: "Можно ли поступить без экзаменов?", answer: "Да, большинство наших партнёрских вузов в Турции и Китае принимают по среднему баллу аттестата и результатам собеседования — сдавать вступительные экзамены не нужно." },
+  { id: "f-2", category: "Обучение", question: "Какие есть гранты и скидки?", answer: "У части университетов есть гранты от 25% до 100% на обучение — точный размер зависит от вуза, специальности и вашего среднего балла. Проверим доступные варианты бесплатно." },
+  { id: "f-3", category: "Обучение", question: "Сколько времени занимает поступление?", answer: "В среднем от подачи документов до получения приглашения от вуза проходит 2–6 недель, в зависимости от университета и сезона подачи." },
+  { id: "f-4", category: "Виза USA", question: "Что делать при отказе в визе?", answer: "Разбираем причину отказа, усиливаем пакет документов и готовим ко второй попытке с учётом замечаний консула — сопровождение включено в нашу услугу." },
+  { id: "f-5", category: "Виза USA", question: "Сколько стоит консульский сбор?", answer: "Консульский сбор для неиммиграционной визы США составляет $185 и оплачивается отдельно от наших услуг." },
+  { id: "f-6", category: "Туры", question: "Можно ли оформить тур в рассрочку?", answer: "Да, действует рассрочка 0·0·12 — без первого взноса и переплаты, оформление занимает 15 минут в офисе." },
+  { id: "f-7", category: "Работа", question: "Нужен ли опыт работы для трудоустройства за рубежом?", answer: "Требования зависят от вакансии: для рабочих специальностей опыт часто не обязателен, для инженерных и IT-позиций — как правило, нужен профильный опыт от 1 года." },
+  { id: "f-8", category: "Недвижимость", question: "Даёт ли покупка недвижимости право на ВНЖ?", answer: "В Турции покупка недвижимости от определённой суммы даёт право на вид на жительство. Точные условия и пороги уточняем индивидуально под объект и страну." },
+  { id: "f-9", category: "Общее", question: "Сколько стоят ваши услуги?", answer: "Стоимость зависит от направления и объёма сопровождения. Первая консультация всегда бесплатна — на ней мы озвучим точную стоимость под вашу ситуацию." },
+  { id: "f-10", category: "Общее", question: "В каком городе находится офис?", answer: "Офис ZagranEasy находится в Алматы, ул. Сатпаева 30/8 (БЦ Нурлы Тау), Блок С, 3 этаж, офис 148. Также можно проконсультироваться онлайн через WhatsApp." },
 ];
