@@ -151,3 +151,7 @@ export function getVisaServices() {
 export function getRealEstateRegions() {
   return realEstateRegions;
 }
+
+export function getFaqItems() {
+  return faqItems;
+}

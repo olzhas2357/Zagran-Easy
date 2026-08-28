@@ -12,7 +12,7 @@ export const tours: Tour[] = [
     priceFrom: 2800,
     hotelStars: 5,
     includes: ["Авиаперелёт туда и обратно", "Проживание в отелях 4-5*", "Питание (завтраки)", "Индивидуальный трансфер", "Экскурсии и личный гид", "Медицинская страховка", "Визовая поддержка"],
-    imageUrl: "/images/tour-china.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200&q=80",
     isHot: false,
   },
   {
@@ -26,7 +26,7 @@ export const tours: Tour[] = [
     priceFrom: 3500,
     hotelStars: 4,
     includes: ["Авиаперелёт туда и обратно", "Проживание в отелях 4*", "Питание (завтраки)", "Трансфер между городами", "Экскурсии с гидом", "Медицинская страховка", "Визовая поддержка"],
-    imageUrl: "/images/tour-italy.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1200&q=80",
     isHot: true,
   },
   {
@@ -40,7 +40,7 @@ export const tours: Tour[] = [
     priceFrom: 1900,
     hotelStars: 4,
     includes: ["Авиаперелёт туда и обратно", "Проживание в отелях 4*", "Питание (завтраки)", "Трансфер", "Экскурсии", "Страховка"],
-    imageUrl: "/images/tour-thailand.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1200&q=80",
     isHot: true,
   },
 ];
