@@ -48,7 +48,7 @@ export default async function TeacherAssignmentPage({ params }: { params: Promis
           initialScore={assignment.reviewScore}
           initialComment={assignment.reviewComment}
           initialErrors={assignment.reviewErrors}
-          alreadyReviewed={assignment.status === "reviewed"}
+          alreadyReviewed={assignment.status === "completed"}
         />
       </div>
     </div>

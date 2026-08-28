@@ -1,15 +1,19 @@
 // ============================================================
-// ZagranEasy — Кабинет преподавателя: серверные запросы от имени
-// залогиненного учителя (RLS: is_teacher() / is_my_student() / teacher_id = auth.uid()).
+// ZagranEasy — Кабинет преподавателя: серверные запросы через NestJS API
+// от имени залогиненного учителя (роль teacher).
 // ============================================================
 
-import { createSupabaseServerClient } from "./supabase/server";
+import { apiGet } from "./api";
+import { getSessionUser, getToken } from "./session";
 import type { TeacherProfile } from "./types";
 
+function unwrapProfile(row: Record<string, unknown>): Record<string, unknown> | undefined {
+  const p = row.profiles;
+  return (Array.isArray(p) ? p[0] : p) as Record<string, unknown> | undefined;
+}
+
 function mapTeacherRow(row: Record<string, unknown>): TeacherProfile {
-  const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as
-    | Record<string, unknown>
-    | undefined;
+  const profile = unwrapProfile(row);
   return {
     id: row.id as string,
     fullName: (profile?.full_name as string) ?? null,
@@ -22,21 +26,13 @@ function mapTeacherRow(row: Record<string, unknown>): TeacherProfile {
 }
 
 // Профиль текущего учителя — источник правды для роли "учитель".
-// Наличие строки в teachers (а не profiles.role) определяет доступ к /teacher/*.
 export async function getCurrentTeacher(): Promise<TeacherProfile | null> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase
-    .from("teachers")
-    .select("id, specializations, bio, max_students, hourly_rate, profiles(full_name, phone)")
-    .eq("id", user.id)
-    .maybeSingle();
-  if (error || !data) return null;
-  return mapTeacherRow(data);
+  const user = await getSessionUser();
+  if (!user || user.profile.role !== "teacher") return null;
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/teachers/${user.profile.id}`, token);
+  if (res.error || !res.data) return null;
+  return mapTeacherRow(res.data);
 }
 
 export interface DashboardStats {
@@ -47,43 +43,23 @@ export interface DashboardStats {
 }
 
 export async function getDashboardStats(teacherId: string): Promise<DashboardStats> {
-  const supabase = await createSupabaseServerClient();
-
+  const token = await getToken();
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
 
-  const [studentsRes, lessonsRes, reviewsRes, attendanceRes] = await Promise.all([
-    supabase.from("students").select("id", { count: "exact", head: true }).eq("teacher_id", teacherId),
-    supabase
-      .from("scheduled_lessons")
-      .select("id", { count: "exact", head: true })
-      .eq("teacher_id", teacherId)
-      .gte("scheduled_at", startOfToday)
-      .lt("scheduled_at", startOfTomorrow),
-    supabase
-      .from("task_attempts")
-      .select("id, students!inner(teacher_id)", { count: "exact", head: true })
-      .eq("status", "pending_review")
-      .is("reviewed_by", null)
-      .eq("students.teacher_id", teacherId),
-    supabase
-      .from("lesson_attendance")
-      .select("attended, scheduled_lessons!inner(teacher_id)")
-      .eq("scheduled_lessons.teacher_id", teacherId),
+  const [studentsRes, lessonsRes, pendingRes] = await Promise.all([
+    apiGet<unknown[]>(`/teachers/${teacherId}/students`, token),
+    apiGet<unknown[]>(`/scheduled-lessons?from=${startOfToday}&to=${startOfTomorrow}`, token),
+    apiGet<unknown[]>("/assignments?status=pending", token),
   ]);
 
-  const attendanceRows = attendanceRes.data || [];
-  const attendanceRate =
-    attendanceRows.length > 0
-      ? Math.round((attendanceRows.filter((r) => r.attended).length / attendanceRows.length) * 100)
-      : null;
-
   return {
-    studentsCount: studentsRes.count ?? 0,
-    lessonsToday: lessonsRes.count ?? 0,
-    pendingReviewCount: reviewsRes.count ?? 0,
-    attendanceRate,
+    studentsCount: studentsRes.data?.length ?? 0,
+    lessonsToday: lessonsRes.data?.length ?? 0,
+    pendingReviewCount: pendingRes.data?.length ?? 0,
+    // Агрегат посещаемости пока не отдаётся NestJS API отдельным эндпоинтом.
+    attendanceRate: null,
   };
 }
 
@@ -98,16 +74,12 @@ export interface NextLesson {
 }
 
 export async function getNextLesson(teacherId: string): Promise<NextLesson | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("scheduled_lessons")
-    .select("id, title, description, scheduled_at, duration_minutes, meeting_url, student_ids")
-    .eq("teacher_id", teacherId)
-    .gt("scheduled_at", new Date().toISOString())
-    .order("scheduled_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/scheduled-lessons?from=${new Date().toISOString()}`, token);
+  if (res.error || !res.data || res.data.length === 0) return null;
+
+  const data = res.data.filter((r) => r.teacher_id === teacherId).sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))[0];
+  if (!data) return null;
 
   return {
     id: data.id as string,
@@ -127,27 +99,20 @@ export interface PendingReview {
   createdAt: string;
 }
 
-export async function getPendingReviews(teacherId: string, limit = 5): Promise<PendingReview[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("task_attempts")
-    .select("id, created_at, tasks(title), students!inner(teacher_id, profiles!students_id_fkey(full_name))")
-    .eq("status", "pending_review")
-    .is("reviewed_by", null)
-    .eq("students.teacher_id", teacherId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error || !data) return [];
+// Бэкенд сам ограничивает список ролью teacher → teacher_id текущего пользователя.
+export async function getPendingReviews(_teacherId: string, limit = 5): Promise<PendingReview[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/assignments?status=pending", token);
+  if (res.error || !res.data) return [];
 
-  return data.map((row) => {
-    const task = Array.isArray(row.tasks) ? row.tasks[0] : row.tasks;
-    const student = Array.isArray(row.students) ? row.students[0] : row.students;
-    const studentProfile = student ? (Array.isArray(student.profiles) ? student.profiles[0] : student.profiles) : undefined;
+  return res.data.slice(0, limit).map((row) => {
+    const studentRow = (Array.isArray(row.students) ? row.students[0] : row.students) as Record<string, unknown> | undefined;
+    const studentProfile = unwrapProfile(studentRow || {});
     return {
       id: row.id as string,
       studentName: (studentProfile?.full_name as string) || "Без имени",
-      taskTitle: (task?.title as string) || "Задание",
-      createdAt: row.created_at as string,
+      taskTitle: (row.title as string) || "Задание",
+      createdAt: (row.created_at as string) || (row.due_date as string) || "",
     };
   });
 }
@@ -164,20 +129,53 @@ export interface StudentListItem {
   xp: number | null;
 }
 
-function mapStudentRow(row: Record<string, unknown>): StudentListItem {
-  const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as
-    | Record<string, unknown>
-    | undefined;
-  const goalsList = (Array.isArray(row.goals) ? row.goals : row.goals ? [row.goals] : []) as Record<
-    string,
-    unknown
-  >[];
+function mapTeacherStudentRow(row: Record<string, unknown>): StudentListItem {
+  const student = (row.students as Record<string, unknown>) || row;
+  const profile = unwrapProfile(student);
+  return {
+    id: student.id as string,
+    fullName: (profile?.full_name as string) ?? null,
+    avatarUrl: (profile?.avatar_url as string) ?? null,
+    // Экзаменационная цель — из отдельного /students/:id (goals), не из списка.
+    examType: null,
+    currentScore: null,
+    targetScore: null,
+    progress: null,
+    streak: (student.current_streak as number) ?? null,
+    xp: (student.total_xp as number) ?? null,
+  };
+}
+
+export async function getStudents(teacherId: string): Promise<StudentListItem[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/teachers/${teacherId}/students`, token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapTeacherStudentRow);
+}
+
+export interface StudentDetail extends StudentListItem {
+  phone: string | null;
+}
+
+export async function getStudentById(teacherId: string, studentId: string): Promise<StudentDetail | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/students/${studentId}`, token);
+  if (res.error || !res.data) return null;
+
+  const row = res.data;
+  const teachers = (row.teachers as Record<string, unknown>[]) || [];
+  const isMyStudent = teachers.some((t) => t.teacher_id === teacherId);
+  if (!isMyStudent) return null;
+
+  const profile = unwrapProfile(row);
+  const goalsList = ((Array.isArray(row.goals) ? row.goals : row.goals ? [row.goals] : []) as Record<string, unknown>[]);
   const goal = goalsList.find((g) => g.status === "active") ?? goalsList[0];
 
   return {
     id: row.id as string,
     fullName: (profile?.full_name as string) ?? null,
     avatarUrl: (profile?.avatar_url as string) ?? null,
+    phone: (profile?.phone as string) ?? null,
     examType: (goal?.exam_type as string) ?? null,
     currentScore: (goal?.current_score as number) ?? null,
     targetScore: (goal?.target_score as number) ?? null,
@@ -187,69 +185,16 @@ function mapStudentRow(row: Record<string, unknown>): StudentListItem {
   };
 }
 
-export async function getStudents(teacherId: string): Promise<StudentListItem[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("students")
-    .select(
-      "*, profiles!students_id_fkey(full_name, avatar_url), goals(exam_type, current_score, target_score, progress, status)"
-    )
-    .eq("teacher_id", teacherId);
-  if (error || !data) return [];
-
-  return (data as Record<string, unknown>[]).map(mapStudentRow);
-}
-
-export interface StudentDetail extends StudentListItem {
-  phone: string | null;
-}
-
-export async function getStudentById(teacherId: string, studentId: string): Promise<StudentDetail | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("students")
-    .select(
-      "*, profiles!students_id_fkey(full_name, avatar_url, phone), goals(exam_type, current_score, target_score, progress, status)"
-    )
-    .eq("teacher_id", teacherId)
-    .eq("id", studentId)
-    .maybeSingle();
-  if (error || !data) return null;
-
-  const row = data as Record<string, unknown>;
-  const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as
-    | Record<string, unknown>
-    | undefined;
-
-  return {
-    ...mapStudentRow(row),
-    phone: (profile?.phone as string) ?? null,
-  };
-}
-
 export interface StudentOption {
   id: string;
   fullName: string | null;
 }
 
 export async function getStudentsForSelect(teacherId: string): Promise<StudentOption[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("students")
-    .select("id, profiles!students_id_fkey(full_name)")
-    .eq("teacher_id", teacherId);
-  if (error || !data) return [];
-
-  return (data as Record<string, unknown>[]).map((row) => {
-    const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as
-      | Record<string, unknown>
-      | undefined;
-    return { id: row.id as string, fullName: (profile?.full_name as string) ?? null };
-  });
+  const students = await getStudents(teacherId);
+  return students.map((s) => ({ id: s.id, fullName: s.fullName }));
 }
 
-// Reads the first present key from a row — used where the exact column name
-// on task_attempts/tasks isn't confirmed against the live Supabase schema.
 function pickFirst(row: Record<string, unknown>, keys: string[]): unknown {
   for (const key of keys) {
     if (row[key] !== undefined && row[key] !== null) return row[key];
@@ -264,10 +209,10 @@ export interface TaskOption {
 }
 
 export async function getTaskBank(): Promise<TaskOption[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("tasks").select("*").order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return (data as Record<string, unknown>[]).map((row) => ({
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/tasks", token);
+  if (res.error || !res.data) return [];
+  return res.data.map((row) => ({
     id: row.id as string,
     title: (pickFirst(row, ["title", "name"]) as string) || "Задание",
     type: (pickFirst(row, ["type", "task_type"]) as string) ?? null,
@@ -297,14 +242,10 @@ function mapLessonRow(row: Record<string, unknown>): LessonListItem {
 }
 
 export async function getLessons(teacherId: string): Promise<LessonListItem[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("scheduled_lessons")
-    .select("*")
-    .eq("teacher_id", teacherId)
-    .order("scheduled_at", { ascending: false });
-  if (error || !data) return [];
-  return (data as Record<string, unknown>[]).map(mapLessonRow);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/scheduled-lessons?teacher_id=${teacherId}`, token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapLessonRow).sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
 }
 
 export async function getLessonsSplit(teacherId: string): Promise<{ upcoming: LessonListItem[]; past: LessonListItem[] }> {
@@ -324,29 +265,16 @@ export interface LessonDetail extends LessonListItem {
 }
 
 export async function getLessonById(teacherId: string, lessonId: string): Promise<LessonDetail | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("scheduled_lessons")
-    .select("*")
-    .eq("teacher_id", teacherId)
-    .eq("id", lessonId)
-    .maybeSingle();
-  if (error || !data) return null;
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/scheduled-lessons/${lessonId}`, token);
+  if (res.error || !res.data) return null;
 
-  const row = data as Record<string, unknown>;
+  const row = res.data;
+  if (row.teacher_id !== teacherId) return null;
+
   const studentIds = (row.student_ids as string[]) || [];
-
-  let students: StudentOption[] = [];
-  if (studentIds.length > 0) {
-    const { data: studentRows } = await supabase
-      .from("students")
-      .select("id, profiles!students_id_fkey(full_name)")
-      .in("id", studentIds);
-    students = ((studentRows as Record<string, unknown>[]) || []).map((r) => {
-      const profile = (Array.isArray(r.profiles) ? r.profiles[0] : r.profiles) as Record<string, unknown> | undefined;
-      return { id: r.id as string, fullName: (profile?.full_name as string) ?? null };
-    });
-  }
+  const allStudents = studentIds.length > 0 ? await getStudentsForSelect(teacherId) : [];
+  const students = allStudents.filter((s) => studentIds.includes(s.id));
 
   const rawMaterials = row.materials;
   const materials = Array.isArray(rawMaterials)
@@ -377,34 +305,28 @@ export interface AssignmentListItem {
 }
 
 function mapAssignmentRow(row: Record<string, unknown>): AssignmentListItem {
-  const task = Array.isArray(row.tasks) ? row.tasks[0] : row.tasks;
-  const student = Array.isArray(row.students) ? row.students[0] : row.students;
-  const studentProfile = (student
-    ? Array.isArray((student as Record<string, unknown>).profiles)
-      ? ((student as Record<string, unknown>).profiles as Record<string, unknown>[])[0]
-      : (student as Record<string, unknown>).profiles
-    : undefined) as Record<string, unknown> | undefined;
+  const student = (Array.isArray(row.students) ? row.students[0] : row.students) as Record<string, unknown> | undefined;
+  const studentProfile = unwrapProfile(student || {});
 
   return {
     id: row.id as string,
-    studentId: (student as Record<string, unknown>)?.id as string,
+    studentId: (student?.id as string) ?? (row.student_id as string),
     studentName: (studentProfile?.full_name as string) || "Без имени",
-    taskTitle: ((task as Record<string, unknown>)?.title as string) || "Задание",
-    status: (row.status as string) || "pending_review",
-    createdAt: row.created_at as string,
-    reviewScore: (row.review_score as number) ?? null,
+    taskTitle: (row.title as string) || "Задание",
+    status: (row.status as string) || "pending",
+    createdAt: (row.created_at as string) || (row.due_date as string) || "",
+    // Оценка хранится по каждому task_attempt отдельно, не на самом assignment.
+    reviewScore: null,
   };
 }
 
-export async function getAssignments(teacherId: string): Promise<AssignmentListItem[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("task_attempts")
-    .select("*, tasks(title), students!inner(id, teacher_id, profiles!students_id_fkey(full_name))")
-    .eq("students.teacher_id", teacherId)
-    .order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return (data as Record<string, unknown>[]).map(mapAssignmentRow);
+// Бэкенд сам ограничивает список ассайнментов ролью teacher → teacher_id
+// текущего пользователя (см. AssignmentsController.findAll).
+export async function getAssignments(_teacherId: string): Promise<AssignmentListItem[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/assignments", token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapAssignmentRow);
 }
 
 export interface AssignmentDetail extends AssignmentListItem {
@@ -415,26 +337,26 @@ export interface AssignmentDetail extends AssignmentListItem {
   reviewErrors: string | null;
 }
 
-export async function getAssignmentById(teacherId: string, attemptId: string): Promise<AssignmentDetail | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("task_attempts")
-    .select("*, tasks(*), students!inner(id, teacher_id, profiles!students_id_fkey(full_name))")
-    .eq("students.teacher_id", teacherId)
-    .eq("id", attemptId)
-    .maybeSingle();
-  if (error || !data) return null;
+export async function getAssignmentById(teacherId: string, assignmentId: string): Promise<AssignmentDetail | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/assignments/${assignmentId}`, token);
+  if (res.error || !res.data) return null;
 
-  const row = data as Record<string, unknown>;
-  const task = (Array.isArray(row.tasks) ? row.tasks[0] : row.tasks) as Record<string, unknown> | undefined;
+  const row = res.data;
+  if (row.teacher_id !== teacherId) return null;
+
+  const tasks = (row.tasks as Record<string, unknown>[]) || [];
+  const task = tasks[0];
 
   return {
     ...mapAssignmentRow(row),
     taskQuestion: (pickFirst(task || {}, ["question", "prompt", "description", "title"]) as string) ?? null,
     taskType: (pickFirst(task || {}, ["type", "task_type"]) as string) ?? null,
-    answerText: (pickFirst(row, ["answer_text", "answer", "content", "response_text", "response", "text"]) as string) ?? null,
-    reviewComment: (row.review_comment as string) ?? null,
-    reviewErrors: (row.review_errors as string) ?? null,
+    // Текст ответа ученика хранится в task_attempts — детально не отдаётся
+    // текущим /assignments/:id, доступен через проверку (review).
+    answerText: null,
+    reviewComment: null,
+    reviewErrors: null,
   };
 }
 
@@ -447,16 +369,12 @@ export interface MaterialItem {
 }
 
 export async function getMaterials(teacherId: string): Promise<MaterialItem[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("scheduled_lessons")
-    .select("id, title, scheduled_at, materials")
-    .eq("teacher_id", teacherId)
-    .order("scheduled_at", { ascending: false });
-  if (error || !data) return [];
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/scheduled-lessons?teacher_id=${teacherId}`, token);
+  if (res.error || !res.data) return [];
 
   const items: MaterialItem[] = [];
-  for (const row of data as Record<string, unknown>[]) {
+  for (const row of res.data) {
     const rawMaterials = row.materials;
     if (!Array.isArray(rawMaterials)) continue;
     for (const m of rawMaterials as Record<string, unknown>[]) {
@@ -470,5 +388,5 @@ export async function getMaterials(teacherId: string): Promise<MaterialItem[]> {
       });
     }
   }
-  return items;
+  return items.sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
 }

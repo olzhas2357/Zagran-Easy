@@ -2,12 +2,12 @@
 
 // ============================================================
 // ZagranEasy — Кабинет преподавателя: серверные экшены (мутации)
-// Проверки прав идут через RLS (is_teacher()/teacher_id = auth.uid()/
-// is_my_student()) — экшены сами по себе ничего не проверяют.
+// через NestJS API (роль teacher проверяется на бэкенде).
 // ============================================================
 
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "./supabase/server";
+import { apiPatch, apiPost } from "./api";
+import { getSessionUser, getToken } from "./session";
 
 export interface NewLessonInput {
   title: string;
@@ -24,47 +24,27 @@ export async function createLesson(input: NewLessonInput): Promise<{ success: bo
   if (!input.title.trim()) return { success: false, error: "Укажите название урока" };
   if (!input.scheduledAt) return { success: false, error: "Укажите дату и время урока" };
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Не авторизован" };
-
-  const { data, error } = await supabase
-    .from("scheduled_lessons")
-    .insert({
-      teacher_id: user.id,
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>(
+    "/scheduled-lessons",
+    {
       student_ids: input.studentIds,
       title: input.title.trim(),
-      description: input.description.trim() || null,
+      description: input.description.trim() || undefined,
       scheduled_at: input.scheduledAt,
       duration_minutes: input.durationMinutes,
-      meeting_url: input.meetingUrl.trim() || null,
+      meeting_url: input.meetingUrl.trim() || undefined,
       materials: input.materials,
       homework_task_ids: input.homeworkTaskIds,
-      status: "scheduled",
-    })
-    .select("id")
-    .single();
+    },
+    token
+  );
 
-  if (error || !data) return { success: false, error: error?.message || "Не удалось создать урок" };
-
-  // Уведомления ученикам — best effort: точная схема notifications не
-  // подтверждена, поэтому ошибка вставки не должна ломать создание урока.
-  if (input.studentIds.length > 0) {
-    await supabase.from("notifications").insert(
-      input.studentIds.map((studentId) => ({
-        user_id: studentId,
-        title: "Новый урок",
-        message: `Урок "${input.title.trim()}" назначен на ${new Date(input.scheduledAt).toLocaleString("ru-RU")}`,
-        type: "lesson",
-      }))
-    );
-  }
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать урок" };
 
   revalidatePath("/teacher/lessons");
   revalidatePath("/teacher");
-  return { success: true, id: data.id as string };
+  return { success: true, id: res.data.id };
 }
 
 export async function uploadLessonMaterial(
@@ -73,19 +53,27 @@ export async function uploadLessonMaterial(
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { success: false, error: "Файл не выбран" };
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Не авторизован" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
 
-  const ext = file.name.split(".").pop() || "bin";
-  const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from("lesson-materials").upload(path, file, { contentType: file.type });
-  if (error) return { success: false, error: error.message };
+  const upload = new FormData();
+  upload.set("file", file);
 
-  const { data } = supabase.storage.from("lesson-materials").getPublicUrl(path);
-  return { success: true, url: data.publicUrl, name: file.name };
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const res = await fetch(`${API_URL}/uploads?bucket=lesson-materials`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: upload,
+    });
+    const json = await res.json();
+    if (!res.ok || json.success === false) {
+      return { success: false, error: json.message || "Ошибка загрузки файла" };
+    }
+    return { success: true, url: json.data.url, name: json.data.name };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
 }
 
 export interface ReviewInput {
@@ -96,59 +84,13 @@ export interface ReviewInput {
 }
 
 export async function reviewAssignment(input: ReviewInput): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Не авторизован" };
-
-  const { data: attempt, error: fetchError } = await supabase
-    .from("task_attempts")
-    .select("id, student_id")
-    .eq("id", input.attemptId)
-    .maybeSingle();
-  if (fetchError || !attempt) return { success: false, error: "Задание не найдено" };
-
-  const { error } = await supabase
-    .from("task_attempts")
-    .update({
-      reviewed_by: user.id,
-      review_score: input.score,
-      review_comment: input.comment.trim() || null,
-      review_errors: input.errors.trim() || null,
-      reviewed_at: new Date().toISOString(),
-      status: "reviewed",
-    })
-    .eq("id", input.attemptId);
-  if (error) return { success: false, error: error.message };
-
-  const studentId = attempt.student_id as string;
-
-  // Побочные эффекты — best effort, не должны откатывать сохранённую оценку.
-  await supabase.from("notifications").insert({
-    user_id: studentId,
-    title: "Задание проверено",
-    message: `Ваша работа проверена. Оценка: ${input.score}`,
-    type: "review",
-  });
-
-  await supabase.from("xp_log").insert({
-    student_id: studentId,
-    amount: 30,
-    source: "task",
-  });
-
-  const { data: studentRow } = await supabase
-    .from("students")
-    .select("total_tasks_completed")
-    .eq("id", studentId)
-    .maybeSingle();
-  if (studentRow && typeof studentRow.total_tasks_completed === "number") {
-    await supabase
-      .from("students")
-      .update({ total_tasks_completed: studentRow.total_tasks_completed + 1 })
-      .eq("id", studentId);
-  }
+  const token = await getToken();
+  const res = await apiPatch(
+    `/assignments/${input.attemptId}/review`,
+    { score: input.score, comment: input.comment.trim() || undefined, errors: input.errors.trim() || undefined },
+    token
+  );
+  if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/teacher/assignments");
   revalidatePath(`/teacher/assignments/${input.attemptId}`);
@@ -162,17 +104,16 @@ export interface TeacherProfileInput {
 }
 
 export async function updateTeacherProfile(input: TeacherProfileInput): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   if (!user) return { success: false, error: "Не авторизован" };
 
-  const { error } = await supabase
-    .from("teachers")
-    .update({ bio: input.bio.trim() || null, specializations: input.specializations })
-    .eq("id", user.id);
-  if (error) return { success: false, error: error.message };
+  const token = await getToken();
+  const res = await apiPatch(
+    `/teachers/${user.profile.id}`,
+    { bio: input.bio.trim() || undefined, specializations: input.specializations },
+    token
+  );
+  if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/teacher/profile");
   return { success: true };

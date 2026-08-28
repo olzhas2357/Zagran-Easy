@@ -6,8 +6,8 @@ function formatDate(iso: string) {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  pending_review: "На проверке",
-  reviewed: "Проверено",
+  pending: "На проверке",
+  completed: "Проверено",
 };
 
 export default async function TeacherAssignmentsPage() {
@@ -15,8 +15,8 @@ export default async function TeacherAssignmentsPage() {
   if (!teacher) return null;
 
   const assignments = await getAssignments(teacher.id);
-  const pending = assignments.filter((a) => a.status !== "reviewed");
-  const reviewed = assignments.filter((a) => a.status === "reviewed");
+  const pending = assignments.filter((a) => a.status !== "completed");
+  const reviewed = assignments.filter((a) => a.status === "completed");
 
   return (
     <div className="flex flex-col gap-6 p-6">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { loginAction } from "@/lib/session";
 
 export function LoginForm({
   title,
@@ -26,11 +26,10 @@ export function LoginForm({
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await loginAction(email, password);
     setLoading(false);
     if (error) {
-      setError(error.message === "Invalid login credentials" ? "Неверный email или пароль" : error.message);
+      setError(error);
       return;
     }
     const next = searchParams.get("next") || defaultNext;

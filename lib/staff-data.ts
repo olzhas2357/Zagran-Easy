@@ -1,10 +1,10 @@
 // ============================================================
-// ZagranEasy — Кабинет менеджера: серверные запросы от имени
-// залогиненного сотрудника (RLS: is_staff() / is_admin()).
+// ZagranEasy — Кабинет менеджера: серверные запросы через NestJS API
+// от имени залогиненного сотрудника (роль admin/manager).
 // ============================================================
 
-import { createSupabaseServerClient } from "./supabase/server";
-import { USE_DB } from "./db";
+import { apiGet } from "./api";
+import { getSessionUser, getToken } from "./session";
 import type { Profile, Lead, LeadActivity, University } from "./types";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -44,18 +44,11 @@ function mapActivityRow(row: Record<string, unknown>): LeadActivity {
 }
 
 // Профиль текущего сотрудника — источник правды для роли (admin/manager).
-// Возвращает null и для гостя, и для обычного клиента без записи в profiles.
+// Возвращает null и для гостя, и для пользователя без нужной роли.
 export async function getCurrentProfile(): Promise<Profile | null> {
-  if (!USE_DB) return null;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
   if (!user) return null;
-
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-  if (error || !data) return null;
-  return mapProfileRow(data);
+  return mapProfileRow(user.profile as unknown as Record<string, unknown>);
 }
 
 function mapAdminUniversityRow(row: Record<string, unknown>): University {
@@ -104,41 +97,40 @@ function mapAdminUniversityRow(row: Record<string, unknown>): University {
 
 // Все вузы (включая неактивные черновики) — для CMS в /staff/universities.
 export async function getUniversitiesForAdmin(): Promise<University[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("universities").select("*").order("sort_order");
-  if (error || !data) return [];
-  return data.map(mapAdminUniversityRow);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/admin/universities", token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapAdminUniversityRow);
 }
 
 // Один вуз по id (включая неактивные) — для формы редактирования.
 export async function getUniversityForAdmin(id: string): Promise<University | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("universities").select("*").eq("id", id).maybeSingle();
-  if (error || !data) return null;
-  return mapAdminUniversityRow(data);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/admin/universities/${id}`, token);
+  if (res.error || !res.data) return null;
+  return mapAdminUniversityRow(res.data);
 }
 
 export async function getLeadsForAdmin(): Promise<Lead[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return data.map(mapLeadRow);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/leads?limit=100", token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapLeadRow);
 }
 
 export async function getLeadActivities(leadId: string): Promise<LeadActivity[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("lead_activities")
-    .select("*")
-    .eq("lead_id", leadId)
-    .order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return data.map(mapActivityRow);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/leads/${leadId}/activities`, token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapActivityRow);
 }
 
 export async function getStaffProfiles(): Promise<Profile[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("profiles").select("*").order("created_at");
-  if (error || !data) return [];
-  return data.map(mapProfileRow);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/users?limit=100", token);
+  if (res.error || !res.data) return [];
+  return res.data
+    .map((row) => ({ ...row, id: row.id, full_name: row.full_name, role: row.role, phone: row.phone, created_at: row.created_at }))
+    .map(mapProfileRow)
+    .filter((p) => p.role === "admin" || p.role === "manager");
 }

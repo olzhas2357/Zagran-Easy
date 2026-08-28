@@ -1,10 +1,10 @@
 // ============================================================
-// ZagranEasy — Кабинет студента: серверные запросы от имени
-// залогиненного пользователя (через cookie-сессию), чтобы работал RLS.
+// ZagranEasy — Кабинет студента: серверные запросы через NestJS API
+// от имени залогиненного пользователя.
 // ============================================================
 
-import { createSupabaseServerClient } from "./supabase/server";
-import { USE_DB } from "./db";
+import { apiGet } from "./api";
+import { getSessionUser, getToken } from "./session";
 import type { Application } from "./types";
 
 function mapApplicationRow(row: Record<string, unknown>): Application {
@@ -27,26 +27,19 @@ function mapApplicationRow(row: Record<string, unknown>): Application {
   };
 }
 
-export async function getCurrentUser() {
-  if (!USE_DB) return null;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+export async function getCurrentUser(): Promise<{ id: string; email?: string } | null> {
+  const user = await getSessionUser();
+  if (!user || user.profile.role !== "student") return null;
+  return { id: user.id, email: user.email };
 }
 
 // Последняя (текущая) заявка пользователя — MVP-упрощение: один активный
 // процесс поступления на аккаунт. Несколько заявок параллельно — будущая фаза.
 export async function getMyApplication(userId: string): Promise<Application | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("applications")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  return mapApplicationRow(data);
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/applications?limit=1`, token);
+  if (res.error || !res.data || res.data.length === 0) return null;
+  const row = res.data[0];
+  if (row.user_id !== userId) return null;
+  return mapApplicationRow(row);
 }

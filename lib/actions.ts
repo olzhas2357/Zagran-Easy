@@ -2,10 +2,10 @@
 
 // ============================================================
 // ZagranEasy — Server Actions
-// Серверная логика: сохранение заявок, квиз, формы
+// Серверная логика: сохранение заявок, квиз, формы — через NestJS API
 // ============================================================
 
-import { supabase, USE_DB } from "./db";
+import { apiPost } from "./api";
 
 // ---- Типы для actions ----
 interface LeadInput {
@@ -43,34 +43,20 @@ export async function createLead(input: LeadInput): Promise<ActionResult> {
     return { success: false, error: "Ответы квиза отсутствуют" };
   }
 
-  // Если Supabase подключён — сохраняем в БД
-  if (USE_DB) {
-    const { data, error } = await supabase
-      .from("leads")
-      .insert({
-        source: input.source,
-        service: input.service,
-        name: input.name || null,
-        phone: input.phone || null,
-        message: input.message || null,
-        quiz_answers: input.quizAnswers || null,
-        status: "new",
-      })
-      .select("id")
-      .single();
+  const res = await apiPost<{ id: string }>("/leads", {
+    source: input.source,
+    service: input.service,
+    name: input.name,
+    phone: input.phone,
+    message: input.message,
+    quiz_answers: input.quizAnswers,
+  });
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return { success: false, error: "Ошибка сохранения. Попробуйте позже." };
-    }
-
-    return { success: true, leadId: data.id };
+  if (res.error || !res.data) {
+    return { success: false, error: res.error || "Ошибка сохранения. Попробуйте позже." };
   }
 
-  // Без Supabase — логируем в консоль (для разработки)
-  const fakeId = `local-${Date.now()}`;
-  console.log("📩 New lead (local):", { id: fakeId, ...input });
-  return { success: true, leadId: fakeId };
+  return { success: true, leadId: res.data.id };
 }
 
 // ---- Квиз: сохранение + определение результата ----
