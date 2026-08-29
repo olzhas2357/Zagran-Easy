@@ -15,6 +15,7 @@ import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ArrowUpRight } from 'lucide-react';
 
 export default async function HomePage() {
   const [countries, universities, reviews, tours] = await Promise.all([
@@ -163,32 +164,49 @@ export default async function HomePage() {
             </div>
           </FadeIn>
         </div>
-        <div className="mt-8 sm:mt-10">
-          <MediaReel items={MEDIA_REEL_ITEMS} />
-        </div>
+        {/* <div className="mt-8 sm:mt-10"> */}
+          {/* <MediaReel items={MEDIA_REEL_ITEMS} /> */}
+        {/* </div> */}
       </section>
 
       {/* Hub — модули направлений */}
-      <section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10">
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5 sm:gap-4">
-          {SERVICES.map((s, i) => (
-            <FadeIn key={s.id} delay={i * 0.05}>
-              <TiltCard maxTilt={6}>
-                <Link
-                  href={s.href}
-                  className="flex flex-col gap-2.5 rounded-2xl border border-ze-border bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-ze-primary sm:p-5"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[13px] bg-[#EBF1FE] text-[21px]">
-                    {s.icon}
+<section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+        {SERVICES.map((s, i) => (
+          <FadeIn key={s.id} delay={i * 0.05}>
+            <TiltCard maxTilt={6}>
+              <Link
+                href={s.href}
+                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-ze-border bg-white p-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-ze-primary/40 hover:shadow-[0_12px_24px_-8px_rgba(15,23,42,0.08)] sm:p-5"
+              >
+                {/* Фоновый мягкий свечение-акцент при ховере */}
+                <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-ze-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                <div>
+                  {/* Верхний блок: Иконка и Стрелка-индикатор */}
+                  <div className="mb-3.5 flex items-center justify-between">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#EBF1FE] to-[#E2EBFF] text-[22px] text-ze-primary transition-transform duration-300 group-hover:scale-105">
+                      {s.icon}
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-ze-muted opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ze-primary group-hover:opacity-100" />
                   </div>
-                  <div className="text-[15.5px] font-semibold">{s.title}</div>
-                  <div className="text-[12.5px] leading-snug text-ze-muted">{s.subtitle}</div>
-                </Link>
-              </TiltCard>
-            </FadeIn>
-          ))}
-        </div>
-      </section>
+
+                  {/* Заголовок */}
+                  <h3 className="text-[15px] font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-ze-primary sm:text-[16px]">
+                    {s.title}
+                  </h3>
+
+                  {/* Подзаголовок */}
+                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-ze-muted">
+                    {s.subtitle}
+                  </p>
+                </div>
+              </Link>
+            </TiltCard>
+          </FadeIn>
+        ))}
+      </div>
+    </section>
 
       {/* Статистика */}
       <section className="relative px-4 py-5 sm:px-10">
@@ -259,7 +277,7 @@ export default async function HomePage() {
       </section>
 
       {/* Туры */}
-      <section id="tours" className="py-11 sm:py-19">
+      {/* <section id="tours" className="py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Туры</div>
           <h2 className="mb-7 mt-2 text-[25px] font-extrabold tracking-tight sm:mb-9 sm:text-[38px]">
@@ -300,7 +318,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Рассрочка */}
       <section className="px-4 sm:px-10">

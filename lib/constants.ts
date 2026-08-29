@@ -16,11 +16,11 @@ export const SITE = {
 } as const;
 
 export const SERVICES = [
-  { id: "education", icon: "🎓", title: "Обучение", subtitle: "за рубежом", color: "emerald", href: "/education" },
-  { id: "tours", icon: "✈️", title: "Туры", subtitle: "по миру", color: "sky", href: "/tours" },
-  { id: "work", icon: "💼", title: "Работа", subtitle: "за границей", color: "violet", href: "/work" },
-  { id: "visa", icon: "🗽", title: "Виза USA", subtitle: "B1/B2, F-1", color: "blue", href: "/visa-usa" },
-  { id: "realestate", icon: "🏠", title: "Жильё", subtitle: "за рубежом", color: "amber", href: "/realestate" },
+  { id: "education", icon: "🎓", title: "Университеты", subtitle: "за рубежом", color: "emerald", href: "/education" },
+  { id: "language", icon: "", title: "Изучение языка", subtitle: "IELTS, HSK, SAT", color: "sky", href: "/language" },
+  // { id: "work", icon: "💼", title: "Работа", subtitle: "за границей", color: "violet", href: "/work" },
+  // { id: "visa", icon: "🗽", title: "Виза USA", subtitle: "B1/B2, F-1", color: "blue", href: "/visa-usa" },
+  // { id: "realestate", icon: "🏠", title: "Жильё", subtitle: "за рубежом", color: "amber", href: "/realestate" },
 ] as const;
 
 export const STATS = [
