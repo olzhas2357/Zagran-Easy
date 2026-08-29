@@ -59,8 +59,7 @@ export const MEDIA_REEL_ITEMS = [
   { id: "reel-15", type: "photo", label: "Момент со студентами", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763273/WhatsApp_Image_2026-04-09_at_14.47.23_sgemr6.jpg` },
   { id: "reel-16", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761929/WhatsApp_Video_2026-04-09_at_14.54.56_p9deem.jpg` },
   { id: "reel-17", type: "photo", label: "Документы о зачислении", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763271/WhatsApp_Image_2026-04-09_at_14.44.25_ut1ik5.jpg` },
-  { id: "reel-18", type: "photo", label: "Момент со студентами", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763271/WhatsApp_Image_2026-04-09_at_14.44.21_vsvy0d.jpg` },
-  { id: "reel-19", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761724/543_w1xzjf.jpg` },
+  { id: "reel-18", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761724/543_w1xzjf.jpg` },
 ] as const;
 
 // Только фото (без видео-постеров) — для плотных фото-лент и коллажей,

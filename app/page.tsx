@@ -142,13 +142,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Фото-лента: письма о зачислении + жизнь студентов */}
-      {/* <section className="overflow-hidden border-b border-ze-border bg-white py-8 sm:py-10">
-        <div className="flex flex-col gap-3.5">
-          <PhotoMarquee images={ACCEPTANCE_LETTER_PHOTOS} speed={30} direction="normal" />
-          <PhotoMarquee images={CAMPUS_LIFE_PHOTOS} speed={38} direction="reverse" />
-        </div>
-      </section> */}
 
       {/* О компании + реел-лента */}
       <section className="py-11 sm:py-16">

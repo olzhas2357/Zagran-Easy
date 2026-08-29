@@ -12,15 +12,15 @@ export interface NavItem {
 
 // Главное меню (публичное)
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Главная", href: "/" },
-  { label: "Университеты", href: "/education", icon: "🎓" },
+  // { label: "Главная", href: "/" },
+  // { label: "Университеты", href: "/education", icon: "🎓" },
   // Временно скрыто — фокус на обучении, см. zagraneasy-requirements.json (main_services)
   // { label: "Туры", href: "/tours", icon: "✈️" },
   // { label: "Работа", href: "/work", icon: "💼" },
   // { label: "Виза USA", href: "/visa-usa", icon: "🗽" },
   // { label: "Недвижимость", href: "/realestate", icon: "🏠" },
   // { label: "О нас", href: "/about" },
-  { label: "FAQ", href: "/faq" },
+  // { label: "FAQ", href: "/faq" },
 ];
 
 // Меню портала сотрудников
