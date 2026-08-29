@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Compass, ArrowLeft, ArrowRight, CheckCircle2, Check } from "lucide-react";
 import { createLead } from "@/lib/actions";
 import { waUrl, waQuizMessage, isValidPhone } from "@/lib/utils";
 
@@ -50,7 +51,6 @@ export function LandingQuiz() {
   const done = step >= QUESTIONS.length;
   const current = QUESTIONS[Math.min(step, QUESTIONS.length - 1)];
   const answeredCurrent = Boolean(answers[current.key]);
-  const progress = done ? 100 : (step / QUESTIONS.length) * 100;
 
   function pick(value: string) {
     setAnswers((a) => ({ ...a, [current.key]: value }));
@@ -87,19 +87,29 @@ export function LandingQuiz() {
   }
 
   return (
-    <div className="rounded-[20px] border border-ze-border bg-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.05)] sm:p-9">
+    <div className="rounded-[24px] border border-ze-border bg-white p-6 shadow-[0_8px_28px_rgba(15,23,42,0.06)] sm:p-9">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-[20px] font-extrabold tracking-tight sm:text-[27px]">Не знаете, что выбрать?</h2>
-        <div className="flex-none text-[13px] font-semibold text-ze-muted">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-blue-50">
+            <Compass className="h-5.5 w-5.5 text-ze-primary" strokeWidth={1.75} />
+          </div>
+          <h2 className="text-[19px] font-extrabold tracking-tight sm:text-[27px]">Не знаете, что выбрать?</h2>
+        </div>
+        <div className="flex-none rounded-full bg-ze-surface px-3 py-1.5 text-[12.5px] font-semibold text-ze-muted">
           {done ? "Готово" : `Шаг ${step + 1} из ${QUESTIONS.length}`}
         </div>
       </div>
 
-      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#EEF1F6]">
-        <div
-          className="h-full rounded-full bg-ze-primary transition-all duration-300 ease-out"
-          style={{ width: `${progress}%` }}
-        />
+      <div className="mt-5 flex gap-1.5">
+        {QUESTIONS.map((q, i) => (
+          <div key={q.key} className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF1F6]">
+            <div
+              className={`h-full rounded-full bg-ze-primary transition-all duration-500 ease-out ${
+                i < step || done ? "w-full" : i === step ? "w-1/2" : "w-0"
+              }`}
+            />
+          </div>
+        ))}
       </div>
 
       {!done && (
@@ -112,16 +122,20 @@ export function LandingQuiz() {
                 <button
                   key={opt.value}
                   onClick={() => pick(opt.value)}
-                  className={`flex items-center gap-2.5 rounded-[14px] border-[1.5px] px-4 py-3.5 text-left text-[15px] font-medium transition-colors ${
-                    active ? "border-ze-primary bg-[#F3F7FF] text-ze-primary" : "border-ze-border bg-white text-ze-ink"
+                  className={`flex items-center gap-3 rounded-2xl border-[1.5px] px-4 py-3.5 text-left text-[15px] font-medium transition-all duration-200 ${
+                    active
+                      ? "border-ze-primary bg-[#F3F7FF] text-ze-primary shadow-[0_4px_14px_rgba(26,86,219,0.12)]"
+                      : "border-ze-border bg-white text-ze-ink hover:-translate-y-0.5 hover:border-[#B9C8E8] hover:shadow-[0_6px_16px_rgba(15,23,42,0.06)]"
                   }`}
                 >
                   <span className="flex-1">{opt.label}</span>
                   <span
-                    className={`h-[18px] w-[18px] flex-none rounded-full border-[1.5px] ${
-                      active ? "border-ze-primary bg-[radial-gradient(circle,#1A56DB_0_4px,#fff_5px_100%)]" : "border-[#D3DBE7] bg-white"
+                    className={`flex h-5 w-5 flex-none items-center justify-center rounded-full border-[1.5px] transition-colors ${
+                      active ? "border-ze-primary bg-ze-primary" : "border-[#D3DBE7] bg-white"
                     }`}
-                  />
+                  >
+                    {active && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                  </span>
                 </button>
               );
             })}
@@ -130,18 +144,22 @@ export function LandingQuiz() {
             <button
               onClick={() => setStep((s) => Math.max(0, s - 1))}
               disabled={step === 0}
-              className="rounded-xl border border-ze-border bg-white px-[18px] py-[13px] text-[14.5px] font-semibold text-ze-muted transition-colors hover:border-slate-300 hover:text-ze-ink disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-xl border border-ze-border bg-white px-[18px] py-[13px] text-[14.5px] font-semibold text-ze-muted transition-all duration-200 hover:border-slate-300 hover:text-ze-ink disabled:opacity-40"
             >
+              <ArrowLeft className="h-4 w-4" strokeWidth={2} />
               Назад
             </button>
             <button
               onClick={next}
               disabled={!answeredCurrent}
-              className={`rounded-xl px-[22px] py-[13px] text-[14.5px] font-semibold text-white transition-colors ${
-                answeredCurrent ? "cursor-pointer bg-ze-primary hover:bg-ze-primary-dark" : "cursor-not-allowed bg-[#C3CFE3]"
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-[22px] py-[13px] text-[14.5px] font-semibold text-white transition-all duration-200 sm:flex-none ${
+                answeredCurrent
+                  ? "cursor-pointer bg-ze-primary shadow-[0_6px_16px_rgba(26,86,219,0.24)] hover:-translate-y-0.5 hover:bg-ze-primary-dark hover:shadow-[0_8px_20px_rgba(26,86,219,0.3)]"
+                  : "cursor-not-allowed bg-[#E4E9F3] text-[#9BA8C2]"
               }`}
             >
               {step === QUESTIONS.length - 1 ? "Показать варианты" : "Далее"}
+              <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </button>
           </div>
         </div>
@@ -150,8 +168,8 @@ export function LandingQuiz() {
       {done && !submitted && (
         <div className="mt-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[#E9F9F1] text-[19px] font-bold text-emerald-600">
-              ✓
+            <div className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[#E9F9F1] text-emerald-600">
+              <CheckCircle2 className="h-5.5 w-5.5" strokeWidth={2} />
             </div>
             <div>
               <div className="text-[17px] font-bold">Подобрали для вас направление</div>
@@ -168,7 +186,7 @@ export function LandingQuiz() {
             <button
               onClick={handleSubmitPhone}
               disabled={!isValidPhone(phone) || isPending}
-              className="flex-none rounded-xl bg-ze-accent px-[22px] py-[15px] text-[15px] font-semibold text-white transition-colors hover:bg-ze-accent-dark disabled:opacity-50"
+              className="flex-none rounded-xl bg-ze-accent px-[22px] py-[15px] text-[15px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-accent-dark disabled:translate-y-0 disabled:opacity-50 disabled:shadow-none"
             >
               {isPending ? "Отправляем…" : "Получить подборку"}
             </button>
@@ -180,14 +198,17 @@ export function LandingQuiz() {
       )}
 
       {submitted && (
-        <div className="mt-6 rounded-2xl bg-[#F5F8FE] p-5 text-center">
-          <div className="text-[16px] font-bold">Заявка принята</div>
+        <div className="mt-6 rounded-2xl border border-ze-border/70 bg-ze-surface p-6 text-center">
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#E9F9F1] text-emerald-600">
+            <CheckCircle2 className="h-6 w-6" strokeWidth={2} />
+          </div>
+          <div className="mt-3 text-[16px] font-bold">Заявка принята</div>
           <p className="mt-1.5 text-[14px] text-ze-muted">Менеджер свяжется в течение рабочего дня. Можно написать прямо сейчас:</p>
           <a
             href={waUrl(waQuizMessage(fullAnswers))}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-block rounded-xl bg-ze-whatsapp px-5 py-3 text-[14.5px] font-bold text-white hover:bg-ze-whatsapp-dark"
+            className="mt-4 inline-block rounded-xl bg-ze-whatsapp px-5 py-3 text-[14.5px] font-bold text-white shadow-[0_6px_16px_rgba(37,211,102,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-whatsapp-dark"
           >
             Написать в WhatsApp
           </a>
