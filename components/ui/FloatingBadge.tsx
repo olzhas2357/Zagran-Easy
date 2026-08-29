@@ -13,7 +13,7 @@ export function FloatingBadge({
   duration = 3.2,
   delay = 0,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   value: string;
   label: string;
   className?: string;
@@ -37,7 +37,9 @@ export function FloatingBadge({
         y: { duration, repeat: Infinity, ease: "easeInOut", delay: delay + 0.5 },
       }}
     >
-      <span className="text-[18px] leading-none">{icon}</span>
+      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-[#EBF1FE] text-ze-primary">
+        {icon}
+      </span>
       <div className="leading-tight">
         <div className="text-[14px] font-extrabold text-ze-ink">{value}</div>
         <div className="text-[10.5px] font-medium text-ze-muted">{label}</div>

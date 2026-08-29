@@ -1,7 +1,20 @@
 import Link from "next/link";
+import {
+  GraduationCap,
+  User,
+  Landmark,
+  Stamp,
+  Home as HomeIcon,
+  MessageCircle,
+  Calendar,
+  ShieldCheck,
+  Zap,
+  CheckCircle2,
+  HeartHandshake,
+} from "lucide-react";
 import { fetchAllUniversities, fetchEducationCountries, fetchReviews, fetchTours } from "@/lib/data";
 import { formatDuration, formatPrice, waUrl } from "@/lib/utils";
-import { SITE, STATS, ABOUT, MEDIA_REEL_ITEMS, SERVICES, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
+import { STATS, ABOUT, MEDIA_REEL_ITEMS, SERVICE_COLORS, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -14,6 +27,8 @@ import { LandingQuiz } from "@/components/home/LandingQuiz";
 import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
+import { StudentJourney } from "@/components/home/StudentJourney";
+import { TurkeyExperience } from "@/components/home/TurkeyExperience";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 export default async function HomePage() {
@@ -42,11 +57,12 @@ export default async function HomePage() {
         <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
           <div className="min-w-0 flex-1">
             <h1 className="mt-4.5 text-[35px] font-extrabold leading-[1.05] tracking-tight text-balance sm:text-[60px]">
-              Весь мир —
-              <br />в одном месте
+              Поступление за рубеж —
+              <br />проще, чем кажется
             </h1>
             <p className="mt-4 max-w-[520px] text-[15.5px] leading-relaxed text-ze-muted sm:text-[19px]">
-              {SITE.description}
+              Помогаем выбрать университет, поступить, переехать и оставаться рядом на протяжении всего
+              образовательного пути.
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5">
               <a
@@ -61,7 +77,7 @@ export default async function HomePage() {
                 href="/education"
                 className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
               >
-                Смотреть услуги
+                Посмотреть университеты
               </Link>
             </div>
             <div className="mt-5.5 flex items-center gap-2.5 text-[13.5px] text-ze-muted">
@@ -76,67 +92,51 @@ export default async function HomePage() {
 
           {/* Плавающий фото-коллаж */}
           <div className="relative w-full min-w-0 flex-1">
-            <div className="relative aspect-4/3">
-              <FloatingPhoto
-                src={HERO_COLLAGE[0].src}
-                alt={HERO_COLLAGE[0].label}
-                className="absolute left-0 top-0 h-[62%] w-[58%]"
-                range={12}
-                duration={4.2}
-                delay={0}
-              />
+            <div className="relative aspect-4/3 max-w-lg mx-auto">
+              
+              {/* Доминирующее фото — слева сверху */}
               <FloatingPhoto
                 src={HERO_COLLAGE[1].src}
                 alt={HERO_COLLAGE[1].label}
-                className="absolute right-0 top-[6%] h-[45%] w-[38%]"
-                range={9}
-                duration={3.6}
-                delay={0.4}
-                rotateRange={3}
+                className="absolute left-0 top-0 h-[72%] w-[60%] rounded-3xl object-cover shadow-lg border border-white/50"
+                range={6}
+                duration={5}
+                delay={0}
               />
-              <FloatingPhoto
-                src={HERO_COLLAGE[2].src}
-                alt={HERO_COLLAGE[2].label}
-                className="absolute bottom-0 left-[8%] h-[42%] w-[40%]"
-                range={10}
-                duration={4.8}
-                delay={0.8}
-              />
+
+              {/* Перекрывающее фото — справа снизу */}
               <FloatingPhoto
                 src={HERO_COLLAGE[3].src}
                 alt={HERO_COLLAGE[3].label}
-                className="absolute bottom-[4%] right-[2%] h-[48%] w-[42%]"
-                range={11}
-                duration={4}
-                delay={0.2}
-                rotateRange={3}
+                className="absolute right-0 bottom-2 h-[60%] w-[52%] rounded-3xl object-cover shadow-xl border border-white/60 z-10"
+                range={8}
+                duration={4.2}
+                delay={0.4}
+                rotateRange={2}
               />
+
               <HeroCelebration />
 
+              {/* Акцентный бейдж — слева внизу под главным фото */}
               <FloatingBadge
-                icon="🗽"
+                icon={<Stamp className="h-4 w-4" strokeWidth={2} />}
                 value="98%"
                 label="одобренных виз"
-                className="left-[2%] top-[2%]"
-                duration={3.4}
+                className="left-[4%] bottom-[8%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+                duration={3.6}
                 delay={0.3}
               />
+
+              {/* Акцентный бейдж — справа вверху над перекрытием */}
               <FloatingBadge
-                icon="🎓"
+                icon={<GraduationCap className="h-4 w-4" strokeWidth={2} />}
                 value="389+"
                 label="программ обучения"
-                className="bottom-[6%] right-[4%]"
-                duration={3.8}
-                delay={0.9}
+                className="right-[2%] top-[4%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+                duration={4}
+                delay={0.8}
               />
-              <FloatingBadge
-                icon="✈️"
-                value="3 200+"
-                label="довольных клиентов"
-                className="left-[30%] top-[46%] hidden sm:flex"
-                duration={3.1}
-                delay={1.3}
-              />
+
             </div>
           </div>
         </div>
@@ -168,25 +168,62 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Hub — модули направлений */}
+      {/* Наши услуги */}
       <section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10">
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5 sm:gap-4">
-          {SERVICES.map((s, i) => (
-            <FadeIn key={s.id} delay={i * 0.05}>
-              <TiltCard maxTilt={6}>
-                <Link
-                  href={s.href}
-                  className="flex flex-col gap-2.5 rounded-2xl border border-ze-border bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-ze-primary sm:p-5"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[13px] bg-[#EBF1FE] text-[21px]">
-                    {s.icon}
-                  </div>
-                  <div className="text-[15.5px] font-semibold">{s.title}</div>
-                  <div className="text-[12.5px] leading-snug text-ze-muted">{s.subtitle}</div>
-                </Link>
-              </TiltCard>
-            </FadeIn>
-          ))}
+        <FadeIn>
+          <div className="max-w-[640px]">
+            <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Наши услуги</div>
+            <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+              Всё необходимое для вашего образования
+            </h2>
+            <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+              От выбора университета до адаптации, обучения и первых шагов в карьере.
+            </p>
+          </div>
+        </FadeIn>
+        <div className="mt-7 grid grid-cols-1 gap-3.5 sm:mt-9 sm:grid-cols-3 sm:gap-5">
+          {[
+            {
+              id: "education",
+              Icon: GraduationCap,
+              title: "Образование",
+              text: "Программы и возможности для получения новых знаний и квалификации",
+              color: "emerald",
+            },
+            {
+              id: "students",
+              Icon: User,
+              title: "Студент",
+              text: "Поступление, обучение, адаптация и развитие карьеры",
+              color: "blue",
+            },
+            {
+              id: "universities",
+              Icon: Landmark,
+              title: "Университеты",
+              text: "Помогаем университетам находить студентов и развивать международные программы",
+              color: "violet",
+            },
+          ].map((s, i) => {
+            const colors = SERVICE_COLORS[s.color];
+            return (
+              <FadeIn key={s.id} delay={i * 0.06}>
+                <TiltCard maxTilt={5}>
+                  <Link
+                    href="/education"
+                    className="flex h-full flex-col gap-3 rounded-2xl border border-ze-border bg-white p-5.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-ze-primary sm:p-6.5"
+                  >
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg}`}>
+                      <s.Icon className={`h-6 w-6 ${colors.text}`} strokeWidth={1.75} />
+                    </div>
+                    <div className="text-[17px] font-bold">{s.title}</div>
+                    <div className="flex-1 text-[13.5px] leading-relaxed text-ze-muted">{s.text}</div>
+                    {/* <div className={`text-[13.5px] font-semibold ${colors.text}`}>Подробнее →</div> */}
+                  </Link>
+                </TiltCard>
+              </FadeIn>
+            );
+          })}
         </div>
       </section>
 
@@ -212,95 +249,105 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Обучение */}
-      <section id="study" className="border-y border-ze-border bg-ze-surface py-11 sm:py-19">
+      {/* Университеты для студентов */}
+      <section id="study" className="border-y border-ze-border bg-[#F8FAFC] py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
-          <div className="mb-5.5 flex items-end justify-between gap-4 sm:mb-8">
-            <div>
-              <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Обучение</div>
-              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[38px]">Куда поступить в 2026</h2>
+          <div className="mb-8 flex items-end justify-between gap-4 sm:mb-11">
+            <div className="max-w-[560px]">
+              <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">
+                Университеты для студентов
+              </div>
+              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight text-ze-ink sm:text-[38px]">
+                Найдём университет, который подходит именно вам
+              </h2>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px]">
+                Сравнивайте университеты, программы, стоимость обучения, требования и возможности поступления в
+                одном месте.
+              </p>
             </div>
-            <Link href="/education" className="hidden flex-none text-[14.5px] font-semibold sm:block">
-              Все направления →
+            <Link
+              href="/education"
+              className="hidden flex-none text-[14.5px] font-semibold text-ze-primary sm:block"
+            >
+              Найти университет →
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4 sm:gap-4.5">
+          <div className="flex flex-wrap gap-5 sm:gap-6">
             {countries.map((c) => (
-              <FadeIn key={c.id}>
-                <TiltCard maxTilt={5}>
-                  <Link
-                    href="/education"
-                    className="block overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
-                  >
-                    <div className="aspect-4/3 overflow-hidden">
-                      <div className="h-full w-full transition-transform duration-500 hover:scale-110">
-                        <CoverPhoto src={c.imageUrl} alt={c.name} />
-                      </div>
+              <FadeIn key={c.id} className="w-full sm:w-[300px]">
+                <Link
+                  href="/education"
+                  className="group block overflow-hidden rounded-[22px] bg-white transition-shadow duration-300 hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)]"
+                >
+                  <div className="aspect-[4/5] overflow-hidden rounded-[22px]">
+                    <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
+                      <CoverPhoto src={c.imageUrl} alt={c.name} />
                     </div>
-                    <div className="p-3.5 sm:p-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="text-[16px] font-bold">
-                          {c.flag} {c.name}
-                        </div>
-                      </div>
-                      <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">
-                        {universityCountByCountry.get(c.id) || 0} университетов · {c.cities.slice(0, 2).join(", ")}
-                      </div>
-                      <div className="mt-2.5 text-[14px] font-semibold">
-                        {formatPrice(cheapestByCountry.get(c.id) || 0)} / год
-                      </div>
+                  </div>
+                  <div className="p-4 sm:p-5">
+                    <div className="text-[16px] font-bold text-ze-ink">
+                      {c.flag} {c.name}
                     </div>
-                  </Link>
-                </TiltCard>
+                    <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">
+                      {universityCountByCountry.get(c.id) || 0} университетов · {c.cities.slice(0, 2).join(", ")}
+                    </div>
+                    <div className="mt-2.5 text-[14px] font-semibold text-ze-ink">
+                      {formatPrice(cheapestByCountry.get(c.id) || 0)} / год
+                    </div>
+                  </div>
+                </Link>
               </FadeIn>
             ))}
           </div>
+          <Link
+            href="/education"
+            className="mt-6 block text-center text-[14.5px] font-semibold text-ze-primary sm:hidden"
+          >
+            Найти университет →
+          </Link>
         </div>
       </section>
 
-      {/* Туры */}
-      {/* <section id="tours" className="py-11 sm:py-19">
+      <StudentJourney />
+      <TurkeyExperience />
+
+      {/* Долгосрочная поддержка */}
+      <section className="py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
-          <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Туры</div>
-          <h2 className="mb-7 mt-2 text-[25px] font-extrabold tracking-tight sm:mb-9 sm:text-[38px]">
-            Отдых, собранный под вас
-          </h2>
-          <div className="flex flex-col gap-9 sm:gap-14">
-            {tours.map((t, i) => (
-              <FadeIn key={t.id}>
-                <div className={`flex flex-col items-center gap-4.5 sm:gap-12 ${i % 2 === 1 ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
-                  <div className="w-full min-w-0 flex-1">
-                    <Link
-                      href={`/tours/${t.slug}`}
-                      className="group block aspect-16/10 overflow-hidden rounded-[18px] border border-ze-border"
-                    >
-                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-[1.05]">
-                        <CoverPhoto src={t.imageUrl} alt={t.title} />
-                      </div>
-                    </Link>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className={`text-[12px] font-semibold ${t.isHot ? "text-emerald-600" : "text-ze-primary"}`}>
-                      {t.region.toUpperCase()} · {formatDuration(t.durationDays)}
+          <FadeIn>
+            <div className="max-w-[640px]">
+              <h2 className="text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+                Мы не заканчиваем работу после поступления
+              </h2>
+              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+                Наша задача — помочь студенту не только поступить, но и успешно адаптироваться, учиться и строить
+                карьеру.
+              </p>
+            </div>
+          </FadeIn>
+          <div className="mt-7 grid grid-cols-2 gap-3.5 sm:mt-9 sm:grid-cols-4 sm:gap-4.5">
+            {[
+              { Icon: HomeIcon, title: "Первый год", text: "Помощь с общежитием и адаптацией", color: "blue" },
+              { Icon: MessageCircle, title: "Период обучения", text: "Консультации и постоянная связь", color: "emerald" },
+              { Icon: Calendar, title: "5 лет", text: "Поддержка студента на протяжении образовательного пути", color: "violet" },
+              // { icon: "💼", title: "Магистратура", text: "Помощь с поиском стажировки и работы" },
+            ].map((c, i) => {
+              const colors = SERVICE_COLORS[c.color];
+              return (
+                <FadeIn key={c.title} delay={i * 0.05}>
+                  <div className="flex h-full flex-col gap-2.5 rounded-2xl border border-ze-border bg-white p-4.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colors.bg}`}>
+                      <c.Icon className={`h-5 w-5 ${colors.text}`} strokeWidth={1.75} />
                     </div>
-                    <h3 className="mt-2 text-[20px] font-bold tracking-tight sm:text-[27px]">{t.title}</h3>
-                    <p className="mt-2.5 text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px]">{t.description}</p>
-                    <div className="mt-4 flex items-center gap-3.5">
-                      <div className="text-[18px] font-bold">{formatPrice(t.priceFrom)}</div>
-                      <Link
-                        href={`/tours/${t.slug}`}
-                        className="rounded-[11px] bg-[#EBF1FE] px-4.5 py-2.5 text-[14px] font-semibold text-ze-primary hover:bg-[#DCE6FA]"
-                      >
-                        Подобрать тур
-                      </Link>
-                    </div>
+                    <div className="text-[15px] font-bold">{c.title}</div>
+                    <div className="text-[12.5px] leading-snug text-ze-muted">{c.text}</div>
                   </div>
-                </div>
-              </FadeIn>
-            ))}
+                </FadeIn>
+              );
+            })}
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* Рассрочка */}
       <section className="px-4 sm:px-10">
@@ -328,6 +375,82 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Студентам и родителям */}
+      <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19">
+        <div className="mx-auto max-w-6xl px-4 sm:px-10">
+          <FadeIn>
+            <h2 className="max-w-[560px] text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+              Родители знают, что их ребёнок не один
+            </h2>
+          </FadeIn>
+          <div className="mt-7 grid grid-cols-1 gap-4.5 sm:mt-9 sm:grid-cols-2 sm:gap-6">
+            {[
+              {
+                title: "Студент",
+                items: ["Университет", "Поступление", "Переезд", "Общежитие", "Обучение", "Карьерное развитие"],
+                badge: SERVICE_COLORS.blue.badge,
+                dot: "bg-blue-700",
+              },
+              {
+                title: "Родитель",
+                items: [
+                  "Информация о процессе",
+                  "Связь с менеджером",
+                  "Понимание этапов",
+                  "Поддержка ребёнка",
+                  "Долгосрочное сопровождение",
+                ],
+                badge: SERVICE_COLORS.amber.badge,
+                dot: "bg-amber-700",
+              },
+            ].map((card, i) => (
+              <FadeIn key={card.title} delay={i * 0.06}>
+                <div className="h-full rounded-2xl border border-ze-border bg-white p-5.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-7">
+                  <div className={`inline-block rounded-lg px-3 py-1 text-[13px] font-semibold ${card.badge}`}>
+                    {card.title.toUpperCase()}
+                  </div>
+                  <ul className="mt-4 flex flex-col gap-2.5">
+                    {card.items.map((item) => (
+                      <li key={item} className="flex items-center gap-2.5 text-[14.5px] text-ze-ink">
+                        <span className={`h-1.5 w-1.5 flex-none rounded-full ${card.dot}`} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Почему ZagranEasy */}
+      <section className="py-11 sm:py-19">
+        <div className="mx-auto max-w-6xl px-4 sm:px-10">
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4 sm:gap-4.5">
+            {[
+              { Icon: ShieldCheck, title: "Надёжно", text: "Работаем прозрачно и сопровождаем каждый этап.", color: "blue" },
+              { Icon: Zap, title: "Быстро", text: "Помогаем решать вопросы оперативно.", color: "amber" },
+              { Icon: CheckCircle2, title: "Удобно", text: "Все основные процессы собраны в одном месте.", color: "emerald" },
+              { Icon: HeartHandshake, title: "Рядом", text: "Остаёмся на связи после поступления.", color: "violet" },
+            ].map((b, i) => {
+              const colors = SERVICE_COLORS[b.color];
+              return (
+                <FadeIn key={b.title} delay={i * 0.05}>
+                  <div className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colors.bg}`}>
+                      <b.Icon className={`h-5 w-5 ${colors.text}`} strokeWidth={1.75} />
+                    </div>
+                    <div className="text-[15px] font-bold">{b.title}</div>
+                    <div className="text-[12.5px] leading-snug text-ze-muted">{b.text}</div>
+                  </div>
+                </FadeIn>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Квиз */}
       <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19">
         <div className="mx-auto max-w-[800px] px-4 sm:px-10">
@@ -339,6 +462,36 @@ export default async function HomePage() {
       <section className="py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <ReviewsCarousel reviews={reviews} />
+        </div>
+      </section>
+
+      {/* Финальный CTA */}
+      <section className="px-4 pb-11 sm:px-10 sm:pb-19">
+        <div className="mx-auto max-w-6xl">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-4 rounded-[20px] border border-ze-border bg-ze-surface p-8 text-center sm:p-14">
+              <h2 className="text-[25px] font-extrabold tracking-tight sm:text-[38px]">Готовы начать?</h2>
+              <p className="max-w-[480px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px]">
+                Расскажите о своих целях — мы поможем определить следующий шаг.
+              </p>
+              <div className="mt-2 flex flex-wrap justify-center gap-2.5">
+                <a
+                  href={waUrl("Здравствуйте! Хочу получить консультацию.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-2xl bg-ze-primary px-6 py-4 text-[16px] font-semibold text-white transition-colors hover:bg-ze-primary-dark"
+                >
+                  Получить консультацию
+                </a>
+                <Link
+                  href="/education"
+                  className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
+                >
+                  Посмотреть университеты
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 

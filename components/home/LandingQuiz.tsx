@@ -6,14 +6,14 @@ import { waUrl, waQuizMessage, isValidPhone } from "@/lib/utils";
 
 const QUESTIONS = [
   {
-    q: "Что вас интересует?",
+    q: "В какую страну вы планируете поступать?",
     key: "goal" as const,
     opts: [
-      { label: "Обучение за рубежом", value: "education" },
-      // { label: "Туры и отдых", value: "tours" },
-      // { label: "Работа по контракту", value: "work" },
-      // { label: "Виза в США", value: "visa" },
-      // { label: "Недвижимость", value: "realestate" },
+      { label: "Китай", value: "china" },
+      { label: "Турция", value: "turkey" },
+      { label: "Италия", value: "italy" },
+      { label: "США", value: "usa" },
+      { label: "другое", value: "another" },
     ],
   },
   {
