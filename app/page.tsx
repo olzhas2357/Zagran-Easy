@@ -143,12 +143,12 @@ export default async function HomePage() {
       </section>
 
       {/* Фото-лента: письма о зачислении + жизнь студентов */}
-      <section className="overflow-hidden border-b border-ze-border bg-white py-8 sm:py-10">
+      {/* <section className="overflow-hidden border-b border-ze-border bg-white py-8 sm:py-10">
         <div className="flex flex-col gap-3.5">
           <PhotoMarquee images={ACCEPTANCE_LETTER_PHOTOS} speed={30} direction="normal" />
           <PhotoMarquee images={CAMPUS_LIFE_PHOTOS} speed={38} direction="reverse" />
         </div>
-      </section>
+      </section> */}
 
       {/* О компании + реел-лента */}
       <section className="py-11 sm:py-16">
@@ -259,7 +259,7 @@ export default async function HomePage() {
       </section>
 
       {/* Туры */}
-      <section id="tours" className="py-11 sm:py-19">
+      {/* <section id="tours" className="py-11 sm:py-19">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Туры</div>
           <h2 className="mb-7 mt-2 text-[25px] font-extrabold tracking-tight sm:mb-9 sm:text-[38px]">
@@ -300,7 +300,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Рассрочка */}
       <section className="px-4 sm:px-10">
