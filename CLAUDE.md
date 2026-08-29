@@ -323,7 +323,7 @@ It is an orientation experience before university.
 
 Headline:
 
-“Познакомьтесь со страной, университетами.”
+“Познакомьтесь со страной, университетами и будущими студентами.”
 
 CTA:
 

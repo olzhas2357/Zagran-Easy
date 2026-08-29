@@ -34,11 +34,11 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 // Breadcrumb маппинг
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
-  "/education": "Обучение",
-  "/tours": "Туры",
-  "/work": "Работа",
-  "/visa-usa": "Виза USA",
-  "/realestate": "Недвижимость",
+  "/education": "Университеты",
+  // "/tours": "Туры",
+  // "/work": "Работа",
+  // "/visa-usa": "Виза USA",
+  // "/realestate": "Недвижимость",
   "/about": "О нас",
   "/faq": "FAQ",
   "/staff": "Портал",

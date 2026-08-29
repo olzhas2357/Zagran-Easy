@@ -7,23 +7,13 @@ import { waUrl } from "@/lib/utils";
 const SERVICES: { value: ServiceType; label: string }[] = [
   { value: "education", label: "Обучение за рубежом" },
   { value: "tours", label: "Тур" },
-  { value: "work", label: "Трудоустройство" },
-  { value: "visa", label: "Виза в США" },
-  { value: "realestate", label: "Недвижимость" },
 ];
 
 const COUNTRIES_BY_SERVICE: Partial<Record<ServiceType, { value: string; label: string }[]>> = {
   education: [
     { value: "turkey", label: "Турция" },
     { value: "china", label: "Китай" },
-    { value: "italy", label: "Италия" },
-    { value: "malaysia", label: "Малайзия" },
-  ],
-  work: [
-    { value: "turkey", label: "Турция" },
-    { value: "poland", label: "Польша" },
-    { value: "germany", label: "Германия" },
-  ],
+  ]
 };
 
 export function CalculatorForm() {
@@ -129,7 +119,7 @@ export function CalculatorForm() {
           <span className="text-[14px] font-bold">Итого</span>
           <span className="text-[20px] font-extrabold text-ze-primary">${result.total.toLocaleString("ru-RU")}</span>
         </div>
-        {result.note && <p className="mt-2 text-[12.5px] text-ze-muted">{result.note}</p>}
+        {/* {result.note && <p className="mt-2 text-[12.5px] text-ze-muted">{result.note}</p>}
         <a
           href={waUrl(result.waMessage)}
           target="_blank"
@@ -137,7 +127,7 @@ export function CalculatorForm() {
           className="mt-4 block rounded-xl bg-ze-whatsapp py-3 text-center text-[14px] font-bold text-white hover:bg-ze-whatsapp-dark"
         >
           Отправить клиенту в WhatsApp
-        </a>
+        </a> */}
       </div>
     </div>
   );
