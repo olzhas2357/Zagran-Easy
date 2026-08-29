@@ -31,11 +31,11 @@ export const metadata: Metadata = {
 export default function LanguagePage() {
   return (
     <div className="bg-white pb-16 sm:pb-0">
-      <LanguageHeader />
+      {/* <LanguageHeader /> */}
       <LanguageHero />
       <TrustBar />
       <Problems />
-      <Courses />
+      <Courses /> */
       <CourseFinder />
       <Teachers />
       <TeacherHighlight />
