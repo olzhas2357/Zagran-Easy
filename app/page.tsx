@@ -58,7 +58,8 @@ export default async function HomePage() {
           <div className="min-w-0 flex-1">
             <h1 className="mt-4.5 text-[35px] font-extrabold leading-[1.05] tracking-tight text-balance sm:text-[60px]">
               Поступление за рубеж —
-              <br />проще, чем кажется
+              <br />
+              <span className="text-[#3255ad]">проще, чем кажется</span>
             </h1>
             <p className="mt-4 max-w-[520px] text-[15.5px] leading-relaxed text-ze-muted sm:text-[19px]">
               Помогаем выбрать университет, поступить, переехать и оставаться рядом на протяжении всего
@@ -80,9 +81,9 @@ export default async function HomePage() {
                 Посмотреть университеты
               </Link>
             </div>
-            <div className="mt-5.5 flex items-center gap-2.5 text-[13.5px] text-ze-muted">
+            <div className="mt-10.5 flex items-center gap-1.5 text-[13.5px] text-ze-muted">
               <div className="flex">
-                <div className="h-7 w-7 rounded-full border-2 border-white bg-[#DCE6FA]" />
+                <div className="h-10 w-10 rounded-full border-2 border-white bg-[#DCE6FA]" />
                 <div className="-ml-2.5 h-7 w-7 rounded-full border-2 border-white bg-[#C7D8F7]" />
                 <div className="-ml-2.5 h-7 w-7 rounded-full border-2 border-white bg-[#B0C9F4]" />
               </div>

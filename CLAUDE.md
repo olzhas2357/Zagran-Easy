@@ -1,470 +1,708 @@
-Design a modern premium EdTech platform website called “ZagranEasy”.
-
-The website helps students and parents choose universities abroad, apply for education, relocate, settle in, and receive long-term support throughout their education and early career.
-
-OVERALL DESIGN DIRECTION
-
-Create a highly polished, minimalistic, trustworthy and premium educational platform.
-
-Visual references:
-- modern SaaS landing pages
-- premium EdTech products
-- Apple-level simplicity
-- Linear / Stripe style spacing and typography
-- clean university websites
-- modern fintech-style information hierarchy
-
-The design must feel:
-- trustworthy
-- intelligent
-- calm
-- premium
-- modern
-- international
-- easy to understand
-- focused on students and parents
-
-Avoid:
-- excessive gradients
-- excessive animations
-- huge decorative illustrations
-- dark interfaces
-- excessive colors
-- crowded layouts
-- generic stock-photo feeling
-- overly rounded childish UI
-- unnecessary text
+# Full UI/UX & Development Prompt — ZagranEasy Language Courses
 
-COLOR SYSTEM
+Создай полноценный современный landing page для **ZagranEasy**, образовательной платформы, которая помогает студентам изучать иностранные языки и готовиться к обучению за рубежом.
 
-Primary:
-- deep navy / dark blue for text
-- clean white background
-- very light blue-gray sections
+Главная цель страницы — **продавать языковые курсы** и превращать рекламный трафик в заявки/регистрации на обучение.
 
-Accent:
-- primary blue
-- soft green
-- soft purple
-- warm orange
+Страница должна выглядеть как **премиальная международная EdTech-платформа**, а не как обычный сайт репетитора или онлайн-школы.
 
-Use accent colors only for icons, small labels, status indicators and important actions.
+## 1. Общий стиль
 
-Cards should primarily be white with:
-- 1px subtle border
-- very soft shadow
-- 16–24px border radius
-- generous internal spacing
+Используй:
 
-TYPOGRAPHY
+* основной цвет: `#3255AD`
+* тёмный navy для текста;
+* белый и очень светлый серо-голубой фон;
+* большие выразительные заголовки;
+* много свободного пространства;
+* rounded corners `20–28px`;
+* аккуратные borders;
+* очень мягкие shadows;
+* качественные фотографии преподавателей и студентов;
+* минимальное количество декоративных элементов;
+* subtle hover animations;
+* плавные transitions;
+* современную responsive-сетку.
 
-Use a modern sans-serif font similar to Inter.
+Не использовать:
 
-Typography hierarchy:
-- large confident headlines
-- medium-weight section titles
-- readable body text
-- small uppercase labels for section categories
+* дешёвые градиенты;
+* слишком много цветов;
+* чрезмерные glassmorphism-эффекты;
+* перегруженные карточки;
+* огромные баннеры с большим количеством текста;
+* визуальный стиль «школьного сайта».
 
-The website must have excellent whitespace and visual rhythm.
+Визуальное ощущение:
 
-LAYOUT
+**Modern EdTech + Premium SaaS + International Education.**
 
-Maximum content width approximately 1200–1280px.
+---
 
-Desktop:
-- spacious horizontal layout
-- 5-column service cards when appropriate
-- 2-column content sections
-- large visual blocks
+# 2. Header
 
-Tablet:
-- 2–3 columns
+Создай фиксированный/липкий header.
 
-Mobile:
-- single-column cards
-- horizontal scrolling where appropriate
-- large touch targets
-- no tiny text
-- navigation optimized for mobile
+Слева:
 
---------------------------------
-HEADER
---------------------------------
+**ZagranEasy**
 
-Create a clean sticky header.
+Навигация:
 
-Left:
-ZagranEasy logo.
+* Курсы
+* Преподаватели
+* Как проходит обучение
 
-Navigation:
-- Университеты
-- Образование
-- Студентам
-- Родителям
-- О нас
+---
 
-Right:
-- Войти
-- Получить консультацию
+# 3. Hero Section
 
-Primary CTA:
-“Получить консультацию”
+Первый экран должен сразу объяснять ценность продукта.
 
-Header should remain extremely minimal.
+Используй небольшой eyebrow:
 
---------------------------------
-HERO SECTION
---------------------------------
+**ОНЛАЙН-ЯЗЫКОВЫЕ КУРСЫ**
 
-Headline:
+Главный заголовок:
 
-“Поступление за рубеж —
-проще, чем кажется”
+**Подготовьтесь к учёбе за рубежом
+с преподавателем, который поможет достичь результата**
 
-Supporting text:
+Альтернативный короткий вариант:
 
-“Помогаем выбрать университет, поступить, переехать и оставаться рядом на протяжении всего образовательного пути.”
+**Учите язык.
+Готовьтесь к своему будущему.**
 
-Primary CTA:
-“Получить консультацию”
+Под заголовком:
 
-Secondary CTA:
-“Посмотреть университеты”
-
-Add a subtle visual showing:
-student → university → relocation → education → career
-
-Do not make the hero visually complicated.
-
---------------------------------
-SERVICES SECTION
---------------------------------
-
-Section label:
-
-“НАШИ УСЛУГИ”
-
-Headline:
-
-“Всё необходимое для вашего образования”
-
-Subtitle:
-
-“От выбора университета до адаптации, обучения и первых шагов в карьере.”
-
-Create five minimal service cards:
-
-
-1. Образование
-“Программы и возможности для получения новых знаний и квалификации”
-
-2. Студентам
-“Поступление, обучение, адаптация и развитие карьеры”
-
-3. Университеты
-“Помогаем университетам находить студентов и развивать международные программы”
-
-
-Each card contains:
-- simple line icon
-- title
-- short description
-- subtle colored accent
-- “Подробнее →”
-
-Cards should feel like premium SaaS navigation cards.
-
---------------------------------
-UNIVERSITIES SECTION
---------------------------------
-
-Create a dedicated section:
-
-Label:
-“УНИВЕРСИТЕТЫ ДЛЯ СТУДЕНТОВ”
-
-Headline:
-
-“Найдём университет,
-который подходит именно вам”
-
-Supporting text:
-
-“Сравнивайте университеты, программы, стоимость обучения, требования и возможности поступления в одном месте.”
-
-Show university cards.
-
-Each university card contains:
-- university photo
-- university logo
-- university name
-- country
-- city
-- ranking / reputation indicator
-- available programs
-- tuition information
-- application status
-- “Подробнее →”
-
-Example universities can include Turkish universities.
-
-Do not make the university cards look like generic directories.
-
-They should feel premium and trustworthy.
-
-Add filters:
-
-Страна
-Город
-Уровень обучения
-Направление
-Стоимость
-Язык обучения
-
-Primary action:
-
-“Найти университет”
-
-Secondary:
-
-“Смотреть все университеты”
-
---------------------------------
-STUDENT JOURNEY SECTION
---------------------------------
-
-Create a visual timeline titled:
-
-“Полное сопровождение студента”
-
-Subtitle:
-
-“Мы рядом на каждом этапе — от первой консультации до первых шагов в карьере.”
-
-Show the journey as a clean horizontal timeline on desktop and vertical timeline on mobile.
-
-Steps:
-
-01
-Консультация
-
-“Определяем цели, интересы и подходящие варианты обучения.”
-
-02
-Выбор университета
-
-“Подбираем университет и программу под цели студента.”
-
-03
-Поступление
-
-“Помогаем подготовить документы и пройти процесс поступления.”
-
-04
-Переезд
-
-“Помогаем подготовиться к переезду и первым дням в новой стране.”
-
-05
-Заселение
-
-“Помогаем с размещением в общежитии в первый год.”
-
-06
-Адаптация
-
-“Помогаем студенту освоиться и решить первые организационные вопросы.”
-
-07
-Поддержка во время обучения
-
-“Остаёмся на связи и помогаем на протяжении всего обучения.”
-
-08
-поддержка
-
-“Во время обучение помогаем найти дополнительный заработак.”
-
---------------------------------
-TURKEY EXPERIENCE SECTION
---------------------------------
-
-Create a visually attractive special feature for Turkey.
-
-Label:
-
-“ЕСЛИ ВЫ ВЫБИРАЕТЕ ТУРЦИЮ”
-
-Headline:
-
-“Начните знакомство с Турцией ещё до учёбы родителям дадим тур”
-
-Show a premium travel-style card.
-
-Offer:
-
-“7 дней — 5 городов”
-
-Include:
-
-- 7 дней путешествия
-- 5 городов
-- завтраки
-- транспорт
-- гид
-- экскурсионная программа
-- знакомство с университетами
-- знакомство с будущими студентами
-
-The design should communicate that this is not simply tourism.
-
-It is an orientation experience before university.
-
-Headline:
-
-“Познакомьтесь со страной, университетами и будущими студентами.”
+> Практические занятия, сильные преподаватели и программа, созданная для тех, кто хочет уверенно говорить, учиться и поступать за рубеж.
 
 CTA:
 
-“Узнать о программе”
+**[ Подобрать курс → ]**
 
-Use elegant travel photography of Turkey, but keep the design minimal.
+Вторичная кнопка:
 
---------------------------------
-LONG-TERM SUPPORT SECTION
---------------------------------
+**Посмотреть преподавателей**
 
-Create a large premium section.
+Под кнопками:
 
-Headline:
+`Онлайн · Индивидуально и в группе · Для начинающих и продолжающих Оффлайн`
 
-“Мы не заканчиваем работу после поступления.”
+Справа разместить большую фотографию молодого преподавателя/студента.
 
-Supporting text:
+Поверх изображения можно разместить небольшие floating cards:
 
-“Наша задача — помочь студенту не только поступить, но и успешно адаптироваться, учиться и строить карьеру.”
+**50+ студентов**
 
-Highlight:
+**4.9 ★ рейтинг**
 
-1. Первый год
-Помощь с общежитием и адаптацией
+**Онлайн-занятия**
 
-2. Период обучения
-Консультации и постоянная связь
+Hero должен быть визуально сильным и сразу создавать доверие.
 
-3. 5 лет
-Поддержка студента на протяжении образовательного пути
+---
 
-4. Магистратура
-Помощь с поиском стажировки и работы
+# 4. Trust Bar
 
-Use four elegant cards with simple icons.
+Сразу после hero сделай небольшую полосу доверия:
 
---------------------------------
-FOR STUDENTS & PARENTS
---------------------------------
+**Уже учатся с ZagranEasy**
 
-Create a section specifically designed for students and parents.
+`50+ студентов`
 
-Headline:
+`20+ преподавателей`
 
-“Родители знают, что их ребёнок не один.”
+`5+ языков`
 
-Show two cards:
+`4.9/5 средняя оценка`
 
-СТУДЕНТ
+Не делать огромные карточки — это должна быть компактная статистика.
 
-- университет
-- поступление
-- переезд
-- общежитие
-- обучение
-- карьерное развитие
+---
 
-РОДИТЕЛЬ
+# 5. Problem Section
 
-- информация о процессе
-- связь с менеджером
-- понимание этапов
-- поддержка ребёнка
-- долгосрочное сопровождение
+Заголовок:
 
-The section should communicate security and trust without using fear-based messaging.
+**Язык не должен быть препятствием к вашей цели**
 
---------------------------------
-WHY ZAGRANEASY
---------------------------------
+Покажи 3–4 проблемы:
 
-Create four minimal benefits:
+### Боитесь говорить?
 
-Надёжно
-“Работаем прозрачно и сопровождаем каждый этап.”
+Практикуйте язык с преподавателем на каждом занятии.
 
-Быстро
-“Помогаем решать вопросы оперативно.”
+### Не знаете, с чего начать?
 
-Удобно
-“Все основные процессы собраны в одном месте.”
+Получите понятную программу обучения.
 
-Рядом
-“Остаёмся на связи после поступления.”
+### Готовитесь к экзамену?
 
-Use simple line icons.
+Подготовка к IELTS и другим языковым экзаменам.
 
---------------------------------
-FINAL CTA
---------------------------------
+### Планируете обучение за рубежом?
 
-Create a clean final CTA section.
+Подготовьте язык заранее и приезжайте увереннее.
 
-Headline:
+Используй небольшие иконки и короткий текст.
 
-“Готовы начать?”
+---
 
-Subtitle:
+# 6. Courses Section
 
-“Расскажите о своих целях — мы поможем определить следующий шаг.”
+Главный продающий блок.
 
-Primary button:
+Заголовок:
 
-“Получить консультацию”
+**Выберите курс под свою цель**
 
-Secondary button:
+Подзаголовок:
 
-“Посмотреть университеты”
+> Не просто изучайте язык — учитесь использовать его в реальных ситуациях.
 
-Keep the section visually calm and premium.
+Создай красивые карточки курсов.
 
---------------------------------
-DESIGN SYSTEM
---------------------------------
+## Course Card
 
-Use consistent:
-- 8px spacing system
-- 16–24px card radius
-- subtle shadows
-- thin borders
-- generous whitespace
-- clear typography hierarchy
-- accessible contrast
-- responsive layouts
+Каждая карточка должна содержать:
 
-Animations should be subtle:
-- fade-in
-- small hover elevation
-- slight card movement
-- smooth transitions
+* изображение;
+* название;
+* короткое описание;
+* уровень;
+* продолжительность;
+* формат;
+* преподавателя;
+* цену;
 
-Avoid excessive motion.
+Пример:
 
-The entire website must look like one coherent premium product, not a collection of separate landing pages.
+### General English
 
-The most important design principle:
+Разговорный английский для жизни, учёбы и путешествий.
 
-MINIMALISM + TRUST + CLARITY.
+`A1–C1`
 
-Every section should immediately answer:
-“What does ZagranEasy do for the student?”
+`12 недель`
 
-The final result should look like a serious international EdTech platform that parents can trust and students want to use.
+`2 занятия / неделя`
+
+**от $XX / месяц**
+
+**[ Подробнее → ]**
+
+---
+
+### IELTS Preparation
+
+Системная подготовка к IELTS с преподавателем.
+
+`B1–C1`
+
+`8–12 недель`
+
+`Speaking + Writing + Reading + Listening`
+
+**от $XX**
+
+**[ Начать подготовку → ]**
+---
+
+### HSK
+
+Системная подготовка к HSK с преподавателем.
+
+`3-5`
+
+`8–12 недель`
+
+`Speaking + Writing + Reading + Listening`
+
+**от $XX**
+
+**[ Начать подготовку → ]**
+---
+
+### English for University
+
+Язык для студентов, которые планируют обучение за рубежом.
+
+`B1–C1`
+
+**[ Подробнее → ]**
+
+
+---
+
+# 7. Course Comparison / Selection
+
+Создай интерактивный блок:
+
+## Не знаете, какой курс выбрать?
+
+> Ответьте на несколько вопросов — мы поможем подобрать подходящий формат обучения.
+
+Покажи:
+
+**Ваша цель**
+
+* Поступление за рубеж
+* IELTS
+* HSK
+* TOEFL
+* Разговорный язык
+
+
+---
+
+# 8. Teachers Section
+
+Заголовок:
+
+**Учитесь у преподавателей, а не у скучного учебника**
+
+Подзаголовок:
+
+> Каждый преподаватель ZagranEasy — это человек с опытом, методикой и собственным подходом к обучению.
+
+Создай горизонтальный/сеточный список преподавателей.
+
+Teacher Card:
+
+* большое фото;
+* имя;
+* язык;
+* специализация;
+* опыт;
+* рейтинг;
+* количество студентов.
+
+Например:
+
+**Имя Фамилия**
+
+English Teacher
+
+`IELTS · Speaking · Academic English`
+
+`5+ лет опыта`
+
+`4.9 ★`
+
+**[ Смотреть профиль → ]**
+
+При hover карточка слегка поднимается.
+
+---
+
+# 9. Teacher Profile Highlight
+
+После списка преподавателей сделай большой premium-блок.
+
+Слева — фотография преподавателя.
+
+Справа:
+
+**Познакомьтесь с вашим преподавателем**
+
+**Имя Фамилия**
+
+> Помогаю студентам уверенно говорить на английском и подготовиться к обучению за рубежом.
+
+Покажи:
+
+`5+ лет опыта`
+
+`50+ студентов`
+
+`IELTS 7.5`
+
+Кнопка:
+
+**[ Смотреть профиль → ]**
+
+---
+
+# 10. How It Works
+
+Заголовок:
+
+**Начать обучение проще, чем кажется**
+
+Покажи 4 шага:
+
+### 01
+
+**Выберите цель**
+
+Расскажите, зачем вам нужен язык.
+
+### 02
+
+**Подберите курс**
+
+Мы предложим подходящую программу.
+
+### 03
+
+**Познакомьтесь с преподавателем**
+
+Выберите преподавателя и удобный формат.
+
+### 04
+
+**Начните обучение**
+
+Занимайтесь онлайн и отслеживайте свой прогресс.
+
+Используй визуальную timeline/step layout.
+
+---
+
+# 11. Learning Experience
+
+Создай секцию:
+
+**Что вы получаете на курсе**
+
+Покажи 6 преимуществ:
+
+* Живые занятия с преподавателем
+* Практика разговорной речи
+* Домашние задания
+* Персональная обратная связь
+* Отслеживание прогресса
+* Учебные материалы
+
+Можно использовать минималистичные иконки.
+
+---
+
+# 12. Results Section
+
+Очень важный продающий блок.
+
+Заголовок:
+
+**Ваш результат — наша главная цель**
+
+Покажи progression:
+
+`Ваш текущий уровень`
+
+↓
+
+`Обучение`
+
+↓
+
+`Практика`
+
+↓
+
+`Уверенный язык`
+
+Добавь реальные метрики, если они есть:
+
+**50+ студентов**
+
+**90%+ завершили программу**
+
+**4.9/5 средняя оценка**
+
+Не придумывай статистику, если реальные данные отсутствуют. Используй placeholders.
+
+---
+
+# 13. Reviews
+
+Заголовок:
+
+**Что говорят наши студенты**
+
+Создай 3–4 review cards.
+
+Каждая:
+
+★★★★★
+
+> Короткий реальный отзыв студента.
+
+**Имя**
+
+IELTS Preparation
+
+Важно: отзывы должны выглядеть настоящими, но не создавать фальшивые данные. Если отзывов пока нет — используй placeholder для CMS.
+
+---
+
+# 14. Pricing
+
+Создай продающий pricing section.
+
+Заголовок:
+
+**Выберите формат обучения**
+
+Три варианта:
+
+### Самостоятельно
+
+Учебные материалы + задания.
+
+**$XX / месяц**
+
+[ Выбрать ]
+
+### В группе
+
+Живые занятия + преподаватель.
+
+**$XX / месяц**
+
+[ Выбрать ]
+
+### Индивидуально
+
+Персональная программа + преподаватель.
+
+**$XX / месяц**
+
+[ Выбрать ]
+
+Основной тариф визуально выделить.
+
+Добавь:
+
+> Итоговая стоимость зависит от курса, преподавателя и формата обучения.
+
+---
+
+# 15. Final CTA
+
+Сделай большой финальный блок.
+
+Заголовок:
+
+**Готовы начать учить язык?**
+
+Подзаголовок:
+
+> Выберите курс, найдите своего преподавателя и сделайте первый шаг к обучению за рубежом.
+
+Основная кнопка:
+
+**[ Подобрать курс → ]**
+
+Вторичная:
+
+**Посмотреть преподавателей**
+
+Используй крупную фотографию преподавателя/студентов на фоне или сбоку.
+
+---
+
+# 16. FAQ
+
+Добавь accordion:
+
+### Как проходят занятия?
+
+### Можно ли заниматься индивидуально?
+
+### Какие языки доступны?
+
+### Как определить свой уровень?
+
+### Можно ли сменить преподавателя?
+
+### Сколько длится курс?
+
+### Есть ли пробное занятие?
+
+### Можно ли подготовиться к IELTS?
+
+Accordion должен открываться плавно.
+
+---
+
+# 17. Footer
+
+Footer:
+
+**ZagranEasy**
+
+> Образование без границ.
+
+Links:
+
+**Обучение**
+
+* Курсы
+* Преподаватели
+* IELTS
+* Speaking Club
+
+**ZagranEasy**
+
+* О нас
+* Контакты
+* FAQ
+
+**Помощь**
+
+* Поддержка
+* Политика конфиденциальности
+* Условия использования
+
+Social:
+
+Instagram
+WhatsApp
+Telegram
+
+---
+
+# 18. Mobile UX
+
+Landing должен быть полностью responsive.
+
+На мобильном:
+
+* hero превращается в вертикальный layout;
+* изображение преподавателя располагается после текста;
+* CTA занимает удобную ширину;
+* карточки курсов становятся горизонтально скроллируемыми или вертикальными;
+* teacher cards становятся swipeable;
+* navigation превращается в mobile menu;
+* sticky CTA внизу экрана:
+
+**Подобрать курс →**
+
+Не уменьшай desktop-версию просто пропорционально. Создай отдельный mobile UX.
+
+---
+
+# 19. Animations
+
+Используй очень аккуратные animations:
+
+* fade-in;
+* translate-up;
+* hover elevation;
+* image scale на hover;
+* плавное появление карточек;
+* smooth accordion;
+* smooth scrolling.
+
+Анимации должны быть быстрыми и незаметными.
+
+Не использовать excessive animations.
+
+---
+
+# 20. Conversion Strategy
+
+Landing page должен постоянно вести пользователя к одному из действий:
+
+**1. Подобрать курс**
+
+**2. Посмотреть курс**
+
+**3. Посмотреть преподавателя**
+
+Основная CTA:
+
+**Подобрать курс →**
+
+Вторичная:
+
+**Посмотреть курсы**
+
+Не создавать много конкурирующих CTA.
+
+---
+
+# 21. Technical Requirements
+
+Используй:
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Lucide Icons
+* responsive design;
+* reusable React components;
+* semantic HTML;
+* accessible buttons and links;
+* optimized images;
+* clean component architecture.
+
+Создай компоненты:
+
+`Header`
+
+`Hero`
+
+`TrustBar`
+
+`Problems`
+
+`Courses`
+
+`CourseCard`
+
+`CourseFinder`
+
+`Teachers`
+
+`TeacherCard`
+
+`TeacherHighlight`
+
+`HowItWorks`
+
+`Benefits`
+
+`Results`
+
+`Reviews`
+
+`Pricing`
+
+`FinalCTA`
+
+`FAQ`
+
+`Footer`
+
+Все данные курсов, преподавателей, отзывов и pricing должны быть вынесены в отдельные массивы/объекты, чтобы в будущем подключить CMS или backend без переписывания UI.
+
+---
+
+# Final Design Direction
+
+Главное ощущение сайта:
+
+**“Я могу доверить ZagranEasy своё обучение.”**
+
+Сайт должен быть:
+
+**Premium
+Clean
+Modern
+Trustworthy
+Student-focused
+Conversion-focused
+International**
+
+Не делай обычный лендинг с одинаковыми прямоугольными секциями.
+
+Используй сильную визуальную иерархию, большие фотографии преподавателей, качественные карточки курсов и понятные CTA.
+
+Каждая секция должна отвечать на один вопрос пользователя:
+
+**Что это? → Для кого? → Кто преподаватели? → Какие курсы? → Как проходит обучение? → Какой результат? → Сколько стоит? → Как начать?**
+
+Главная задача дизайна — не просто красиво показать ZagranEasy, а **довести пользователя от рекламного объявления до выбора курса и заявки на обучение**.

@@ -12,17 +12,17 @@ export interface NavItem {
 
 // Главное меню (публичное)
 export const NAV_ITEMS: NavItem[] = [
-  // { label: "Главная", href: "/" },
-  // { label: "Университеты", href: "/education", icon: "🎓" },
-  // Временно скрыто — фокус на обучении, см. zagraneasy-requirements.json (main_services)
-  // { label: "Туры", href: "/tours", icon: "✈️" },
-  // { label: "Работа", href: "/work", icon: "💼" },
-  // { label: "Виза USA", href: "/visa-usa", icon: "🗽" },
-  // { label: "Недвижимость", href: "/realestate", icon: "🏠" },
-  // { label: "О нас", href: "/about" },
-  // { label: "FAQ", href: "/faq" },
+  // {
+  //   label: "Instagram",
+  //   href: "https://instagram.com/zagraneasy",
+  //   icon: "/files/image_insta.png",
+  // },
+  // {
+  //   label: "WhatsApp",
+  //   href: "https://wa.me/77479112606",
+  //   icon: "/files/image_whatsapp.png",
+  // },
 ];
-
 // Меню портала сотрудников
 export const STAFF_NAV_ITEMS: NavItem[] = [
   { label: "Дашборд", href: "/staff" },
@@ -35,6 +35,7 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
   "/education": "Университеты",
+  "/language": "Языковые курсы",
   // "/tours": "Туры",
   // "/work": "Работа",
   // "/visa-usa": "Виза USA",
@@ -60,6 +61,11 @@ export const PAGE_META: Record<
     title: "Обучение за рубежом — ZagranEasy",
     description:
       "3200+ зачислений в университеты Турции, Китая, Италии, Малайзии. Поступление без экзаменов, гранты до 100%.",
+  },
+  "/language": {
+    title: "Языковые курсы — ZagranEasy",
+    description:
+      "Онлайн-курсы английского языка: General English, IELTS Preparation, English for University, Speaking Club.",
   },
   "/tours": {
     title: "Эксклюзивные туры — ZagranEasy",
