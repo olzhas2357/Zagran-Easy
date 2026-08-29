@@ -87,6 +87,30 @@ export const CAMPUS_LIFE_PHOTOS = REEL_PHOTOS_ONLY.filter((i) => i.label !== "Д
   alt: i.label,
 }));
 
+// Только фото (без видео-постеров) — для плотных фото-лент и коллажей,
+// где нужна именно фотография, а не превью видео.
+export const REEL_PHOTOS_ONLY = MEDIA_REEL_ITEMS.filter((i) => i.type === "photo");
+
+// Коллаж плавающих фото в hero — 5 карточек с разной фазой анимации
+export const HERO_COLLAGE = [
+  REEL_PHOTOS_ONLY[3],
+  REEL_PHOTOS_ONLY[4],
+  REEL_PHOTOS_ONLY[6],
+  REEL_PHOTOS_ONLY[8],
+  REEL_PHOTOS_ONLY[1],
+] as const;
+
+// Лента "писем о зачислении" — используем реальные фото документов из Cloudinary
+export const ACCEPTANCE_LETTER_PHOTOS = MEDIA_REEL_ITEMS.filter((i) => i.label === "Документы о зачислении").map(
+  (i) => ({ src: i.src, alt: i.label })
+);
+
+// Лента "моменты со студентами" — второй ряд, едет в обратную сторону
+export const CAMPUS_LIFE_PHOTOS = REEL_PHOTOS_ONLY.filter((i) => i.label !== "Документы о зачислении").map((i) => ({
+  src: i.src,
+  alt: i.label,
+}));
+
 // Отдельный номер WhatsApp для модуля образования
 export const EDUCATION_PHONE = "77470382914";
 

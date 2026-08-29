@@ -2,8 +2,17 @@ import Link from "next/link";
 import { fetchAllUniversities, fetchEducationCountries, fetchReviews, fetchTours } from "@/lib/data";
 import { formatDuration, formatPrice, waUrl } from "@/lib/utils";
 import { SITE, STATS, ABOUT, MEDIA_REEL_ITEMS, SERVICES, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
+import { fetchAllUniversities, fetchEducationCountries, fetchReviews, fetchTours } from "@/lib/data";
+import { formatDuration, formatPrice, waUrl } from "@/lib/utils";
+import { SITE, STATS, ABOUT, MEDIA_REEL_ITEMS, SERVICES, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
+import { TiltCard } from "@/components/ui/TiltCard";
+import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
+import { FloatingBadge } from "@/components/ui/FloatingBadge";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { GradientSpots } from "@/components/ui/GradientSpots";
+import { PhotoMarquee } from "@/components/ui/PhotoMarquee";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
 import { FloatingBadge } from "@/components/ui/FloatingBadge";
@@ -19,9 +28,11 @@ import { ArrowUpRight } from 'lucide-react';
 
 export default async function HomePage() {
   const [countries, universities, reviews, tours] = await Promise.all([
+  const [countries, universities, reviews, tours] = await Promise.all([
     fetchEducationCountries(),
     fetchAllUniversities(),
     fetchReviews(),
+    fetchTours(),
     fetchTours(),
   ]);
 
@@ -38,6 +49,9 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
+      <section className="relative overflow-hidden border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
+        <GradientSpots variant="hero" />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
       <section className="relative overflow-hidden border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
         <GradientSpots variant="hero" />
         <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
@@ -111,6 +125,43 @@ export default async function HomePage() {
                 duration={4}
                 delay={0.2}
                 rotateRange={3}
+
+          {/* Плавающий фото-коллаж */}
+          <div className="relative w-full min-w-0 flex-1">
+            <div className="relative aspect-4/3">
+              <FloatingPhoto
+                src={HERO_COLLAGE[0].src}
+                alt={HERO_COLLAGE[0].label}
+                className="absolute left-0 top-0 h-[62%] w-[58%]"
+                range={12}
+                duration={4.2}
+                delay={0}
+              />
+              <FloatingPhoto
+                src={HERO_COLLAGE[1].src}
+                alt={HERO_COLLAGE[1].label}
+                className="absolute right-0 top-[6%] h-[45%] w-[38%]"
+                range={9}
+                duration={3.6}
+                delay={0.4}
+                rotateRange={3}
+              />
+              <FloatingPhoto
+                src={HERO_COLLAGE[2].src}
+                alt={HERO_COLLAGE[2].label}
+                className="absolute bottom-0 left-[8%] h-[42%] w-[40%]"
+                range={10}
+                duration={4.8}
+                delay={0.8}
+              />
+              <FloatingPhoto
+                src={HERO_COLLAGE[3].src}
+                alt={HERO_COLLAGE[3].label}
+                className="absolute bottom-[4%] right-[2%] h-[48%] w-[42%]"
+                range={11}
+                duration={4}
+                delay={0.2}
+                rotateRange={3}
               />
               <HeroCelebration />
 
@@ -138,8 +189,40 @@ export default async function HomePage() {
                 duration={3.1}
                 delay={1.3}
               />
+              <FloatingBadge
+                icon="🗽"
+                value="98%"
+                label="одобренных виз"
+                className="left-[2%] top-[2%]"
+                duration={3.4}
+                delay={0.3}
+              />
+              <FloatingBadge
+                icon="🎓"
+                value="389+"
+                label="программ обучения"
+                className="bottom-[6%] right-[4%]"
+                duration={3.8}
+                delay={0.9}
+              />
+              <FloatingBadge
+                icon="✈️"
+                value="3 200+"
+                label="довольных клиентов"
+                className="left-[30%] top-[46%] hidden sm:flex"
+                duration={3.1}
+                delay={1.3}
+              />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Фото-лента: письма о зачислении + жизнь студентов */}
+      <section className="overflow-hidden border-b border-ze-border bg-white py-8 sm:py-10">
+        <div className="flex flex-col gap-3.5">
+          <PhotoMarquee images={ACCEPTANCE_LETTER_PHOTOS} speed={30} direction="normal" />
+          <PhotoMarquee images={CAMPUS_LIFE_PHOTOS} speed={38} direction="reverse" />
         </div>
       </section>
 
@@ -213,11 +296,20 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-6xl">
           <GradientSpots variant="section" />
           <div className="relative grid grid-cols-1 gap-4.5 rounded-[20px] border border-[#E4EBF8] bg-[#F5F8FE] p-6 sm:grid-cols-3 sm:gap-8 sm:p-9">
+      <section className="relative px-4 py-5 sm:px-10">
+        <div className="relative mx-auto max-w-6xl">
+          <GradientSpots variant="section" />
+          <div className="relative grid grid-cols-1 gap-4.5 rounded-[20px] border border-[#E4EBF8] bg-[#F5F8FE] p-6 sm:grid-cols-3 sm:gap-8 sm:p-9">
             {STATS.map((s, i) => (
               <div
                 key={s.label}
                 className={`flex flex-col gap-1 ${i > 0 ? "border-t border-[#DDE6F5] pt-4.5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0" : ""}`}
               >
+                <AnimatedCounter
+                  value={s.value}
+                  suffix={s.suffix}
+                  className="text-[32px] font-extrabold leading-none tracking-tight text-ze-primary sm:text-[46px]"
+                />
                 <AnimatedCounter
                   value={s.value}
                   suffix={s.suffix}
@@ -270,6 +362,31 @@ export default async function HomePage() {
                     </div>
                   </Link>
                 </TiltCard>
+                <TiltCard maxTilt={5}>
+                  <Link
+                    href="/education"
+                    className="block overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+                  >
+                    <div className="aspect-4/3 overflow-hidden">
+                      <div className="h-full w-full transition-transform duration-500 hover:scale-110">
+                        <CoverPhoto src={c.imageUrl} alt={c.name} />
+                      </div>
+                    </div>
+                    <div className="p-3.5 sm:p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-[16px] font-bold">
+                          {c.flag} {c.name}
+                        </div>
+                      </div>
+                      <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">
+                        {universityCountByCountry.get(c.id) || 0} университетов · {c.cities.slice(0, 2).join(", ")}
+                      </div>
+                      <div className="mt-2.5 text-[14px] font-semibold">
+                        {formatPrice(cheapestByCountry.get(c.id) || 0)} / год
+                      </div>
+                    </div>
+                  </Link>
+                </TiltCard>
               </FadeIn>
             ))}
           </div>
@@ -288,6 +405,14 @@ export default async function HomePage() {
               <FadeIn key={t.id}>
                 <div className={`flex flex-col items-center gap-4.5 sm:gap-12 ${i % 2 === 1 ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
                   <div className="w-full min-w-0 flex-1">
+                    <Link
+                      href={`/tours/${t.slug}`}
+                      className="group block aspect-16/10 overflow-hidden rounded-[18px] border border-ze-border"
+                    >
+                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-[1.05]">
+                        <CoverPhoto src={t.imageUrl} alt={t.title} />
+                      </div>
+                    </Link>
                     <Link
                       href={`/tours/${t.slug}`}
                       className="group block aspect-16/10 overflow-hidden rounded-[18px] border border-ze-border"
