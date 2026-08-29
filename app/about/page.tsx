@@ -39,7 +39,7 @@ export default function AboutPage() {
       <div className="border-b border-ze-border">
         <div className="mx-auto max-w-6xl px-4 py-9 sm:px-10 sm:py-14">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#DDE4F0] bg-white py-1.5 pl-1.5 pr-3 text-[12.5px] font-medium text-slate-700">
-            ТОО «ZAGRANEASY» · Алматы
+            ИП «ZAGRANEASY» · Алматы
           </div>
           <h1 className="mt-4 max-w-[760px] text-[28px] font-extrabold leading-[1.04] tracking-tight text-balance sm:text-[46px]">
             {ABOUT.heading}
