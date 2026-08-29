@@ -184,6 +184,14 @@ export default async function HomePage() {
               text: "Программы и возможности для получения новых знаний и квалификации",
               color: "emerald",
             },
+
+            {
+              id: "language",
+              Icon: GraduationCap,
+              title: "Языковое образование",
+              text: "языковые курсы, подготовка к экзаменам и обучение за рубежом",
+              color: "emerald",
+            },
             {
               id: "students",
               Icon: User,
