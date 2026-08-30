@@ -1,8 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { TeacherCard } from "@/components/language/TeacherCard";
-import { LANGUAGE_TEACHERS } from "@/lib/language-data";
+import { TeacherProfileModal } from "@/components/language/TeacherProfileModal";
+import { LANGUAGE_TEACHERS, type LanguageTeacher } from "@/lib/language-data";
 
 export function Teachers() {
+  const [selected, setSelected] = useState<LanguageTeacher | null>(null);
+
   return (
     <section id="teachers" className="py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
@@ -21,11 +27,13 @@ export function Teachers() {
         <div className="mt-8 grid grid-cols-2 gap-4 sm:mt-11 sm:grid-cols-4 sm:gap-5">
           {LANGUAGE_TEACHERS.map((t, i) => (
             <FadeIn key={t.id} delay={i * 0.06}>
-              <TeacherCard teacher={t} />
+              <TeacherCard teacher={t} onOpen={setSelected} />
             </FadeIn>
           ))}
         </div>
       </div>
+
+      <TeacherProfileModal teacher={selected} onClose={() => setSelected(null)} />
     </section>
   );
 }

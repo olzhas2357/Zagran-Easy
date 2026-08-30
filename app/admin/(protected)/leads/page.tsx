@@ -59,7 +59,7 @@ export default function AdminLeadsPage() {
       key: "status",
       title: "Статус",
       render: (row) => (
-        <span className={`rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${STATUS_STYLES[row.status] || "bg-slate-100 text-slate-600"}`}>
+        <span className={`rounded-full px-2.5 py-1 text-[12.5px] font-semibold ${STATUS_STYLES[row.status] || "bg-slate-100 text-slate-600"}`}>
           {STATUS_LABELS[row.status] || row.status}
         </span>
       ),
@@ -68,10 +68,10 @@ export default function AdminLeadsPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-5 sm:p-8">
       <div>
-        <h1 className="text-[22px] font-extrabold tracking-tight text-slate-900">Заявки</h1>
-        <p className="mt-1 text-[14px] text-slate-500">{total} всего.</p>
+        <h1 className="text-[24px] font-extrabold tracking-tight text-slate-900 sm:text-[28px]">Заявки</h1>
+        <p className="mt-1.5 text-[14.5px] text-slate-500">{total} всего.</p>
       </div>
 
       <DataTable

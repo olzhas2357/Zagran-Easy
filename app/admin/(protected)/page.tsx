@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet } from "@/lib/api";
 import { StatsCard } from "@/components/admin/StatsCard";
+import { CreditCard, FileText, GraduationCap, Users } from "lucide-react";
 
 interface Lead {
   id: string;
@@ -70,10 +71,10 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon="👥" value={usersTotal ?? "—"} label="Пользователей" />
-        <StatsCard icon="🎓" value={studentsTotal ?? "—"} label="Студентов" />
-        <StatsCard icon="📋" value={leadsTotal ?? "—"} label="Заявок" />
-        <StatsCard icon="💳" value={paymentsTotal ?? "—"} label="Платежей" />
+        <StatsCard icon={Users} value={usersTotal ?? "—"} label="Пользователей" />
+        <StatsCard icon={GraduationCap} value={studentsTotal ?? "—"} label="Студентов" />
+        <StatsCard icon={FileText} value={leadsTotal ?? "—"} label="Заявок" />
+        <StatsCard icon={CreditCard} value={paymentsTotal ?? "—"} label="Платежей" />
       </div>
 
       <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { X, Upload } from "lucide-react";
 import { uploadUniversityFile } from "@/lib/staff-actions";
 
 // Несколько фото: миниатюры с удалением + drag&drop зона добавления.
@@ -47,9 +48,10 @@ export function ImageListUploader({
               <button
                 type="button"
                 onClick={() => onChange(value.filter((_, idx) => idx !== i))}
-                className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[11px] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                aria-label="Удалить фото"
               >
-                ✕
+                <X className="h-3 w-3" strokeWidth={2.5} />
               </button>
             </div>
           ))}
@@ -71,7 +73,10 @@ export function ImageListUploader({
           dragOver ? "border-ze-primary bg-[#EBF1FE] text-ze-primary" : "border-ze-border text-ze-muted hover:border-slate-300"
         }`}
       >
-        {isPending ? "Загружаем…" : "Перетащите фото сюда или нажмите, чтобы выбрать"}
+        <span className="flex items-center justify-center gap-1.5">
+          <Upload className="h-3.5 w-3.5" strokeWidth={1.75} />
+          {isPending ? "Загружаем…" : "Перетащите фото сюда или нажмите, чтобы выбрать"}
+        </span>
         <input ref={inputRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
       </div>
       {error && <div className="mt-1.5 text-[12px] text-red-600">{error}</div>}
@@ -136,9 +141,10 @@ export function SingleFileUploader({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="flex-none rounded-lg border border-ze-border bg-white px-2.5 py-2 text-[12px] text-slate-500 hover:border-slate-300"
+            className="flex-none rounded-lg border border-ze-border bg-white px-2.5 py-2 text-slate-500 hover:border-slate-300"
+            aria-label="Удалить файл"
           >
-            ✕
+            <X className="h-3.5 w-3.5" strokeWidth={2} />
           </button>
         )}
         <input ref={inputRef} type="file" accept={accept} hidden onChange={(e) => handleFile(e.target.files)} />

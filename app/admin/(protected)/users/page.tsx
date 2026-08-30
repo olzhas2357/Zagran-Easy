@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Search, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet } from "@/lib/api";
 import { DataTable, type Column } from "@/components/admin/DataTable";
@@ -67,17 +68,18 @@ export default function AdminUsersPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 p-5 sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-extrabold tracking-tight text-slate-900">Пользователи</h1>
-          <p className="mt-1 text-[14px] text-slate-500">{total} всего.</p>
+          <h1 className="text-[24px] font-extrabold tracking-tight text-slate-900 sm:text-[28px]">Пользователи</h1>
+          <p className="mt-1.5 text-[14.5px] text-slate-500">{total} всего.</p>
         </div>
         <Link
           href="/admin/users/new"
-          className="rounded-lg bg-blue-600 px-4 py-2.5 text-[13.5px] font-semibold text-white hover:bg-blue-700"
+          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(37,99,235,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700"
         >
-          + Создать пользователя
+          <UserPlus className="h-4.5 w-4.5" strokeWidth={2} />
+          Создать пользователя
         </Link>
       </div>
 
@@ -86,19 +88,22 @@ export default function AdminUsersPage() {
           <button
             key={f.value}
             onClick={() => setRoleFilter(f.value)}
-            className={`rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+            className={`rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors ${
               roleFilter === f.value ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
             }`}
           >
             {f.label}
           </button>
         ))}
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Поиск по имени…"
-          className="ml-auto w-full max-w-[240px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] outline-none focus:border-blue-600"
-        />
+        <div className="relative ml-auto w-full max-w-[260px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Поиск по имени…"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-[14px] outline-none transition-colors focus:border-blue-600"
+          />
+        </div>
       </div>
 
       <DataTable

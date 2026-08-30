@@ -2,11 +2,12 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { X, Upload } from "lucide-react";
 import type { StudentOption, TaskOption } from "@/lib/teacher-data";
 import { createLesson, uploadLessonMaterial } from "@/lib/teacher-actions";
 
 const inputClass =
-  "w-full rounded-lg border border-ze-border bg-white px-3 py-2.5 text-[13.5px] outline-none focus:border-ze-primary";
+  "w-full rounded-xl border border-ze-border bg-white px-3.5 py-3 text-[14px] text-ze-ink outline-none transition-colors focus:border-ze-primary";
 const textareaClass = `${inputClass} resize-none`;
 
 const DURATIONS = [30, 45, 60, 90, 120];
@@ -14,7 +15,7 @@ const DURATIONS = [30, 45, 60, 90, 120];
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <div className="mb-1.5 text-[12px] font-semibold text-ze-muted">{label}</div>
+      <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">{label}</div>
       {children}
     </label>
   );
@@ -87,7 +88,7 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 flex max-w-xl flex-col gap-4">
+    <form onSubmit={handleSubmit} className="mt-6 flex max-w-xl flex-col gap-5">
       <Field label="Название урока">
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="HSK Listening — Level 3" className={inputClass} />
       </Field>
@@ -125,7 +126,7 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
                   key={s.id}
                   type="button"
                   onClick={() => toggle(studentIds, setStudentIds, s.id)}
-                  className={`rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                  className={`rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors ${
                     active
                       ? "border-ze-primary bg-ze-primary text-white"
                       : "border-ze-border bg-white text-ze-ink hover:border-slate-300"
@@ -150,14 +151,15 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
           {materials.length > 0 && (
             <ul className="flex flex-col gap-1">
               {materials.map((m, i) => (
-                <li key={m.url + i} className="flex items-center justify-between rounded-lg border border-ze-border px-3 py-2 text-[12.5px]">
+                <li key={m.url + i} className="flex items-center justify-between rounded-xl border border-ze-border px-3.5 py-2.5 text-[13px]">
                   <span className="truncate">{m.name}</span>
                   <button
                     type="button"
                     onClick={() => setMaterials(materials.filter((_, idx) => idx !== i))}
-                    className="text-ze-muted hover:text-red-600"
+                    className="flex-none text-ze-muted hover:text-red-600"
+                    aria-label="Удалить файл"
                   >
-                    ✕
+                    <X className="h-4 w-4" strokeWidth={2} />
                   </button>
                 </li>
               ))}
@@ -167,9 +169,10 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="w-fit rounded-lg border border-dashed border-ze-border px-3 py-2 text-[12.5px] font-medium text-ze-muted hover:border-slate-300"
+            className="flex w-fit items-center gap-2 rounded-xl border border-dashed border-ze-border px-3.5 py-2.5 text-[13px] font-semibold text-ze-muted transition-colors hover:border-slate-300 hover:text-ze-ink"
           >
-            {uploading ? "Загружаем…" : "+ Загрузить файлы"}
+            <Upload className="h-4 w-4" strokeWidth={1.75} />
+            {uploading ? "Загружаем…" : "Загрузить файлы"}
           </button>
           <input
             ref={fileInputRef}
@@ -192,7 +195,7 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
                   key={t.id}
                   type="button"
                   onClick={() => toggle(homeworkTaskIds, setHomeworkTaskIds, t.id)}
-                  className={`rounded-full border px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                  className={`rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors ${
                     active
                       ? "border-ze-primary bg-ze-primary text-white"
                       : "border-ze-border bg-white text-ze-ink hover:border-slate-300"
@@ -206,12 +209,12 @@ export function LessonForm({ students, tasks }: { students: StudentOption[]; tas
         </Field>
       )}
 
-      {error && <div className="text-[13px] text-red-600">{error}</div>}
+      {error && <div className="rounded-xl bg-red-50 px-3.5 py-3 text-[13.5px] font-medium text-red-600">{error}</div>}
 
       <button
         type="submit"
         disabled={isPending || uploading}
-        className="w-fit rounded-lg bg-ze-primary px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-ze-primary-dark disabled:opacity-60"
+        className="w-fit rounded-xl bg-ze-primary px-6 py-3 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-primary-dark disabled:translate-y-0 disabled:opacity-60"
       >
         {isPending ? "Создаём…" : "Создать урок"}
       </button>

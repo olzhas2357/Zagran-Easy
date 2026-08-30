@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { LANGUAGE_FAQ } from "@/lib/language-data";
@@ -30,9 +31,9 @@ export function LanguageFaq() {
                   <motion.span
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
-                    className="flex-none text-[13px] text-slate-400"
+                    className="flex-none text-slate-400"
                   >
-                    ▼
+                    <ChevronDown className="h-4.5 w-4.5" strokeWidth={2} />
                   </motion.span>
                 </button>
                 <AnimatePresence initial={false}>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { X } from "lucide-react";
 import type { EducationCountry, University, UniversityProgram, AdmissionStory } from "@/lib/types";
 import { createUniversity, updateUniversity } from "@/lib/staff-actions";
 import { ImageListUploader, SingleFileUploader } from "@/components/staff/MediaUploader";
@@ -34,15 +35,15 @@ function numOrNull(s: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-const inputClass = "w-full rounded-lg border border-ze-border bg-white px-3 py-2.5 text-[13.5px] outline-none focus:border-ze-primary";
+const inputClass = "w-full rounded-xl border border-ze-border bg-white px-3.5 py-3 text-[14px] text-ze-ink outline-none transition-colors focus:border-ze-primary";
 const textareaClass = `${inputClass} resize-none`;
 
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <label className="block">
-      <div className="mb-1.5 text-[12px] font-semibold text-ze-muted">{label}</div>
+      <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">{label}</div>
       {children}
-      {hint && <div className="mt-1 text-[11.5px] text-slate-400">{hint}</div>}
+      {hint && <div className="mt-1 text-[12px] text-slate-400">{hint}</div>}
     </label>
   );
 }
@@ -71,9 +72,9 @@ function TagsField({ label, value, onChange, placeholder }: { label: string; val
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-ze-border bg-white p-4.5">
-      <div className="text-[15px] font-bold">{title}</div>
-      <div className="mt-3.5 grid gap-3.5 sm:grid-cols-2">{children}</div>
+    <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
+      <div className="text-[16px] font-bold text-ze-ink">{title}</div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">{children}</div>
     </div>
   );
 }
@@ -299,18 +300,18 @@ export function UniversityForm({ countries, university }: { countries: Education
         </Field>
       </Section>
 
-      <div className="rounded-2xl border border-ze-border bg-white p-4.5">
+      <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="text-[15px] font-bold">Программы вуза</div>
+          <div className="text-[16px] font-bold text-ze-ink">Программы вуза</div>
           <button
             type="button"
             onClick={() => setProgramList((v) => [...v, { name: "", meta: "", price: "" }])}
-            className="rounded-lg border border-ze-border bg-[#F4F6FA] px-3 py-1.5 text-[12.5px] font-semibold text-slate-700 hover:border-slate-300"
+            className="rounded-lg border border-ze-border bg-[#F4F6FA] px-3.5 py-2 text-[13px] font-semibold text-slate-700 transition-colors hover:border-slate-300"
           >
             + Добавить программу
           </button>
         </div>
-        <div className="mt-3.5 flex flex-col gap-2.5">
+        <div className="mt-4 flex flex-col gap-2.5">
           {programList.map((p, i) => (
             <div key={i} className="grid grid-cols-[1.4fr_1.4fr_0.8fr_36px] items-center gap-2">
               <input
@@ -334,9 +335,10 @@ export function UniversityForm({ countries, university }: { countries: Education
               <button
                 type="button"
                 onClick={() => setProgramList((v) => v.filter((_, idx) => idx !== i))}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-ze-border text-slate-500 hover:border-slate-300"
+                className="flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-ze-border text-slate-500 transition-colors hover:border-slate-300"
+                aria-label="Удалить программу"
               >
-                ✕
+                <X className="h-4 w-4" strokeWidth={2} />
               </button>
             </div>
           ))}
@@ -344,18 +346,18 @@ export function UniversityForm({ countries, university }: { countries: Education
         </div>
       </div>
 
-      <div className="rounded-2xl border border-ze-border bg-white p-4.5">
+      <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="text-[15px] font-bold">Истории поступивших</div>
+          <div className="text-[16px] font-bold text-ze-ink">Истории поступивших</div>
           <button
             type="button"
             onClick={() => setStories((v) => [...v, { name: "", meta: "", text: "" }])}
-            className="rounded-lg border border-ze-border bg-[#F4F6FA] px-3 py-1.5 text-[12.5px] font-semibold text-slate-700 hover:border-slate-300"
+            className="rounded-lg border border-ze-border bg-[#F4F6FA] px-3.5 py-2 text-[13px] font-semibold text-slate-700 transition-colors hover:border-slate-300"
           >
             + Добавить историю
           </button>
         </div>
-        <div className="mt-3.5 flex flex-col gap-3">
+        <div className="mt-4 flex flex-col gap-3">
           {stories.map((s, i) => (
             <div key={i} className="rounded-xl border border-[#F1F4F9] p-3">
               <div className="grid grid-cols-[1fr_1fr_36px] items-center gap-2">
@@ -374,9 +376,10 @@ export function UniversityForm({ countries, university }: { countries: Education
                 <button
                   type="button"
                   onClick={() => setStories((v) => v.filter((_, idx) => idx !== i))}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-ze-border text-slate-500 hover:border-slate-300"
+                  className="flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-ze-border text-slate-500 transition-colors hover:border-slate-300"
+                  aria-label="Удалить историю"
                 >
-                  ✕
+                  <X className="h-4 w-4" strokeWidth={2} />
                 </button>
               </div>
               <textarea
@@ -388,7 +391,7 @@ export function UniversityForm({ countries, university }: { countries: Education
               />
             </div>
           ))}
-          {stories.length === 0 && <div className="text-[13px] text-ze-muted">Истории можно добавить позже.</div>}
+          {stories.length === 0 && <div className="text-[13.5px] text-ze-muted">Истории можно добавить позже.</div>}
         </div>
       </div>
 
@@ -411,9 +414,9 @@ export function UniversityForm({ countries, university }: { countries: Education
         </Field>
       </Section>
 
-      <div className="rounded-2xl border border-ze-border bg-white p-4.5">
-        <label className="flex items-center gap-2 text-[13.5px] font-semibold">
-          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4" />
+      <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <label className="flex items-center gap-2.5 text-[14.5px] font-semibold text-ze-ink">
+          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} className="h-4 w-4 accent-[#1A56DB]" />
           Опубликовать (показывать на сайте)
         </label>
       </div>
@@ -424,7 +427,7 @@ export function UniversityForm({ countries, university }: { countries: Education
         <button
           onClick={save}
           disabled={isPending}
-          className="rounded-xl bg-ze-accent px-5 py-3 text-[14.5px] font-semibold text-white hover:bg-ze-accent-dark disabled:opacity-60"
+          className="rounded-xl bg-ze-accent px-6 py-3 text-[14.5px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-accent-dark disabled:translate-y-0 disabled:opacity-60"
         >
           {isPending ? "Сохраняем…" : isEdit ? "Сохранить изменения" : "Создать университет"}
         </button>

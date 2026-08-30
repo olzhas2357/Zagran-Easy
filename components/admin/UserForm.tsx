@@ -6,17 +6,17 @@ import { useAuth } from "@/lib/auth-context";
 import { apiGet, apiPost } from "@/lib/api";
 
 const inputClass =
-  "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-[13.5px] outline-none focus:border-blue-600";
+  "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-blue-600";
 const textareaClass = `${inputClass} resize-none`;
 
 type Role = "admin" | "manager" | "teacher" | "student" | "parent";
 
 const ROLES: { value: Role; label: string }[] = [
-  { value: "student", label: "Student" },
-  { value: "teacher", label: "Teacher" },
-  { value: "parent", label: "Parent" },
-  { value: "manager", label: "Manager" },
-  { value: "admin", label: "Admin" },
+  { value: "student", label: "Студент" },
+  { value: "teacher", label: "Учитель" },
+  { value: "parent", label: "Родитель" },
+  { value: "manager", label: "Менеджер" },
+  { value: "admin", label: "Админ" },
 ];
 
 const EXAM_TYPES = ["ielts", "hsk", "sat"];
@@ -24,7 +24,7 @@ const EXAM_TYPES = ["ielts", "hsk", "sat"];
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <div className="mb-1.5 text-[12px] font-semibold text-slate-500">{label}</div>
+      <div className="mb-1.5 text-[13px] font-semibold text-slate-600">{label}</div>
       {children}
     </label>
   );
@@ -152,7 +152,7 @@ export function UserForm() {
           <button
             type="button"
             onClick={() => setPassword(randomPassword())}
-            className="whitespace-nowrap rounded-lg border border-slate-200 px-3 py-2.5 text-[12.5px] font-semibold text-slate-600 hover:border-slate-300"
+            className="whitespace-nowrap rounded-xl border border-slate-200 px-3.5 py-3 text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
           >
             Сгенерировать
           </button>
@@ -199,24 +199,24 @@ export function UserForm() {
           <Field label="Специализации (через запятую)">
             <input value={specializations} onChange={(e) => setSpecializations(e.target.value)} placeholder="ielts, hsk" className={inputClass} />
           </Field>
-          <Field label="Bio">
+          <Field label="Описание (bio)">
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className={textareaClass} />
           </Field>
         </>
       )}
 
       {role === "parent" && (
-        <div className="rounded-lg bg-amber-50 px-3 py-2.5 text-[12.5px] text-amber-700">
+        <div className="rounded-xl bg-amber-50 px-3.5 py-3 text-[13px] leading-relaxed text-amber-700">
           Привязку детей к родителю нужно будет сделать отдельно — API пока не поддерживает это при создании.
         </div>
       )}
 
-      {error && <div className="text-[13px] text-red-600">{error}</div>}
+      {error && <div className="rounded-xl bg-red-50 px-3.5 py-3 text-[13.5px] font-medium text-red-600">{error}</div>}
 
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded-lg bg-blue-600 px-5 py-2.5 text-[13.5px] font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+        className="w-fit rounded-xl bg-blue-600 px-6 py-3 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(37,99,235,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 disabled:translate-y-0 disabled:opacity-60"
       >
         {isPending ? "Создаём…" : "Создать пользователя"}
       </button>

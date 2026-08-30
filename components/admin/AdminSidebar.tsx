@@ -3,25 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { LayoutGrid, Users, GraduationCap, ClipboardList, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
-  { href: "/admin", label: "Dashboard", icon: "📊" },
-  { href: "/admin/users", label: "Пользователи", icon: "👥" },
-  { href: "/admin/students", label: "Студенты", icon: "🎓" },
-  { href: "/admin/leads", label: "Заявки", icon: "📋" },
+  { href: "/admin", label: "Главная", Icon: LayoutGrid },
+  { href: "/admin/users", label: "Пользователи", Icon: Users },
+  { href: "/admin/students", label: "Студенты", Icon: GraduationCap },
+  { href: "/admin/leads", label: "Заявки", Icon: ClipboardList },
 ];
 
 function SidebarContent({ fullName, onLogout, onNavigate }: { fullName: string | null; onLogout: () => void; onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full w-[240px] flex-none flex-col bg-slate-900 p-3.5 text-white">
-      <div className="flex items-center gap-2 px-2 py-1">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-[12px] font-extrabold">ZE</div>
-        <div className="text-[13px] font-bold">Admin Panel</div>
+    <div className="flex h-full w-[248px] flex-none flex-col bg-slate-900 p-4 text-white">
+      <div className="flex items-center gap-2.5 px-1.5 py-1">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-[13px] font-extrabold">ZE</div>
+        <div className="text-[13.5px] font-bold tracking-tight">Админ-панель</div>
       </div>
-      <nav className="mt-4 flex flex-col gap-0.5">
+      <nav className="mt-5 flex flex-col gap-1">
         {NAV.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           return (
@@ -29,23 +30,24 @@ function SidebarContent({ fullName, onLogout, onNavigate }: { fullName: string |
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors ${
                 active ? "bg-blue-600 font-semibold text-white" : "text-white/65 hover:bg-slate-800 hover:text-white"
               }`}
             >
-              <span aria-hidden>{item.icon}</span>
+              <item.Icon className="h-[18px] w-[18px] flex-none" strokeWidth={1.9} />
               {item.label}
             </Link>
           );
         })}
       </nav>
       <div className="mt-auto flex flex-col gap-2.5 border-t border-white/10 pt-4">
-        <div className="px-1 text-[12.5px] text-white/70">{fullName || "Админ"}</div>
+        <div className="px-1 text-[13px] font-medium text-white/85">{fullName || "Админ"}</div>
         <button
           onClick={onLogout}
-          className="rounded-lg bg-white/8 px-3 py-2.5 text-left text-[13px] font-semibold text-white hover:bg-white/16"
+          className="flex items-center gap-2.5 rounded-xl bg-white/8 px-3 py-2.5 text-left text-[13.5px] font-semibold text-white hover:bg-white/16"
         >
-          🚪 Выход
+          <LogOut className="h-[18px] w-[18px]" strokeWidth={1.9} />
+          Выход
         </button>
       </div>
     </div>
@@ -68,16 +70,14 @@ export function AdminSidebar({ fullName }: { fullName: string | null }) {
         <SidebarContent fullName={fullName} onLogout={handleLogout} />
       </div>
 
-      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3 text-white md:hidden">
-        <span className="text-[14px] font-bold">ZagranEasy Admin</span>
+      <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-3.5 text-white md:hidden">
+        <span className="text-[14.5px] font-bold">ZagranEasy Админ</span>
         <button
           aria-label="Открыть меню"
           onClick={() => setMobileOpen(true)}
           className="rounded-lg p-2 text-white/80 hover:bg-white/10"
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <Menu className="h-5.5 w-5.5" strokeWidth={2} />
         </button>
       </div>
 

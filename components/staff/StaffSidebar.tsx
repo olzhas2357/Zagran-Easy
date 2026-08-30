@@ -1,49 +1,101 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutGrid, Landmark, ClipboardList, Calculator, BookOpen, Menu } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const NAV = [
-  { href: "/staff", label: "Дашборд" },
-  { href: "/staff/universities", label: "Университеты" },
-  { href: "/staff/leads", label: "Заявки студентов" },
-  { href: "/staff/calculator", label: "Калькулятор" },
-  { href: "/staff/directory", label: "Справочник" },
+  { href: "/staff", label: "Главная", Icon: LayoutGrid },
+  { href: "/staff/universities", label: "Университеты", Icon: Landmark },
+  { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
+  { href: "/staff/calculator", label: "Калькулятор", Icon: Calculator },
+  { href: "/staff/directory", label: "Справочник", Icon: BookOpen },
 ];
 
-export function StaffSidebar({ profile }: { profile: Profile }) {
+function initials(name: string | null) {
+  if (!name) return "М";
+  const parts = name.trim().split(/\s+/);
+  return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
+}
+
+function SidebarContent({ profile, onNavigate }: { profile: Profile; onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex w-[212px] flex-none flex-col bg-ze-navy p-3.5 text-white">
-      <div className="px-2 text-[12px] font-bold uppercase tracking-wide text-white/40">Кабинет менеджера</div>
-      <nav className="mt-3.5 flex flex-col gap-0.5">
+    <div className="flex h-full w-[228px] flex-none flex-col bg-ze-navy p-4 text-white">
+      <div className="flex items-center gap-2.5 px-1.5 py-1">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-ze-primary text-[13px] font-extrabold">ZE</div>
+        <div className="text-[13.5px] font-bold tracking-tight">Кабинет менеджера</div>
+      </div>
+      <nav className="mt-5 flex flex-col gap-1">
         {NAV.map((item) => {
           const active = item.href === "/staff" ? pathname === "/staff" : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-[10px] px-3 py-2.5 text-[13.5px] font-medium transition-colors ${
+              onClick={onNavigate}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] font-medium transition-colors ${
                 active ? "bg-white/12 font-semibold text-white" : "text-white/65 hover:bg-white/8 hover:text-white"
               }`}
             >
+              <item.Icon className="h-[18px] w-[18px] flex-none" strokeWidth={1.9} />
               {item.label}
             </Link>
           );
         })}
       </nav>
       <div className="mt-auto flex flex-col gap-2.5 border-t border-white/10 pt-4">
-        <div className="px-1">
-          <div className="text-[12.5px] text-white/70">
-            {profile.fullName || "Без имени"} · {profile.role === "admin" ? "админ" : "менеджер"}
+        <div className="flex items-center gap-2.5 px-1">
+          <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-white/12 text-[12px] font-bold uppercase">
+            {initials(profile.fullName)}
           </div>
-          {profile.regions.length > 0 && <div className="mt-1 text-[12.5px] text-white/50">{profile.regions.join(", ")}</div>}
+          <div className="min-w-0">
+            <div className="truncate text-[13px] font-medium text-white/85">{profile.fullName || "Без имени"}</div>
+            <div className="truncate text-[12px] text-white/50">{profile.role === "admin" ? "Админ" : "Менеджер"}</div>
+            {profile.regions.length > 0 && <div className="truncate text-[11.5px] text-white/40">{profile.regions.join(", ")}</div>}
+          </div>
         </div>
-        <SignOutButton redirectTo="/staff/login" className="rounded-[10px] bg-white/8 px-3 py-2.5 text-[13px] font-semibold text-white hover:bg-white/16" />
+        <SignOutButton redirectTo="/staff/login" className="rounded-xl bg-white/8 px-3 py-2.5 text-[13.5px] font-semibold text-white hover:bg-white/16" />
       </div>
     </div>
+  );
+}
+
+export function StaffSidebar({ profile }: { profile: Profile }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div className="hidden md:block">
+        <SidebarContent profile={profile} />
+      </div>
+
+      {/* Mobile header + hamburger */}
+      <div className="flex items-center justify-between border-b border-ze-border bg-ze-navy px-4 py-3.5 text-white md:hidden">
+        <span className="text-[14.5px] font-bold">Кабинет менеджера</span>
+        <button
+          aria-label="Открыть меню"
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-2 text-white/80 hover:bg-white/10"
+        >
+          <Menu className="h-5.5 w-5.5" strokeWidth={2} />
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-y-0 left-0">
+            <SidebarContent profile={profile} onNavigate={() => setMobileOpen(false)} />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

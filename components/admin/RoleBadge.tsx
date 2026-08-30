@@ -16,7 +16,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 export function RoleBadge({ role }: { role: string }) {
   return (
-    <span className={`rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${ROLE_STYLES[role] || "bg-slate-100 text-slate-600"}`}>
+    <span className={`rounded-full px-2.5 py-1 text-[12.5px] font-semibold ${ROLE_STYLES[role] || "bg-slate-100 text-slate-600"}`}>
       {ROLE_LABELS[role] || role}
     </span>
   );
