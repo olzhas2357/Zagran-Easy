@@ -50,73 +50,74 @@ export default async function TeacherDashboardPage() {
         <h1 className="text-[24px] font-extrabold tracking-tight text-ze-ink sm:text-[28px]">
           Здравствуйте, {teacher.fullName || "учитель"}!
         </h1>
-        <p className="mt-1.5 text-[14.5px] text-ze-muted">Обзор вашего кабинета преподавателя.</p>
+        <p className="mt-1.5 text-[14.5px] text-ze-muted">Вот что у вас сегодня.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {STAT_CARDS.map((card) => {
-          const value = stats[card.key];
-          const colors = STAT_COLORS[card.color];
-          return (
-            <div
-              key={card.key}
-              className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(15,23,42,0.08)]"
-            >
-              <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${colors.bg}`}>
-                <card.Icon className={`h-5.5 w-5.5 ${colors.text}`} strokeWidth={1.75} />
+      {/* Hero: the next lesson is the single most important thing on the page */}
+      {nextLesson ? (
+        <div className="relative overflow-hidden rounded-[24px] bg-[#0F1B3D] p-6 text-white sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-[260px] w-[260px] rounded-full bg-white/6" />
+          <div className="pointer-events-none absolute -bottom-24 left-10 h-[220px] w-[220px] rounded-full bg-[#3D7BFF]/18 blur-[10px]" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[12.5px] font-semibold text-white/80">
+                <Video className="h-3.5 w-3.5" strokeWidth={2} />
+                Ближайший урок
               </div>
-              <div className="mt-3.5 text-[28px] font-extrabold leading-none tracking-tight text-ze-ink">
-                {value === null ? "—" : value}
-                {card.suffix && value !== null ? card.suffix : ""}
-              </div>
-              <div className="mt-1.5 text-[13.5px] text-ze-muted">{card.label}</div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div>
-        <h2 className="mb-3 text-[17px] font-bold text-ze-ink">Ближайший урок</h2>
-        {nextLesson ? (
-          <div className="flex flex-col gap-4 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div className="flex items-start gap-3.5">
-              <div className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-blue-50">
-                <Video className="h-5.5 w-5.5 text-blue-700" strokeWidth={1.75} />
-              </div>
-              <div>
-                <div className="text-[17px] font-bold text-ze-ink">{nextLesson.title}</div>
-                <div className="mt-1 text-[13.5px] text-ze-muted">
-                  {formatLessonTime(nextLesson.scheduledAt)} · {nextLesson.studentCount} учеников
-                </div>
+              <div className="mt-3 text-[22px] font-extrabold leading-tight sm:text-[26px]">{nextLesson.title}</div>
+              <div className="mt-1.5 text-[14px] text-white/65">
+                {formatLessonTime(nextLesson.scheduledAt)} · {nextLesson.studentCount} учеников
               </div>
             </div>
-            <div className="flex gap-2.5">
+            <div className="flex flex-none gap-2.5">
               {nextLesson.meetingUrl && (
                 <a
                   href={nextLesson.meetingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl bg-ze-primary px-4 py-2.5 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-primary-dark"
+                  className="rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F1B3D] shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-0.5"
                 >
                   Начать урок
                 </a>
               )}
               <Link
                 href={`/teacher/lessons/${nextLesson.id}`}
-                className="flex items-center gap-1.5 rounded-xl border border-ze-border px-4 py-2.5 text-[14px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
+                className="flex items-center gap-1.5 rounded-xl border border-white/20 px-4 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-white/10"
               >
                 <FileText className="h-4 w-4" strokeWidth={2} />
                 Материалы
               </Link>
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2 rounded-[20px] border border-dashed border-ze-border bg-white px-5 py-9 text-center">
-            <CalendarX2 className="h-7 w-7 text-ze-muted" strokeWidth={1.5} />
-            <div className="text-[14.5px] font-semibold text-ze-ink">Ближайших уроков нет</div>
-            <div className="text-[13px] text-ze-muted">Новые уроки появятся здесь, как только будут запланированы.</div>
-          </div>
-        )}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2 rounded-[24px] border border-dashed border-ze-border bg-white px-5 py-10 text-center">
+          <CalendarX2 className="h-7 w-7 text-ze-muted" strokeWidth={1.5} />
+          <div className="text-[14.5px] font-semibold text-ze-ink">Ближайших уроков нет</div>
+          <div className="text-[13px] text-ze-muted">Новые уроки появятся здесь, как только будут запланированы.</div>
+        </div>
+      )}
+
+      {/* Compact stat strip — secondary to the hero, not competing with it */}
+      <div className="grid grid-cols-2 divide-x divide-ze-border rounded-[20px] border border-ze-border bg-white sm:grid-cols-4">
+        {STAT_CARDS.map((card) => {
+          const value = stats[card.key];
+          const colors = STAT_COLORS[card.color];
+          return (
+            <div key={card.key} className="flex items-center gap-3 p-4 sm:p-5">
+              <div className={`flex h-9 w-9 flex-none items-center justify-center rounded-xl ${colors.bg}`}>
+                <card.Icon className={`h-4.5 w-4.5 ${colors.text}`} strokeWidth={1.75} />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[19px] font-extrabold leading-none tracking-tight text-ze-ink">
+                  {value === null ? "—" : value}
+                  {card.suffix && value !== null ? card.suffix : ""}
+                </div>
+                <div className="mt-1 truncate text-[12px] text-ze-muted">{card.label}</div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div>
