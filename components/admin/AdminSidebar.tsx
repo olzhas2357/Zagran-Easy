@@ -18,11 +18,11 @@ function SidebarContent({ fullName, onLogout, onNavigate }: { fullName: string |
 
   return (
     <div className="flex h-full w-[248px] flex-none flex-col bg-slate-900 p-4 text-white">
-      <div className="flex items-center gap-2.5 px-1.5 py-1">
+      <div className="flex flex-none items-center gap-2.5 px-1.5 py-1">
         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-[13px] font-extrabold">ZE</div>
         <div className="text-[13.5px] font-bold tracking-tight">Админ-панель</div>
       </div>
-      <nav className="mt-5 flex flex-col gap-1">
+      <nav className="mt-5 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {NAV.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           return (
@@ -40,7 +40,7 @@ function SidebarContent({ fullName, onLogout, onNavigate }: { fullName: string |
           );
         })}
       </nav>
-      <div className="mt-auto flex flex-col gap-2.5 border-t border-white/10 pt-4">
+      <div className="mt-auto flex flex-none flex-col gap-2.5 border-t border-white/10 pt-4">
         <div className="px-1 text-[13px] font-medium text-white/85">{fullName || "Админ"}</div>
         <button
           onClick={onLogout}

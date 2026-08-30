@@ -8,9 +8,9 @@ export default async function StaffLayout({ children }: LayoutProps<"/staff">) {
   if (profile.role !== "admin" && profile.role !== "manager") redirect("/staff/login");
 
   return (
-    <div className="flex flex-1 flex-col items-stretch bg-[#F7F9FC] md:flex-row">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-[#F7F9FC] md:flex-row">
       <StaffSidebar profile={profile} />
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</div>
     </div>
   );
 }

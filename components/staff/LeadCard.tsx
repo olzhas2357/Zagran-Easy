@@ -84,7 +84,7 @@ export function LeadCard({ lead }: { lead: Lead }) {
                 disabled={isPending || lead.status === s}
                 onClick={() => changeStatus(s)}
                 className={`rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition-colors ${
-                  lead.status === s ? "cursor-default bg-ze-navy text-white" : "border border-ze-border bg-white text-slate-600 hover:border-slate-300"
+                  lead.status === s ? "cursor-default bg-ze-primary text-white" : "border border-ze-border bg-white text-slate-600 hover:border-slate-300"
                 }`}
               >
                 {STATUS_LABEL[s]}
