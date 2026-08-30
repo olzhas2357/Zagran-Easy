@@ -7,22 +7,29 @@ export function LanguageHero() {
       <div className="relative mx-auto flex max-w-6xl flex-col-reverse items-center gap-10 px-4 py-12 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
         <div className="min-w-0 flex-1">
           <FadeIn>
-            <div className="text-[12.5px] font-semibold uppercase tracking-wide text-[#2880DE]">
-              Онлайн-языковые курсы
+            <div className="flex flex-wrap items-center gap-1.5">
+              {["HSK", "IELTS", "SAT"].map((exam) => (
+                <span
+                  key={exam}
+                  className="rounded-full border border-[#DDE4F5] bg-white px-3 py-1 text-[12.5px] font-bold text-[#2880DE]"
+                >
+                  {exam}
+                </span>
+              ))}
             </div>
             <h1 className="mt-4 text-[32px] font-extrabold leading-[1.08] tracking-tight text-balance text-[#0F1B3D] sm:text-[54px]">
-              Подготовьтесь к учёбе за рубежом с преподавателем, который поможет достичь результата
+              Подготовьтесь к HSK, IELTS или SAT с преподавателем, который поможет достичь результата
             </h1>
             <p className="mt-4 max-w-[540px] text-[15px] leading-relaxed text-slate-600 sm:text-[17.5px]">
-              Практические занятия, сильные преподаватели и программа, созданная для тех, кто хочет уверенно
-              говорить, учиться и поступать за рубеж.
+              Практические занятия, сильные преподаватели и программа, созданная для тех, кто готовится к
+              поступлению в университеты Китая, США и других стран.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a
-                href="#finder"
+                href="#paths"
                 className="rounded-2xl bg-[#2880DE] px-6 py-4 text-[16px] font-semibold text-white shadow-[0_10px_24px_rgba(50,85,173,0.28)] transition-colors hover:bg-[#2066B2]"
               >
-                Подобрать курс →
+                Выбрать направление →
               </a>
               <a
                 href="#teachers"

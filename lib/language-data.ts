@@ -88,6 +88,50 @@ export const LANGUAGE_GOALS: LanguageGoal[] = [
   { id: "study", label: "Учёба" },
   { id: "work", label: "Работа" },
   { id: "travel", label: "Путешествия" },
+  { id: "hsk", label: "HSK" },
+  { id: "sat", label: "SAT" },
+];
+
+export interface LanguagePath {
+  id: string;
+  exam: string;
+  country: string;
+  title: string;
+  description: string;
+  goalId: string;
+  hasCourse: boolean;
+}
+
+// Три направления подготовки. Курс/цена/преподаватель показываются только там,
+// где реально есть данные (IELTS) — для HSK и SAT ведём на заявку, а не выдумываем цифры.
+export const LANGUAGE_PATHS: LanguagePath[] = [
+  {
+    id: "hsk",
+    exam: "HSK",
+    country: "Китай",
+    title: "Китайский язык и HSK",
+    description: "Подготовка к экзамену HSK для поступления в университеты Китая.",
+    goalId: "hsk",
+    hasCourse: false,
+  },
+  {
+    id: "ielts",
+    exam: "IELTS",
+    country: "Международный",
+    title: "Английский язык и IELTS",
+    description: "Системная подготовка к IELTS с преподавателем-экспертом по всем четырём модулям.",
+    goalId: "ielts",
+    hasCourse: true,
+  },
+  {
+    id: "sat",
+    exam: "SAT",
+    country: "США",
+    title: "Подготовка к SAT",
+    description: "Математика, Reading и Writing для поступления в университеты США.",
+    goalId: "sat",
+    hasCourse: false,
+  },
 ];
 
 export interface LanguageTeacher {
@@ -253,7 +297,7 @@ export const LANGUAGE_FAQ: LanguageFaqItem[] = [
   {
     id: "faq-3",
     question: "Какие языки доступны?",
-    answer: "Сейчас основной фокус — английский язык, включая подготовку к IELTS и Academic English.",
+    answer: "Английский язык с подготовкой к IELTS, а также направления по китайскому (HSK) и подготовке к SAT — уточняйте формат и старт по вашему направлению.",
   },
   {
     id: "faq-4",
