@@ -17,6 +17,45 @@ export interface LanguageCourse {
   goals: string[];
 }
 
+export interface RealLanguageCourse {
+  id: string;
+  slug: string;
+  title: string;
+
+  exam_type: string;
+  level_from: string;
+  level_to: string;
+
+  description: string;
+
+  total_lessons: number;
+  total_tasks: number;
+  estimated_hours: number;
+
+  image_url: string | null;
+
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface CourseModule {
+  id: string;
+  course_id: string;
+  slug: string;
+  title: string;
+  icon: string;
+  sort_order: number;
+  lessons: CourseLesson[];
+}
+
+export interface CourseLesson {
+  id: string;
+  slug: string;
+  title: string;
+  sort_order: number;
+}
+
 export const LANGUAGE_COURSES: LanguageCourse[] = [
   {
     id: "general-english",
@@ -134,74 +173,14 @@ export const LANGUAGE_PATHS: LanguagePath[] = [
   },
 ];
 
+// Реальные преподаватели приходят с бэкенда — см. lib/data.ts (fetchPublicTeachers).
 export interface LanguageTeacher {
   id: string;
   name: string;
-  role: string;
   tags: string;
-  experience: string;
-  rating: string;
-  students: string;
   photo: string;
+  bio: string;
 }
-
-export const LANGUAGE_TEACHERS: LanguageTeacher[] = [
-  {
-    id: "teacher-1",
-    name: "Айгерим Сатова",
-    role: "English Teacher",
-    tags: "IELTS · Speaking · Academic English",
-    experience: "6+ лет опыта",
-    rating: "4.9 ★",
-    students: "180+ студентов",
-    photo:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "teacher-2",
-    name: "Данияр Ахметов",
-    role: "English Teacher",
-    tags: "General English · Speaking Club",
-    experience: "5+ лет опыта",
-    rating: "4.8 ★",
-    students: "150+ студентов",
-    photo:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "teacher-3",
-    name: "Мадина Ержанова",
-    role: "English Teacher",
-    tags: "IELTS · University Prep",
-    experience: "7+ лет опыта",
-    rating: "5.0 ★",
-    students: "220+ студентов",
-    photo:
-      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80&auto=format&fit=crop",
-  },
-  {
-    id: "teacher-4",
-    name: "Ержан Болатов",
-    role: "English Teacher",
-    tags: "Academic English · Business English",
-    experience: "4+ года опыта",
-    rating: "4.9 ★",
-    students: "110+ студентов",
-    photo:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80&auto=format&fit=crop",
-  },
-];
-
-export const TEACHER_HIGHLIGHT = {
-  name: "Мадина Ержанова",
-  quote:
-    "Помогаю студентам уверенно говорить на английском и подготовиться к обучению за рубежом.",
-  experience: "7+ лет опыта",
-  students: "220+ студентов",
-  score: "IELTS 8.5",
-  photo:
-    "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=900&q=80&auto=format&fit=crop",
-};
 
 export interface LanguageReview {
   id: string;

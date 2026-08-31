@@ -1,13 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, Star, BadgeCheck, Users, GraduationCap } from "lucide-react";
+import { X, BadgeCheck, User } from "lucide-react";
 import type { LanguageTeacher } from "@/lib/language-data";
-
-function parseRating(rating: string) {
-  const n = parseFloat(rating);
-  return Number.isFinite(n) ? n : null;
-}
 
 export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTeacher | null; onClose: () => void }) {
   useEffect(() => {
@@ -25,7 +20,6 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
 
   if (!teacher) return null;
 
-  const rating = parseRating(teacher.rating);
   const tags = teacher.tags.split("·").map((t) => t.trim()).filter(Boolean);
 
   return (
@@ -40,9 +34,15 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
           <X className="h-4.5 w-4.5" strokeWidth={2} />
         </button>
 
-        <div className="aspect-[16/10] w-full flex-none overflow-hidden sm:aspect-auto sm:w-[280px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={teacher.photo} alt={teacher.name} className="h-full w-full object-cover" />
+        <div className="aspect-[16/10] w-full flex-none overflow-hidden bg-[#1A2650] sm:aspect-auto sm:w-[280px]">
+          {teacher.photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={teacher.photo} alt={teacher.name} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <User className="h-14 w-14 text-white/30" strokeWidth={1.5} />
+            </div>
+          )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-8">
@@ -52,7 +52,6 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
           </div>
 
           <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-[#0F1B3D] sm:text-[28px]">{teacher.name}</h3>
-          <p className="mt-1 text-[14.5px] font-medium text-[#2880DE]">{teacher.role}</p>
 
           {tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
@@ -64,23 +63,7 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
             </div>
           )}
 
-          <div className="mt-6 grid grid-cols-3 gap-2.5">
-            <div className="rounded-2xl border border-[#E7ECF6] bg-[#F8FAFD] p-3.5 text-center">
-              <Star className="mx-auto h-4.5 w-4.5 text-amber-500" strokeWidth={2} fill="currentColor" />
-              <div className="mt-1.5 text-[16px] font-extrabold text-[#0F1B3D]">{rating ?? teacher.rating}</div>
-              <div className="text-[11.5px] text-slate-500">рейтинг</div>
-            </div>
-            <div className="rounded-2xl border border-[#E7ECF6] bg-[#F8FAFD] p-3.5 text-center">
-              <GraduationCap className="mx-auto h-4.5 w-4.5 text-[#2880DE]" strokeWidth={1.75} />
-              <div className="mt-1.5 text-[16px] font-extrabold text-[#0F1B3D]">{teacher.experience.replace(/\D+$/, "").trim() || teacher.experience}</div>
-              <div className="text-[11.5px] text-slate-500">опыт</div>
-            </div>
-            <div className="rounded-2xl border border-[#E7ECF6] bg-[#F8FAFD] p-3.5 text-center">
-              <Users className="mx-auto h-4.5 w-4.5 text-emerald-600" strokeWidth={1.75} />
-              <div className="mt-1.5 text-[16px] font-extrabold text-[#0F1B3D]">{teacher.students.replace(/\D+$/, "").trim() || teacher.students}</div>
-              <div className="text-[11.5px] text-slate-500">учеников</div>
-            </div>
-          </div>
+          {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-slate-600">{teacher.bio}</p>}
 
           <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:flex-row">
             <a

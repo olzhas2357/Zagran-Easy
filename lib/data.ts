@@ -10,6 +10,7 @@ import { apiGet } from "./api";
 import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions, faqItems } from "@/data/content";
 import { tours as staticTours, getTourBySlug } from "@/data/tours";
 import type { EducationCountry, University, Tour, WorkCountry, Property, Review } from "./types";
+import type { LanguageTeacher, RealLanguageCourse, CourseModule, CourseLesson } from "./language-data";
 
 // ===================== EDUCATION =====================
 // NestJS возвращает строки в snake_case — мапим их в camelCase-типы приложения.
@@ -111,6 +112,109 @@ export const fetchUniversityBySlug = cache(async (slug: string): Promise<Univers
   if (res.error || !res.data) return null;
   return mapUniversityRow(res.data);
 });
+
+// ===================== TEACHERS =====================
+// Публичный каталог преподавателей для лендинга /language (без авторизации).
+
+function mapPublicTeacherRow(row: Record<string, unknown>): LanguageTeacher {
+  const profile = (Array.isArray(row.profiles) ? row.profiles[0] : row.profiles) as Record<string, unknown> | undefined;
+  const specializations = (row.specializations as string[]) || [];
+  return {
+    id: row.id as string,
+    name: (profile?.full_name as string) || "Преподаватель ZagranEasy",
+    tags: specializations.join(" · "),
+    photo: (row.image_url as string) || "",
+    bio: (row.bio as string) || "",
+  };
+}
+
+export function mapPublicCourseRow(
+  row: Record<string, unknown>
+): RealLanguageCourse {
+  return {
+    id: String(row.id ?? ""),
+    slug: String(row.slug ?? ""),
+    title: String(row.title ?? ""),
+
+    exam_type: String(row.exam_type ?? ""),
+    level_from: String(row.level_from ?? ""),
+    level_to: String(row.level_to ?? ""),
+
+    description: String(row.description ?? ""),
+
+    total_lessons: Number(row.total_lessons ?? 0),
+    total_tasks: Number(row.total_tasks ?? 0),
+    estimated_hours: Number(row.estimated_hours ?? 0),
+
+    image_url: row.image_url
+      ? String(row.image_url)
+      : null,
+
+    is_active: Boolean(row.is_active),
+    sort_order: Number(row.sort_order ?? 0),
+    created_at: String(row.created_at ?? ""),
+  };
+}
+
+export const fetchPublicTeachers = cache(async (): Promise<LanguageTeacher[]> => {
+  const res = await apiGet<Record<string, unknown>[]>("/teachers/public");
+  if (res.error || !res.data) return [];
+  return res.data.map(mapPublicTeacherRow);
+});
+
+export const fetchPublicCourses = cache(
+  async (): Promise<RealLanguageCourse[]> => {
+    const res = await apiGet<Record<string, unknown>[]>("/courses");
+
+    if (res.error || !res.data) {
+      return [];
+    }
+
+    return res.data.map(mapPublicCourseRow);
+  }
+);
+
+
+export const getCourseModules = cache(
+  async (courseId: string): Promise<CourseModule[]> => {
+    const res = await apiGet<Record<string, unknown>[]>(
+      `/courses/${courseId}/sections`
+    );
+
+    if (res.error || !res.data) {
+      return [];
+    }
+
+    return res.data.map(mapCourseModuleRow).sort((a, b) => a.sort_order - b.sort_order);
+  }
+);
+
+function mapCourseLessonRow(row: Record<string, unknown>): CourseLesson {
+  return {
+    id: String(row.id ?? ""),
+    slug: String(row.slug ?? ""),
+    title: String(row.title ?? ""),
+    sort_order: Number(row.sort_order ?? 0),
+  };
+}
+
+export function mapCourseModuleRow(
+  row: Record<string, unknown>
+): CourseModule {
+  return {
+    id: String(row.id ?? ""),
+    course_id: String(row.course_id ?? ""),
+    slug: String(row.slug ?? ""),
+    title: String(row.title ?? ""),
+    icon: String(row.icon ?? ""),
+    sort_order: Number(row.sort_order ?? 0),
+    lessons: Array.isArray(row.lessons)
+      ? row.lessons.map((lesson) =>
+          mapCourseLessonRow(lesson as Record<string, unknown>)
+        )
+      : [],
+  };
+}
 
 // ===================== TOURS =====================
 // Пока не вынесены в NestJS — статический контент.

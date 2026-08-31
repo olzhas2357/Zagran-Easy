@@ -13,6 +13,7 @@ import { FinalCTA } from "@/components/language/FinalCTA";
 import { LanguageFaq } from "@/components/language/LanguageFaq";
 import { LanguageFooter } from "@/components/language/LanguageFooter";
 import { StickyMobileCTA } from "@/components/language/StickyMobileCTA";
+import { fetchPublicCourses, fetchPublicTeachers } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
@@ -25,7 +26,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LanguagePage() {
+export default async function LanguagePage() {
+  const teachers = await fetchPublicTeachers();
+  const courses = await fetchPublicCourses();
+
   return (
     <div className="bg-white pb-16 sm:pb-0">
       <LanguageHero />
@@ -33,8 +37,8 @@ export default function LanguagePage() {
       <LearningPaths />
       <Problems />
       <HowItWorks />
-      {/* <Teachers /> */}
-      {/* <Courses /> */}
+      <Teachers teachers={teachers} />
+      <Courses courses={courses}/>
       <Results />
       <Reviews />
       <Pricing />
