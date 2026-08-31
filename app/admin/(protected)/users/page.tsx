@@ -26,6 +26,12 @@ const ROLE_FILTERS = [
 
 const LIMIT = 20;
 
+function initials(name: string | null) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+}
+
 export default function AdminUsersPage() {
   const { token } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
@@ -57,9 +63,22 @@ export default function AdminUsersPage() {
   });
 
   const columns: Column<UserRow>[] = [
-    { key: "full_name", title: "Имя", render: (row) => row.full_name || "Без имени" },
+    {
+      key: "full_name",
+      title: "Пользователь",
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-blue-50 text-[12px] font-bold text-blue-700">
+            {initials(row.full_name)}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-slate-900">{row.full_name || "Без имени"}</div>
+            <div className="truncate text-[12.5px] text-slate-400">{row.phone || "Телефон не указан"}</div>
+          </div>
+        </div>
+      ),
+    },
     { key: "role", title: "Роль", render: (row) => <RoleBadge role={row.role} /> },
-    { key: "phone", title: "Телефон", render: (row) => row.phone || "—" },
     {
       key: "created_at",
       title: "Создан",

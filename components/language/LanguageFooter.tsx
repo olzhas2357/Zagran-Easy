@@ -6,10 +6,10 @@ const COLUMNS = [
   {
     title: "Обучение",
     links: [
-      { label: "Курсы", href: "#courses" },
+      { label: "Курсы", href: "#finder" },
       { label: "Преподаватели", href: "#teachers" },
-      { label: "IELTS", href: "#courses" },
-      { label: "Speaking Club", href: "#courses" },
+      { label: "IELTS", href: "#finder" },
+      { label: "Speaking Club", href: "#finder" },
     ],
   },
   {

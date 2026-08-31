@@ -29,6 +29,19 @@ const STATUS_LABELS: Record<string, string> = {
 
 const LIMIT = 20;
 
+function initials(name: string | null) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+}
+
+const SOURCE_LABELS: Record<string, string> = {
+  quiz: "Квиз",
+  form: "Форма",
+  whatsapp: "WhatsApp",
+  calculator: "Калькулятор",
+};
+
 export default function AdminLeadsPage() {
   const { token } = useAuth();
   const [leads, setLeads] = useState<LeadRow[]>([]);
@@ -52,9 +65,31 @@ export default function AdminLeadsPage() {
   }, [token, page]);
 
   const columns: Column<LeadRow>[] = [
-    { key: "name", title: "Имя", render: (row) => row.name || "Без имени" },
-    { key: "service", title: "Услуга" },
-    { key: "source", title: "Источник" },
+    {
+      key: "name",
+      title: "Заявка",
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-violet-50 text-[12px] font-bold text-violet-700">
+            {initials(row.name)}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-slate-900">{row.name || "Без имени"}</div>
+            <div className="truncate text-[12.5px] text-slate-400">{row.phone || "Телефон не указан"}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "service",
+      title: "Услуга",
+      render: (row) => (
+        <div>
+          <div className="font-medium text-slate-800">{row.service}</div>
+          <div className="text-[12.5px] text-slate-400">{SOURCE_LABELS[row.source] || row.source}</div>
+        </div>
+      ),
+    },
     {
       key: "status",
       title: "Статус",

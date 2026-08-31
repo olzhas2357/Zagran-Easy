@@ -63,24 +63,20 @@ export function UniversitiesBoard({
       </div>
 
       <div className="mt-4 overflow-hidden rounded-[20px] border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-        <div className="overflow-x-auto">
-          <div className="min-w-[880px]">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr_190px] gap-3 border-b border-[#EEF1F6] bg-slate-50 px-4.5 py-3.5 text-[12px] font-bold uppercase tracking-wide text-ze-muted">
-              <div>Университет</div>
-              <div>Цена / год</div>
-              <div>Дедлайн</div>
-              <div>Презентация</div>
-              <div>Проверено</div>
-              <div />
-            </div>
-            {filtered.length === 0 && (
-              <div className="px-4.5 py-12 text-center text-[14px] text-ze-muted">Ничего не найдено — попробуйте другой запрос.</div>
-            )}
-            {filtered.map((u) => (
-              <UniversityRow key={u.id} university={u} />
-            ))}
-          </div>
+        <div className="hidden border-b border-[#EEF1F6] bg-slate-50 px-4.5 py-3.5 text-[12px] font-bold uppercase tracking-wide text-ze-muted sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_1.2fr_190px] sm:gap-3">
+          <div>Университет</div>
+          <div>Цена / год</div>
+          <div>Дедлайн</div>
+          <div>Презентация</div>
+          <div>Проверено</div>
+          <div />
         </div>
+        {filtered.length === 0 && (
+          <div className="px-4.5 py-12 text-center text-[14px] text-ze-muted">Ничего не найдено — попробуйте другой запрос.</div>
+        )}
+        {filtered.map((u) => (
+          <UniversityRow key={u.id} university={u} />
+        ))}
       </div>
 
       <div className="mt-2.5 text-[12.5px] text-ze-muted">

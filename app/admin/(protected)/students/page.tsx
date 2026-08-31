@@ -14,6 +14,12 @@ interface StudentRow {
   profiles?: { full_name: string | null; role: string };
 }
 
+function initials(name: string | null | undefined) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+}
+
 const LIMIT = 20;
 
 export default function AdminStudentsPage() {
@@ -39,14 +45,43 @@ export default function AdminStudentsPage() {
   }, [token, page]);
 
   const columns: Column<StudentRow>[] = [
-    { key: "full_name", title: "Имя", render: (row) => row.profiles?.full_name || "Без имени" },
-    { key: "current_exam", title: "Экзамен", render: (row) => (row.current_exam ? row.current_exam.toUpperCase() : "—") },
+    {
+      key: "full_name",
+      title: "Студент",
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-emerald-50 text-[12px] font-bold text-emerald-700">
+            {initials(row.profiles?.full_name)}
+          </div>
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-slate-900">{row.profiles?.full_name || "Без имени"}</div>
+            <div className="truncate text-[12.5px] text-slate-400">{row.current_exam ? row.current_exam.toUpperCase() : "Экзамен не выбран"}</div>
+          </div>
+        </div>
+      ),
+    },
     {
       key: "level",
       title: "Уровень",
-      render: (row) => (row.current_level && row.target_level ? `${row.current_level} → ${row.target_level}` : "—"),
+      render: (row) =>
+        row.current_level && row.target_level ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[12.5px] font-semibold text-slate-700">
+            {row.current_level} <span className="text-slate-400">→</span> {row.target_level}
+          </span>
+        ) : (
+          <span className="text-slate-400">—</span>
+        ),
     },
-    { key: "target_country", title: "Страна", render: (row) => row.target_country || "—" },
+    {
+      key: "target_country",
+      title: "Страна",
+      render: (row) =>
+        row.target_country ? (
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[12.5px] font-semibold text-blue-700">{row.target_country}</span>
+        ) : (
+          <span className="text-slate-400">—</span>
+        ),
+    },
   ];
 
   return (

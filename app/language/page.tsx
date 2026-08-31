@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { LanguageHeader } from "@/components/language/LanguageHeader";
 import { LanguageHero } from "@/components/language/LanguageHero";
 import { TrustBar } from "@/components/language/TrustBar";
+import { LearningPaths } from "@/components/language/LearningPaths";
 import { Problems } from "@/components/language/Problems";
-import { Courses } from "@/components/language/Courses";
-import { CourseFinder } from "@/components/language/CourseFinder";
-import { Teachers } from "@/components/language/Teachers";
-import { TeacherHighlight } from "@/components/language/TeacherHighlight";
 import { HowItWorks } from "@/components/language/HowItWorks";
-import { Benefits } from "@/components/language/Benefits";
+import { Teachers } from "@/components/language/Teachers";
+import { Courses } from "@/components/language/Courses";
 import { Results } from "@/components/language/Results";
 import { Reviews } from "@/components/language/Reviews";
 import { Pricing } from "@/components/language/Pricing";
@@ -18,12 +15,12 @@ import { LanguageFooter } from "@/components/language/LanguageFooter";
 import { StickyMobileCTA } from "@/components/language/StickyMobileCTA";
 
 export const metadata: Metadata = {
-  title: "Языковые курсы — ZagranEasy",
+  title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
   description:
-    "Онлайн-курсы английского языка: General English, IELTS Preparation, English for University, Speaking Club. Сильные преподаватели, практика и результат.",
+    "Онлайн-подготовка к HSK, IELTS и SAT с преподавателем. Курсы английского языка, сильные преподаватели, практика и результат для поступления за рубеж.",
   openGraph: {
-    title: "Языковые курсы — ZagranEasy",
-    description: "Онлайн-курсы английского языка с преподавателем. Подготовка к IELTS и обучению за рубежом.",
+    title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
+    description: "Онлайн-подготовка к HSK, IELTS и SAT с преподавателем. Поступление в Китай, США и другие страны.",
     url: "https://zagraneasy.kz/language",
   },
 };
@@ -31,16 +28,13 @@ export const metadata: Metadata = {
 export default function LanguagePage() {
   return (
     <div className="bg-white pb-16 sm:pb-0">
-      {/* <LanguageHeader /> */}
       <LanguageHero />
       <TrustBar />
+      <LearningPaths />
       <Problems />
-      <Courses />
-      <CourseFinder />
-      <Teachers />
-      <TeacherHighlight />
       <HowItWorks />
-      <Benefits />
+      <Teachers />
+      <Courses />
       <Results />
       <Reviews />
       <Pricing />
