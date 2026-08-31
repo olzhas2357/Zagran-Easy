@@ -33,8 +33,8 @@ export default function LanguagePage() {
       <LearningPaths />
       <Problems />
       <HowItWorks />
-      <Teachers />
-      <Courses />
+      {/* <Teachers /> */}
+      {/* <Courses /> */}
       <Results />
       <Reviews />
       <Pricing />

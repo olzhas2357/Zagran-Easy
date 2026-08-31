@@ -22,7 +22,7 @@ export function LanguageHero() {
             </h1>
             <p className="mt-4 max-w-[540px] text-[15px] leading-relaxed text-slate-600 sm:text-[17.5px]">
               Практические занятия, сильные преподаватели и программа, созданная для тех, кто готовится к
-              поступлению в университеты Китая, США и других стран.
+              поступлению в университеты Китая, Турция и других стран.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a
@@ -49,7 +49,7 @@ export function LanguageHero() {
             <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[28px] border border-[#E7ECF6] shadow-[0_24px_60px_rgba(15,27,61,0.12)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=80&auto=format&fit=crop"
+                src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto:eco,f_auto/v1776028170/a4te_opwrjk.png"
                 alt="Преподаватель ZagranEasy на онлайн-занятии"
                 className="h-full w-full object-cover"
               />
