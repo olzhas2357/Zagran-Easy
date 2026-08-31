@@ -8,7 +8,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiPatch, apiPost } from "./api";
-import { getToken } from "./session";
+import { getToken } from "./session-data";
 import { getLeadActivities } from "./staff-data";
 import type { Lead, UniversityProgram, AdmissionStory } from "./types";
 

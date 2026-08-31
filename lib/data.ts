@@ -5,8 +5,9 @@
 // не вынесен в отдельный бэкенд-модуль, читается из локальных данных.
 // ============================================================
 
+import { cache } from "react";
 import { apiGet } from "./api";
-import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions } from "@/data/content";
+import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions, faqItems } from "@/data/content";
 import { tours as staticTours, getTourBySlug } from "@/data/tours";
 import type { EducationCountry, University, Tour, WorkCountry, Property, Review } from "./types";
 
@@ -78,36 +79,38 @@ function mapUniversityRow(row: Record<string, unknown>): University {
   };
 }
 
-export async function fetchEducationCountries(): Promise<EducationCountry[]> {
+// cache() дедуплицирует вызовы с одинаковыми аргументами в рамках одного
+// рендера (например layout + page на одну и ту же страницу).
+export const fetchEducationCountries = cache(async (): Promise<EducationCountry[]> => {
   const res = await apiGet<Record<string, unknown>[]>("/countries");
   if (res.error || !res.data) return [];
   return res.data.filter((c) => c.is_active).map(mapCountryRow).sort((a, b) => a.sortOrder - b.sortOrder);
-}
+});
 
 export async function fetchEducationCountry(slug: string): Promise<EducationCountry | null> {
   const countries = await fetchEducationCountries();
   return countries.find((c) => c.slug === slug) || null;
 }
 
-export async function fetchUniversities(country: { id: string; slug: string }): Promise<University[]> {
+export const fetchUniversities = cache(async (country: { id: string; slug: string }): Promise<University[]> => {
   const res = await apiGet<Record<string, unknown>[]>(`/universities?country=${country.id}&limit=100`);
   if (res.error || !res.data) return [];
   return res.data.map(mapUniversityRow).sort((a, b) => a.sortOrder - b.sortOrder);
-}
+});
 
 // Плоский каталог вузов по всем странам — для /education (поиск + фильтры) и /education/compare.
-export async function fetchAllUniversities(): Promise<University[]> {
+export const fetchAllUniversities = cache(async (): Promise<University[]> => {
   const res = await apiGet<Record<string, unknown>[]>("/universities?limit=100");
   if (res.error || !res.data) return [];
   return res.data.map(mapUniversityRow);
-}
+});
 
 // Один вуз по глобальному slug (не привязан к стране в URL) — для /education/[slug].
-export async function fetchUniversityBySlug(slug: string): Promise<University | null> {
+export const fetchUniversityBySlug = cache(async (slug: string): Promise<University | null> => {
   const res = await apiGet<Record<string, unknown>>(`/universities/${slug}`);
   if (res.error || !res.data) return null;
   return mapUniversityRow(res.data);
-}
+});
 
 // ===================== TOURS =====================
 // Пока не вынесены в NestJS — статический контент.
@@ -150,4 +153,8 @@ export function getVisaServices() {
 
 export function getRealEstateRegions() {
   return realEstateRegions;
+}
+
+export function getFaqItems() {
+  return faqItems;
 }

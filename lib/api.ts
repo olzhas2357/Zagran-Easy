@@ -14,6 +14,8 @@ interface ApiOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
+  /** Секунд до ревалидации Next Data Cache. Игнорируется для мутаций и авторизованных запросов (всегда no-store — иначе Data Cache отдаст чужой ответ по тому же URL другому пользователю). */
+  revalidate?: number;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -40,10 +42,16 @@ function isPaginated(payload: unknown): payload is { data: unknown[]; total: num
 }
 
 export async function api<T = unknown>(path: string, options: ApiOptions = {}): Promise<ApiResponse<T>> {
-  const { method = "GET", body, token } = options;
+  const { method = "GET", body, token, revalidate } = options;
 
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  // Авторизованные запросы и мутации — всегда no-store (Data Cache не учитывает
+  // заголовок Authorization, кеш по URL мог бы отдать чужие данные). Публичный
+  // каталог (без токена, GET) кешируется и ревалидируется в фоне.
+  const cacheInit: RequestInit =
+    token || method !== "GET" ? { cache: "no-store" } : { next: { revalidate: revalidate ?? 300 } };
 
   let res: Response;
   try {
@@ -51,7 +59,7 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
       method,
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
-      cache: "no-store",
+      ...cacheInit,
     });
   } catch {
     return { data: null as T, error: "Нет подключения к серверу" };

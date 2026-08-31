@@ -7,7 +7,7 @@
 
 import { revalidatePath } from "next/cache";
 import { apiPatch, apiPost } from "./api";
-import { getSessionUser, getToken } from "./session";
+import { getSessionUser, getToken } from "./session-data";
 
 export interface NewLessonInput {
   title: string;

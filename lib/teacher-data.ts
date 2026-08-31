@@ -3,8 +3,9 @@
 // от имени залогиненного учителя (роль teacher).
 // ============================================================
 
+import { cache } from "react";
 import { apiGet } from "./api";
-import { getSessionUser, getToken } from "./session";
+import { getSessionUser, getToken } from "./session-data";
 import type { TeacherProfile } from "./types";
 
 function unwrapProfile(row: Record<string, unknown>): Record<string, unknown> | undefined {
@@ -26,14 +27,14 @@ function mapTeacherRow(row: Record<string, unknown>): TeacherProfile {
 }
 
 // Профиль текущего учителя — источник правды для роли "учитель".
-export async function getCurrentTeacher(): Promise<TeacherProfile | null> {
+export const getCurrentTeacher = cache(async (): Promise<TeacherProfile | null> => {
   const user = await getSessionUser();
   if (!user || user.profile.role !== "teacher") return null;
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>>(`/teachers/${user.profile.id}`, token);
   if (res.error || !res.data) return null;
   return mapTeacherRow(res.data);
-}
+});
 
 export interface DashboardStats {
   studentsCount: number;

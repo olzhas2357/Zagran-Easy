@@ -1,14 +1,15 @@
 "use server";
 
 // ============================================================
-// ZagranEasy — серверная сессия для /staff, /teacher, /account.
+// ZagranEasy — server actions логина/логаута для /staff, /teacher, /account.
 // Токен NestJS (/auth/login) хранится в httpOnly-cookie, а не в
-// localStorage (в отличие от /admin), т.к. эти страницы — server
-// components и читают данные на сервере при каждом запросе.
+// localStorage (в отличие от /admin). Импортируется клиентскими компонентами
+// (LoginForm, SignOutButton) — держите этот файл свободным от next/headers
+// импортов вне action-функций и от неэкшн-экспортов (см. lib/session-data.ts).
 // ============================================================
 
 import { cookies } from "next/headers";
-import { api, apiGet } from "./api";
+import { api } from "./api";
 
 const COOKIE_NAME = "ze_session";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 дней
@@ -24,19 +25,6 @@ export interface SessionUser {
   id: string;
   email?: string;
   profile: SessionProfile;
-}
-
-export async function getToken(): Promise<string | null> {
-  const store = await cookies();
-  return store.get(COOKIE_NAME)?.value ?? null;
-}
-
-export async function getSessionUser(): Promise<SessionUser | null> {
-  const token = await getToken();
-  if (!token) return null;
-  const res = await apiGet<SessionUser>("/auth/me", token);
-  if (res.error || !res.data) return null;
-  return res.data;
 }
 
 export async function loginAction(email: string, password: string): Promise<{ error?: string; role?: string }> {

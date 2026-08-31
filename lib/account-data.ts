@@ -4,7 +4,7 @@
 // ============================================================
 
 import { apiGet } from "./api";
-import { getSessionUser, getToken } from "./session";
+import { getSessionUser, getToken } from "./session-data";
 import type { Application } from "./types";
 
 function mapApplicationRow(row: Record<string, unknown>): Application {

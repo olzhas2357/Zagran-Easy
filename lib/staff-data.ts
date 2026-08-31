@@ -3,8 +3,9 @@
 // от имени залогиненного сотрудника (роль admin/manager).
 // ============================================================
 
+import { cache } from "react";
 import { apiGet } from "./api";
-import { getSessionUser, getToken } from "./session";
+import { getSessionUser, getToken } from "./session-data";
 import type { Profile, Lead, LeadActivity, University } from "./types";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -45,11 +46,11 @@ function mapActivityRow(row: Record<string, unknown>): LeadActivity {
 
 // Профиль текущего сотрудника — источник правды для роли (admin/manager).
 // Возвращает null и для гостя, и для пользователя без нужной роли.
-export async function getCurrentProfile(): Promise<Profile | null> {
+export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
   const user = await getSessionUser();
   if (!user) return null;
   return mapProfileRow(user.profile as unknown as Record<string, unknown>);
-}
+});
 
 function mapAdminUniversityRow(row: Record<string, unknown>): University {
   return {

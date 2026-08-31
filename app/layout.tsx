@@ -21,8 +21,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ru" className={`${inter.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans text-ze-ink">
+    <html lang="ru" suppressHydrationWarning>
+      <body suppressHydrationWarning className="flex min-h-full flex-col font-sans text-ze-ink">
         <AppShell>{children}</AppShell>
       </body>
     </html>
