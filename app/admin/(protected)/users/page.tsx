@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet } from "@/lib/api";
@@ -33,6 +34,7 @@ function initials(name: string | null) {
 }
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const { token } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -132,6 +134,7 @@ export default function AdminUsersPage() {
         page={page}
         limit={LIMIT}
         onPageChange={setPage}
+        onRowClick={(row) => router.push(`/admin/users/${row.id}/edit`)}
         loading={loading}
         getRowId={(row) => row.id}
       />

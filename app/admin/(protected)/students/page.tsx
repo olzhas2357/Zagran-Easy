@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet } from "@/lib/api";
 import { DataTable, type Column } from "@/components/admin/DataTable";
@@ -23,6 +24,7 @@ function initials(name: string | null | undefined) {
 const LIMIT = 20;
 
 export default function AdminStudentsPage() {
+  const router = useRouter();
   const { token } = useAuth();
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -98,6 +100,7 @@ export default function AdminStudentsPage() {
         page={page}
         limit={LIMIT}
         onPageChange={setPage}
+        onRowClick={(row) => router.push(`/admin/users/${row.id}/edit`)}
         loading={loading}
         getRowId={(row) => row.id}
       />

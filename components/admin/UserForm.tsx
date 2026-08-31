@@ -3,10 +3,11 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { apiGet, apiPost } from "@/lib/api";
+import { apiGet, apiPatch, apiPost } from "@/lib/api";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-[14px] text-slate-900 outline-none transition-colors focus:border-blue-600";
+const inputDisabledClass = `${inputClass} cursor-not-allowed bg-slate-50 text-slate-400`;
 const textareaClass = `${inputClass} resize-none`;
 
 type Role = "admin" | "manager" | "teacher" | "student" | "parent";
@@ -18,6 +19,8 @@ const ROLES: { value: Role; label: string }[] = [
   { value: "manager", label: "Менеджер" },
   { value: "admin", label: "Админ" },
 ];
+
+const ROLE_LABELS: Record<Role, string> = Object.fromEntries(ROLES.map((r) => [r.value, r.label])) as Record<Role, string>;
 
 const EXAM_TYPES = ["ielts", "hsk", "sat"];
 
@@ -39,11 +42,18 @@ interface TeacherOption {
   profiles?: { full_name: string | null };
 }
 
-export function UserForm() {
+interface UserFormProps {
+  mode?: "create" | "edit";
+  userId?: string;
+}
+
+export function UserForm({ mode = "create", userId }: UserFormProps) {
   const router = useRouter();
   const { token } = useAuth();
+  const isEdit = mode === "edit" && !!userId;
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(isEdit);
 
   const [role, setRole] = useState<Role>("student");
   const [fullName, setFullName] = useState("");
@@ -66,15 +76,119 @@ export function UserForm() {
     apiGet<TeacherOption[]>("/teachers?limit=100", token).then((res) => setTeachers(res.data || []));
   }, [role, token]);
 
+  useEffect(() => {
+    if (!isEdit || !token || !userId) return;
+    let cancelled = false;
+
+    (async () => {
+      const userRes = await apiGet<{
+        id: string;
+        full_name: string | null;
+        role: Role;
+        phone: string | null;
+      }>(`/users/${userId}`, token);
+      if (cancelled) return;
+
+      if (userRes.error || !userRes.data) {
+        setError(userRes.error || "Не удалось загрузить пользователя");
+        setLoading(false);
+        return;
+      }
+
+      const u = userRes.data;
+      setRole(u.role);
+      setFullName(u.full_name || "");
+      setPhone(u.phone || "");
+
+      if (u.role === "teacher") {
+        const teacherRes = await apiGet<{ specializations: string[] | null; bio: string | null }>(`/teachers/${userId}`, token);
+        if (!cancelled && teacherRes.data) {
+          setSpecializations((teacherRes.data.specializations || []).join(", "));
+          setBio(teacherRes.data.bio || "");
+        }
+      }
+
+      if (u.role === "student") {
+        const studentRes = await apiGet<{
+          current_exam: string | null;
+          current_level: string | null;
+          target_level: string | null;
+          target_country: string | null;
+          teacher_id?: string | null;
+          teachers?: { teacher_id: string }[];
+        }>(`/students/${userId}`, token);
+        if (!cancelled && studentRes.data) {
+          const s = studentRes.data;
+          setExamType(s.current_exam || "ielts");
+          setCurrentLevel(s.current_level || "");
+          setTargetLevel(s.target_level || "");
+          setTargetCountry(s.target_country || "");
+          setTeacherId(s.teacher_id || s.teachers?.[0]?.teacher_id || "");
+        }
+      }
+
+      if (!cancelled) setLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isEdit, token, userId]);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
     if (!fullName.trim()) return setError("Укажите имя");
-    if (!email.trim()) return setError("Укажите email");
-    if (password.length < 6) return setError("Пароль минимум 6 символов");
+    if (!isEdit && !email.trim()) return setError("Укажите email");
+    if (!isEdit && password.length < 6) return setError("Пароль минимум 6 символов");
 
     startTransition(async () => {
+      if (isEdit && userId) {
+        const userRes = await apiPatch(
+          `/users/${userId}`,
+          { full_name: fullName.trim(), phone: phone.trim() || undefined },
+          token
+        );
+        if (userRes.error) {
+          setError(userRes.error);
+          return;
+        }
+
+        if (role === "student") {
+          const studentRes = await apiPatch(
+            `/students/${userId}`,
+            {
+              teacher_id: teacherId || null,
+              current_exam: examType || undefined,
+              current_level: currentLevel.trim() || undefined,
+              target_level: targetLevel.trim() || undefined,
+              target_country: targetCountry.trim() || undefined,
+            },
+            token
+          );
+          if (studentRes.error) {
+            setError(`Профиль пользователя обновлён, но не удалось сохранить данные студента: ${studentRes.error}`);
+            return;
+          }
+        }
+
+        if (role === "teacher") {
+          const specs = specializations
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const teacherRes = await apiPatch(`/teachers/${userId}`, { specializations: specs, bio: bio.trim() || undefined }, token);
+          if (teacherRes.error) {
+            setError(`Профиль пользователя обновлён, но не удалось сохранить данные учителя: ${teacherRes.error}`);
+            return;
+          }
+        }
+
+        router.push("/admin/users");
+        return;
+      }
+
       const userRes = await apiPost<{ id: string }>(
         "/users",
         { email: email.trim(), password, full_name: fullName.trim(), role, phone: phone.trim() || undefined },
@@ -85,13 +199,13 @@ export function UserForm() {
         return;
       }
 
-      const userId = userRes.data.id;
+      const newUserId = userRes.data.id;
 
       if (role === "student") {
         const studentRes = await apiPost(
           "/students",
           {
-            user_id: userId,
+            user_id: newUserId,
             teacher_id: teacherId || undefined,
             current_exam: examType || undefined,
             current_level: currentLevel.trim() || undefined,
@@ -111,7 +225,7 @@ export function UserForm() {
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean);
-        const teacherRes = await apiPost("/teachers", { user_id: userId, specializations: specs, bio: bio.trim() || undefined }, token);
+        const teacherRes = await apiPost("/teachers", { user_id: newUserId, specializations: specs, bio: bio.trim() || undefined }, token);
         if (teacherRes.error) {
           setError(`Пользователь создан, но не удалось сохранить данные учителя: ${teacherRes.error}`);
           return;
@@ -122,42 +236,58 @@ export function UserForm() {
     });
   }
 
+  if (loading) {
+    return <div className="mt-6 text-[14px] text-slate-400">Загрузка…</div>;
+  }
+
   return (
     <form onSubmit={handleSubmit} className="mt-6 flex max-w-xl flex-col gap-4">
       <Field label="Роль">
-        <select value={role} onChange={(e) => setRole(e.target.value as Role)} className={inputClass}>
-          {ROLES.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
-          ))}
-        </select>
+        {isEdit ? (
+          <input value={ROLE_LABELS[role] || role} disabled className={inputDisabledClass} />
+        ) : (
+          <select value={role} onChange={(e) => setRole(e.target.value as Role)} className={inputClass}>
+            {ROLES.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        )}
       </Field>
 
       <Field label="Имя">
         <input value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} />
       </Field>
 
-      <Field label="Email">
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
-      </Field>
+      {isEdit ? (
+        <div className="rounded-xl bg-slate-50 px-3.5 py-3 text-[13px] leading-relaxed text-slate-500">
+          Email нельзя изменить из этой формы.
+        </div>
+      ) : (
+        <Field label="Email">
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
+        </Field>
+      )}
 
       <Field label="Телефон">
         <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 ___ ___ ____" className={inputClass} />
       </Field>
 
-      <Field label="Пароль">
-        <div className="flex gap-2">
-          <input value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} />
-          <button
-            type="button"
-            onClick={() => setPassword(randomPassword())}
-            className="whitespace-nowrap rounded-xl border border-slate-200 px-3.5 py-3 text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
-          >
-            Сгенерировать
-          </button>
-        </div>
-      </Field>
+      {!isEdit && (
+        <Field label="Пароль">
+          <div className="flex gap-2">
+            <input value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} />
+            <button
+              type="button"
+              onClick={() => setPassword(randomPassword())}
+              className="whitespace-nowrap rounded-xl border border-slate-200 px-3.5 py-3 text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+            >
+              Сгенерировать
+            </button>
+          </div>
+        </Field>
+      )}
 
       {role === "student" && (
         <>
@@ -218,7 +348,7 @@ export function UserForm() {
         disabled={isPending}
         className="w-fit rounded-xl bg-blue-600 px-6 py-3 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(37,99,235,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 disabled:translate-y-0 disabled:opacity-60"
       >
-        {isPending ? "Создаём…" : "Создать пользователя"}
+        {isPending ? "Сохраняем…" : isEdit ? "Сохранить изменения" : "Создать пользователя"}
       </button>
     </form>
   );

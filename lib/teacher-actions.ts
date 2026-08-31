@@ -101,6 +101,7 @@ export async function reviewAssignment(input: ReviewInput): Promise<{ success: b
 export interface TeacherProfileInput {
   bio: string;
   specializations: string[];
+  imageUrl?: string;
 }
 
 export async function updateTeacherProfile(input: TeacherProfileInput): Promise<{ success: boolean; error?: string }> {
@@ -110,11 +111,44 @@ export async function updateTeacherProfile(input: TeacherProfileInput): Promise<
   const token = await getToken();
   const res = await apiPatch(
     `/teachers/${user.profile.id}`,
-    { bio: input.bio.trim() || undefined, specializations: input.specializations },
+    {
+      bio: input.bio.trim() || undefined,
+      specializations: input.specializations,
+      image_url: input.imageUrl?.trim() || undefined,
+    },
     token
   );
   if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/teacher/profile");
   return { success: true };
+}
+
+export async function uploadTeacherAvatar(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Файл не выбран" };
+
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+
+  const upload = new FormData();
+  upload.set("file", file);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const res = await fetch(`${API_URL}/uploads?bucket=teacher-avatars`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: upload,
+    });
+    const json = await res.json();
+    if (!res.ok || json.success === false) {
+      return { success: false, error: json.message || "Ошибка загрузки файла" };
+    }
+    return { success: true, url: json.data.url };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
 }

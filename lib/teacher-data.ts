@@ -23,6 +23,7 @@ function mapTeacherRow(row: Record<string, unknown>): TeacherProfile {
     bio: (row.bio as string) ?? null,
     maxStudents: (row.max_students as number) ?? null,
     hourlyRate: (row.hourly_rate as number) ?? null,
+    imageUrl: (row.image_url as string) ?? null,
   };
 }
 
@@ -164,9 +165,7 @@ export async function getStudentById(teacherId: string, studentId: string): Prom
   if (res.error || !res.data) return null;
 
   const row = res.data;
-  const teachers = (row.teachers as Record<string, unknown>[]) || [];
-  const isMyStudent = teachers.some((t) => t.teacher_id === teacherId);
-  if (!isMyStudent) return null;
+  if (row.teacher_id !== teacherId) return null;
 
   const profile = unwrapProfile(row);
   const goalsList = ((Array.isArray(row.goals) ? row.goals : row.goals ? [row.goals] : []) as Record<string, unknown>[]);

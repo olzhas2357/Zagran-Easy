@@ -155,6 +155,7 @@ export interface TeacherProfile {
   bio: string | null;
   maxStudents: number | null;
   hourlyRate: number | null;
+  imageUrl: string | null;
 }
 
 export interface ApplicationStep {

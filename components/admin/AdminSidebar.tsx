@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 const NAV = [
   { href: "/admin", label: "Главная", Icon: LayoutGrid },
   { href: "/admin/users", label: "Пользователи", Icon: Users },
+  { href: "/admin/teachers", label: "Учителя", Icon: GraduationCap },
   { href: "/admin/students", label: "Студенты", Icon: GraduationCap },
   { href: "/admin/leads", label: "Заявки", Icon: ClipboardList },
 ];
