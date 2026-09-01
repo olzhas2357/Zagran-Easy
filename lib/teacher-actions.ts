@@ -9,6 +9,16 @@ import { revalidatePath } from "next/cache";
 import { apiPatch, apiPost } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 
+export interface UpdateLessonInput {
+  title: string;
+  description: string;
+  scheduledAt: string; // ISO
+  durationMinutes: number;
+  meetingUrl: string;
+  materials: { name: string; url: string }[];
+  homeworkTaskIds: string[];
+}
+
 export interface NewLessonInput {
   title: string;
   description: string;
@@ -74,6 +84,122 @@ export async function uploadLessonMaterial(
   } catch {
     return { success: false, error: "Нет подключения к серверу" };
   }
+}
+
+export async function updateLesson(
+  lessonId: string,
+  input: UpdateLessonInput
+): Promise<{ success: boolean; error?: string }> {
+  if (!input.title.trim()) return { success: false, error: "Укажите название урока" };
+  if (!input.scheduledAt) return { success: false, error: "Укажите дату и время урока" };
+
+  const token = await getToken();
+  const res = await apiPatch(
+    `/scheduled-lessons/${lessonId}`,
+    {
+      title: input.title.trim(),
+      description: input.description.trim() || undefined,
+      scheduled_at: input.scheduledAt,
+      duration_minutes: input.durationMinutes,
+      meeting_url: input.meetingUrl.trim() || undefined,
+      materials: input.materials,
+      homework_task_ids: input.homeworkTaskIds,
+    },
+    token
+  );
+
+  if (res.error) return { success: false, error: res.error };
+
+  revalidatePath("/teacher/lessons");
+  revalidatePath(`/teacher/lessons/${lessonId}`);
+  revalidatePath("/teacher");
+  return { success: true };
+}
+
+export async function cancelLesson(lessonId: string): Promise<{ success: boolean; error?: string }> {
+  const token = await getToken();
+  const res = await apiPatch(`/scheduled-lessons/${lessonId}`, { status: "cancelled" }, token);
+  if (res.error) return { success: false, error: res.error };
+
+  revalidatePath("/teacher/lessons");
+  revalidatePath(`/teacher/lessons/${lessonId}`);
+  return { success: true };
+}
+
+export interface NewTaskInput {
+  title: string;
+  type: string;
+  examType: string;
+  question: string;
+  section: string;
+  difficulty: string;
+  correctAnswer: string;
+  explanation: string;
+  xpReward: number | null;
+  autoCheck: boolean;
+}
+
+export async function createTask(input: NewTaskInput): Promise<{ success: boolean; id?: string; error?: string }> {
+  if (!input.title.trim()) return { success: false, error: "Укажите название задания" };
+  if (!input.question.trim()) return { success: false, error: "Укажите текст задания" };
+  if (!input.examType.trim()) return { success: false, error: "Укажите экзамен" };
+
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>(
+    "/tasks",
+    {
+      title: input.title.trim(),
+      type: input.type,
+      exam_type: input.examType.trim(),
+      question: input.question.trim(),
+      section: input.section.trim() || undefined,
+      difficulty: input.difficulty.trim() || undefined,
+      correct_answer: input.correctAnswer.trim() || undefined,
+      explanation: input.explanation.trim() || undefined,
+      xp_reward: input.xpReward ?? undefined,
+      auto_check: input.autoCheck,
+    },
+    token
+  );
+
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать задание" };
+
+  revalidatePath("/teacher/tasks");
+  return { success: true, id: res.data.id };
+}
+
+export interface NewAssignmentInput {
+  studentId: string;
+  taskIds: string[];
+  title: string;
+  dueDate: string; // ISO
+}
+
+export async function createAssignment(
+  input: NewAssignmentInput
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  if (!input.studentId) return { success: false, error: "Выберите ученика" };
+  if (input.taskIds.length === 0) return { success: false, error: "Выберите хотя бы одно задание" };
+  if (!input.title.trim()) return { success: false, error: "Укажите название задания" };
+  if (!input.dueDate) return { success: false, error: "Укажите дедлайн" };
+
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>(
+    "/assignments",
+    {
+      student_id: input.studentId,
+      task_ids: input.taskIds,
+      title: input.title.trim(),
+      due_date: input.dueDate,
+    },
+    token
+  );
+
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось назначить задание" };
+
+  revalidatePath("/teacher/assignments");
+  revalidatePath("/teacher");
+  return { success: true, id: res.data.id };
 }
 
 export interface ReviewInput {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Video, Users, FolderOpen, FileText } from "lucide-react";
-import { getCurrentTeacher, getLessonById } from "@/lib/teacher-data";
+import { ArrowLeft, Clock, Video, Users, FolderOpen, FileText, Pencil, ClipboardList } from "lucide-react";
+import { getCurrentTeacher, getLessonById, getTaskBank } from "@/lib/teacher-data";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
@@ -15,12 +15,23 @@ export default async function TeacherLessonPage({ params }: { params: Promise<{ 
   const lesson = await getLessonById(teacher.id, id);
   if (!lesson) notFound();
 
+  const homeworkTasks = lesson.homeworkTaskIds.length > 0 ? (await getTaskBank()).filter((t) => lesson.homeworkTaskIds.includes(t.id)) : [];
+
   return (
     <div className="flex flex-col gap-6 p-5 sm:p-8">
-      <Link href="/teacher/lessons" className="flex w-fit items-center gap-1.5 text-[13.5px] font-semibold text-ze-primary hover:underline">
-        <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
-        Мои уроки
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href="/teacher/lessons" className="flex w-fit items-center gap-1.5 text-[13.5px] font-semibold text-ze-primary hover:underline">
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          Мои уроки
+        </Link>
+        <Link
+          href={`/teacher/lessons/${lesson.id}/edit`}
+          className="flex items-center gap-1.5 rounded-xl border border-ze-border bg-white px-3.5 py-2 text-[13.5px] font-semibold text-ze-ink transition-colors hover:border-slate-300"
+        >
+          <Pencil className="h-3.5 w-3.5" strokeWidth={1.9} />
+          Редактировать
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px] lg:items-start">
         {/* Main: the lesson itself is the primary focus */}
@@ -49,6 +60,22 @@ export default async function TeacherLessonPage({ params }: { params: Promise<{ 
 
         {/* Sidebar: supporting information, secondary to the lesson itself */}
         <div className="flex flex-col gap-5">
+          {homeworkTasks.length > 0 && (
+            <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="flex items-center gap-2 text-[13px] font-bold text-ze-ink">
+                <ClipboardList className="h-4 w-4 text-ze-muted" strokeWidth={1.75} />
+                Домашнее задание
+              </div>
+              <ul className="mt-3 flex flex-col gap-1.5">
+                {homeworkTasks.map((t) => (
+                  <li key={t.id} className="text-[13.5px] text-ze-ink">
+                    {t.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <div className="flex items-center gap-2 text-[13px] font-bold text-ze-ink">
               <Users className="h-4 w-4 text-ze-muted" strokeWidth={1.75} />

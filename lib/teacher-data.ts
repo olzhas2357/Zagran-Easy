@@ -209,14 +209,37 @@ export interface TaskOption {
 }
 
 export async function getTaskBank(): Promise<TaskOption[]> {
+  const tasks = await getTasks();
+  return tasks.map((t) => ({ id: t.id, title: t.title, type: t.type }));
+}
+
+export interface TaskListItem {
+  id: string;
+  title: string;
+  type: string | null;
+  examType: string | null;
+  section: string | null;
+  difficulty: string | null;
+  question: string;
+  xpReward: number | null;
+}
+
+export async function getTasks(): Promise<TaskListItem[]> {
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>[]>("/tasks", token);
   if (res.error || !res.data) return [];
-  return res.data.map((row) => ({
-    id: row.id as string,
-    title: (pickFirst(row, ["title", "name"]) as string) || "Задание",
-    type: (pickFirst(row, ["type", "task_type"]) as string) ?? null,
-  }));
+  return res.data
+    .map((row) => ({
+      id: row.id as string,
+      title: (pickFirst(row, ["title", "name"]) as string) || "Задание",
+      type: (pickFirst(row, ["type", "task_type"]) as string) ?? null,
+      examType: (row.exam_type as string) ?? null,
+      section: (row.section as string) ?? null,
+      difficulty: (row.difficulty as string) ?? null,
+      question: (row.question as string) || "",
+      xpReward: (row.xp_reward as number) ?? null,
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));
 }
 
 export interface LessonListItem {
@@ -315,8 +338,7 @@ function mapAssignmentRow(row: Record<string, unknown>): AssignmentListItem {
     taskTitle: (row.title as string) || "Задание",
     status: (row.status as string) || "pending",
     createdAt: (row.created_at as string) || (row.due_date as string) || "",
-    // Оценка хранится по каждому task_attempt отдельно, не на самом assignment.
-    reviewScore: null,
+    reviewScore: (row.review_score as number) ?? null,
   };
 }
 
@@ -352,11 +374,9 @@ export async function getAssignmentById(teacherId: string, assignmentId: string)
     ...mapAssignmentRow(row),
     taskQuestion: (pickFirst(task || {}, ["question", "prompt", "description", "title"]) as string) ?? null,
     taskType: (pickFirst(task || {}, ["type", "task_type"]) as string) ?? null,
-    // Текст ответа ученика хранится в task_attempts — детально не отдаётся
-    // текущим /assignments/:id, доступен через проверку (review).
-    answerText: null,
-    reviewComment: null,
-    reviewErrors: null,
+    answerText: (row.answer_text as string) ?? null,
+    reviewComment: (row.review_comment as string) ?? null,
+    reviewErrors: (row.review_errors as string) ?? null,
   };
 }
 
