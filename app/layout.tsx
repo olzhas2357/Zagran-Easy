@@ -19,9 +19,16 @@ export const metadata: Metadata = {
   },
 };
 
+// Выставляет data-theme до гидрации — иначе на /language при сохранённой
+// светлой теме страница на долю секунды мигнёт тёмной вёрсткой по умолчанию.
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('ze-theme');if(!t){t=location.pathname.startsWith('/language')?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body suppressHydrationWarning className="flex min-h-full flex-col font-sans text-ze-ink">
         <AppShell>{children}</AppShell>
       </body>

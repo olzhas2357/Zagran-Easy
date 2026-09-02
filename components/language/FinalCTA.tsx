@@ -3,7 +3,7 @@ import { waUrl } from "@/lib/utils";
 
 export function FinalCTA() {
   return (
-    <section className="bg-[#0B132B] px-4 pb-14 pt-10 sm:px-10 sm:pb-20 sm:pt-14">
+    <section className="bg-[#F5F8FF] px-4 pb-14 pt-10 sm:px-10 sm:pb-20 sm:pt-14 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
           <div className="relative overflow-hidden rounded-[28px] px-6 py-12 text-center text-white sm:px-14 sm:py-16" style={{ background: "linear-gradient(135deg, #123fa6 0%, #0B3B8C 40%, #0E7FAE 75%, #123fa6 100%)" }}>

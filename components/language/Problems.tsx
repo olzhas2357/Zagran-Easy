@@ -6,10 +6,10 @@ const ICONS = [Mic, Compass, FileCheck2, Plane];
 
 export function Problems() {
   return (
-    <section className="bg-[#0B132B] py-14 sm:py-20">
+    <section className="bg-[#F5F8FF] py-14 sm:py-20 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <h2 className="max-w-[640px] text-[26px] font-extrabold tracking-tight text-white sm:text-[38px]">
+          <h2 className="max-w-[640px] text-[26px] font-extrabold tracking-tight text-ze-ink sm:text-[38px] dark:text-white">
             Язык не должен быть препятствием к вашей цели
           </h2>
         </FadeIn>
@@ -18,18 +18,21 @@ export function Problems() {
           {/* Left: the problem, muted */}
           <FadeIn>
             <div className="flex h-full flex-col gap-4">
-              <div className="text-[13px] font-bold uppercase tracking-wide text-white/40">Знакомо?</div>
+              <div className="text-[13px] font-bold uppercase tracking-wide text-slate-400 dark:text-white/40">Знакомо?</div>
               <div className="flex flex-1 flex-col gap-3">
                 {LANGUAGE_PROBLEMS.map((p, i) => {
                   const Icon = ICONS[i];
                   return (
-                    <div key={p.title} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur-sm">
-                      <div className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-white/10">
-                        <Icon className="h-4.5 w-4.5 text-[#8FD9F5]" strokeWidth={1.75} />
+                    <div
+                      key={p.title}
+                      className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none dark:backdrop-blur-sm"
+                    >
+                      <div className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-sky-50 dark:bg-white/10">
+                        <Icon className="h-4.5 w-4.5 text-sky-600 dark:text-[#8FD9F5]" strokeWidth={1.75} />
                       </div>
                       <div>
-                        <div className="text-[14.5px] font-bold text-white">{p.title}</div>
-                        <div className="mt-0.5 text-[13px] leading-relaxed text-white/55">{p.text}</div>
+                        <div className="text-[14.5px] font-bold text-ze-ink dark:text-white">{p.title}</div>
+                        <div className="mt-0.5 text-[13px] leading-relaxed text-slate-500 dark:text-white/55">{p.text}</div>
                       </div>
                     </div>
                   );

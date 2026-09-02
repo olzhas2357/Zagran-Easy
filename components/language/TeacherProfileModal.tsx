@@ -25,7 +25,7 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6">
       <div className="absolute inset-0 bg-[#050914]/70 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="relative flex w-full max-w-[820px] flex-col overflow-hidden rounded-t-[28px] border border-white/10 bg-[#0F1830] shadow-[0_30px_80px_rgba(0,0,0,0.5)] sm:flex-row sm:rounded-[28px]">
+      <div className="relative flex w-full max-w-[820px] flex-col overflow-hidden rounded-t-[28px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.25)] sm:flex-row sm:rounded-[28px] dark:border-white/10 dark:bg-[#0F1830] dark:shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
         <button
           onClick={onClose}
           aria-label="Закрыть"
@@ -34,36 +34,39 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
           <X className="h-4.5 w-4.5" strokeWidth={2} />
         </button>
 
-        <div className="aspect-[16/10] w-full flex-none overflow-hidden bg-white/5 sm:aspect-auto sm:w-[280px]">
+        <div className="aspect-[16/10] w-full flex-none overflow-hidden bg-slate-100 sm:aspect-auto sm:w-[280px] dark:bg-white/5">
           {teacher.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={teacher.photo} alt={teacher.name} className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <User className="h-14 w-14 text-white/30" strokeWidth={1.5} />
+              <User className="h-14 w-14 text-slate-300 dark:text-white/30" strokeWidth={1.5} />
             </div>
           )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-8">
-          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#2880DE]/30 bg-[#2880DE]/15 px-3 py-1 text-[12.5px] font-semibold text-[#8FD9F5]">
+          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12.5px] font-semibold text-blue-700 dark:border-[#2880DE]/30 dark:bg-[#2880DE]/15 dark:text-[#8FD9F5]">
             <BadgeCheck className="h-3.5 w-3.5" strokeWidth={2} />
             Преподаватель ZagranEasy
           </div>
 
-          <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-white sm:text-[28px]">{teacher.name}</h3>
+          <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-ze-ink sm:text-[28px] dark:text-white">{teacher.name}</h3>
 
           {tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-white/8 px-3 py-1 text-[12.5px] font-semibold text-white/80">
+                <span
+                  key={tag}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-[12.5px] font-semibold text-slate-600 dark:bg-white/8 dark:text-white/80"
+                >
                   {tag}
                 </span>
               ))}
             </div>
           )}
 
-          {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-white/65">{teacher.bio}</p>}
+          {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-slate-600 dark:text-white/65">{teacher.bio}</p>}
 
           <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:flex-row">
             <a

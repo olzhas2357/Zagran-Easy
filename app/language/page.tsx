@@ -32,7 +32,7 @@ export default async function LanguagePage() {
   const courses = await fetchPublicCourses();
 
   return (
-    <div className="bg-[#0B132B] pb-16 sm:pb-0">
+    <div className="bg-[#F5F8FF] pb-16 sm:pb-0 dark:bg-[#0B132B]">
       <LanguageHero />
       <TrustBar />
       <LearningPaths />

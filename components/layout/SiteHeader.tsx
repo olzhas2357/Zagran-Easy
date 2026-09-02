@@ -7,19 +7,24 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { NAV_ITEMS } from "@/lib/navigation";
 import { waUrl } from "@/lib/utils";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  // /language построена как единый тёмно-синий экран от Header до Footer,
-  // поэтому именно на этом маршруте хедер переключается в тёмную тему.
-  // На остальных страницах сайта поведение и стили не меняются.
+  const { theme } = useTheme();
+  // /language — единственная страница с переключаемой тёмной темой. Хедер
+  // общий для всего сайта, поэтому тёмный вид применяем только когда мы
+  // реально на /language и выбрана тёмная тема — иначе на других страницах
+  // хедер оставался бы тёмным по инерции от сохранённого выбора темы.
   const isLanguage = pathname?.startsWith("/language");
+  const isDark = isLanguage && theme === "dark";
 
   return (
     <header
       className={`sticky top-0 z-40 border-b backdrop-blur-md ${
-        isLanguage ? "border-white/10 bg-[#0B132B]/92" : "border-ze-border bg-white/92"
+        isDark ? "border-white/10 bg-[#0B132B]/92" : "border-ze-border bg-white/92"
       }`}
     >
       <div className="mx-auto flex h-[62px] max-w-6xl items-center gap-3 px-4 sm:h-[72px] sm:px-10">
@@ -32,7 +37,7 @@ export function SiteHeader() {
             priority
             className="h-8 w-auto sm:h-10"
           />
-          <span className={`text-[17px] font-bold tracking-tight ${isLanguage ? "text-white" : "text-ze-ink"}`}>
+          <span className={`text-[17px] font-bold tracking-tight ${isDark ? "text-white" : "text-ze-ink"}`}>
             ZagranEasy
           </span>
         </Link>
@@ -43,7 +48,7 @@ export function SiteHeader() {
               key={item.href}
               href={item.href}
               className={`rounded-[9px] px-3 py-2 text-[14.5px] font-medium transition-colors ${
-                isLanguage
+                isDark
                   ? "text-white/70 hover:bg-white/10 hover:text-white"
                   : "text-slate-700 hover:bg-[#F1F5FB] hover:text-ze-primary"
               }`}
@@ -54,6 +59,15 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          {isLanguage && (
+            <ThemeToggle
+              className={`flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border transition-colors ${
+                isDark
+                  ? "border-white/15 bg-white/[0.06] text-white/80 hover:text-white"
+                  : "border-ze-border bg-white text-ze-muted hover:text-ze-ink"
+              }`}
+            />
+          )}
           {/*
             Личный кабинет клиента временно не используется — см. app/account.
             Вернуть ссылку, когда кабинет снова понадобится.
@@ -80,16 +94,24 @@ export function SiteHeader() {
           </a>
         </div>
 
+        {isLanguage && (
+          <ThemeToggle
+            className={`ml-auto flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border md:hidden ${
+              isDark ? "border-white/15 bg-white/[0.06] text-white/80" : "border-ze-border bg-white text-ze-muted"
+            }`}
+          />
+        )}
+
         <button
           onClick={() => setOpen((v) => !v)}
           aria-label="Меню"
-          className={`ml-auto flex h-11 w-11 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border md:hidden ${
-            isLanguage ? "border-white/15 bg-white/[0.06]" : "border-ze-border bg-white"
-          }`}
+          className={`flex h-11 w-11 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border md:hidden ${
+            isLanguage ? "ml-2" : "ml-auto"
+          } ${isDark ? "border-white/15 bg-white/[0.06]" : "border-ze-border bg-white"}`}
         >
-          <span className={`h-0.5 w-4 rounded-full ${isLanguage ? "bg-white" : "bg-ze-ink"}`} />
-          <span className={`h-0.5 w-4 rounded-full ${isLanguage ? "bg-white" : "bg-ze-ink"}`} />
-          <span className={`h-0.5 w-4 rounded-full ${isLanguage ? "bg-white" : "bg-ze-ink"}`} />
+          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
+          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
+          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
         </button>
       </div>
 
@@ -101,7 +123,7 @@ export function SiteHeader() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
             className={`flex flex-col gap-1 border-t px-4 pb-4 pt-2 md:hidden ${
-              isLanguage ? "border-white/10" : "border-ze-border"
+              isDark ? "border-white/10" : "border-ze-border"
             }`}
           >
             {NAV_ITEMS.filter((item) => item.href !== "/").map((item) => (
@@ -110,7 +132,7 @@ export function SiteHeader() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={`rounded-[10px] px-2.5 py-3 text-[16px] font-medium ${
-                  isLanguage ? "text-white" : "text-ze-ink"
+                  isDark ? "text-white" : "text-ze-ink"
                 }`}
               >
                 {item.label}

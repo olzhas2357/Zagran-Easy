@@ -17,7 +17,7 @@ export function Teachers({ teachers }: { teachers: LanguageTeacher[] }) {
         <FadeIn>
           <div className="max-w-[640px]">
             <div className="text-[12.5px] font-semibold uppercase tracking-wide text-[#2880DE]">Преподаватели</div>
-            <h2 className="mt-2 text-[26px] font-extrabold tracking-tight text-white sm:text-[38px]">
+            <h2 className="mt-2 text-[26px] font-extrabold tracking-tight text-ze-ink sm:text-[38px] dark:text-white">
               Учитесь у преподавателей, а не у скучного учебника
             </h2>
             <p className="mt-3 text-[14.5px] leading-relaxed text-slate-500 sm:text-[16px]">

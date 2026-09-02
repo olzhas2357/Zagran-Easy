@@ -4,10 +4,10 @@ import { LANGUAGE_PRICING } from "@/lib/language-data";
 
 export function Pricing() {
   return (
-    <section className="bg-[#0B132B] py-14 sm:py-20">
+    <section className="bg-[#F5F8FF] py-14 sm:py-20 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <h2 className="text-center text-[26px] font-extrabold tracking-tight text-white sm:text-[38px]">
+          <h2 className="text-center text-[26px] font-extrabold tracking-tight text-ze-ink sm:text-[38px] dark:text-white">
             Выберите формат обучения
           </h2>
         </FadeIn>
@@ -19,7 +19,7 @@ export function Pricing() {
                 className={`flex h-full flex-col gap-4 rounded-[24px] border p-6.5 sm:p-7 ${
                   plan.highlighted
                     ? "border-transparent text-white shadow-[0_20px_50px_rgba(4,12,40,0.4)]"
-                    : "border-white/10 bg-white/[0.05] backdrop-blur-sm"
+                    : "border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none dark:backdrop-blur-sm"
                 }`}
                 style={plan.highlighted ? { background: "linear-gradient(150deg, #2880DE 0%, #123fa6 100%)" } : undefined}
               >
@@ -28,13 +28,13 @@ export function Pricing() {
                     Популярный
                   </span>
                 )}
-                <div className={`text-[17px] font-bold ${plan.highlighted ? "text-white" : "text-white"}`}>
+                <div className={`text-[17px] font-bold ${plan.highlighted ? "text-white" : "text-ze-ink dark:text-white"}`}>
                   {plan.name}
                 </div>
-                <p className={`text-[13.5px] leading-relaxed ${plan.highlighted ? "text-white/80" : "text-white/55"}`}>
+                <p className={`text-[13.5px] leading-relaxed ${plan.highlighted ? "text-white/80" : "text-slate-600 dark:text-white/55"}`}>
                   {plan.description}
                 </p>
-                <div className={`text-[26px] font-extrabold ${plan.highlighted ? "text-white" : "text-white"}`}>
+                <div className={`text-[26px] font-extrabold ${plan.highlighted ? "text-white" : "text-ze-ink dark:text-white"}`}>
                   {plan.price}
                 </div>
                 <a
@@ -42,7 +42,7 @@ export function Pricing() {
                   className={`mt-auto flex items-center justify-center gap-1.5 rounded-2xl px-5 py-3.5 text-[14.5px] font-semibold transition-colors ${
                     plan.highlighted
                       ? "bg-white text-[#2880DE] hover:shadow-[0_0_0_4px_rgba(255,255,255,0.25)]"
-                      : "border border-white/20 text-white hover:border-[#22D3EE] hover:text-[#8FD9F5]"
+                      : "border border-slate-200 text-ze-ink hover:border-sky-300 hover:text-sky-700 dark:border-white/20 dark:text-white dark:hover:border-[#22D3EE] dark:hover:text-[#8FD9F5]"
                   }`}
                 >
                   <Check className="h-4 w-4" strokeWidth={2.25} />
@@ -53,7 +53,7 @@ export function Pricing() {
           ))}
         </div>
 
-        <p className="mt-7 text-center text-[13px] text-white/40">
+        <p className="mt-7 text-center text-[13px] text-slate-500 dark:text-white/40">
           Итоговая стоимость зависит от курса, преподавателя и формата обучения.
         </p>
       </div>
