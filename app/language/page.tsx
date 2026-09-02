@@ -14,6 +14,7 @@ import { LanguageFaq } from "@/components/language/LanguageFaq";
 import { LanguageFooter } from "@/components/language/LanguageFooter";
 import { StickyMobileCTA } from "@/components/language/StickyMobileCTA";
 import { fetchPublicCourses, fetchPublicTeachers } from "@/lib/data";
+import { MotivationMarquee } from "@/components/language/MotivationMarquee";
 
 export const metadata: Metadata = {
   title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
@@ -31,11 +32,12 @@ export default async function LanguagePage() {
   const courses = await fetchPublicCourses();
 
   return (
-    <div className="bg-white pb-16 sm:pb-0">
+    <div className="bg-[#0B132B] pb-16 sm:pb-0">
       <LanguageHero />
       <TrustBar />
       <LearningPaths />
       <Problems />
+      <MotivationMarquee />
       <HowItWorks />
       <Teachers teachers={teachers} />
       <Courses courses={courses}/>

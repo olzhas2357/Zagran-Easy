@@ -24,17 +24,17 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6">
-      <div className="absolute inset-0 bg-[#0B1226]/55 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="relative flex w-full max-w-[820px] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_30px_80px_rgba(15,27,61,0.28)] sm:flex-row sm:rounded-[28px]">
+      <div className="absolute inset-0 bg-[#050914]/70 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="relative flex w-full max-w-[820px] flex-col overflow-hidden rounded-t-[28px] border border-white/10 bg-[#0F1830] shadow-[0_30px_80px_rgba(0,0,0,0.5)] sm:flex-row sm:rounded-[28px]">
         <button
           onClick={onClose}
           aria-label="Закрыть"
-          className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#0F1B3D] shadow-[0_2px_10px_rgba(15,27,61,0.15)] transition-colors hover:bg-white"
+          className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#0B132B] shadow-[0_2px_10px_rgba(0,0,0,0.25)] transition-colors hover:bg-white"
         >
           <X className="h-4.5 w-4.5" strokeWidth={2} />
         </button>
 
-        <div className="aspect-[16/10] w-full flex-none overflow-hidden bg-[#1A2650] sm:aspect-auto sm:w-[280px]">
+        <div className="aspect-[16/10] w-full flex-none overflow-hidden bg-white/5 sm:aspect-auto sm:w-[280px]">
           {teacher.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={teacher.photo} alt={teacher.name} className="h-full w-full object-cover" />
@@ -46,30 +46,30 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col p-6 sm:p-8">
-          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#DDE4F5] bg-[#F3F7FF] px-3 py-1 text-[12.5px] font-semibold text-[#2880DE]">
+          <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#2880DE]/30 bg-[#2880DE]/15 px-3 py-1 text-[12.5px] font-semibold text-[#8FD9F5]">
             <BadgeCheck className="h-3.5 w-3.5" strokeWidth={2} />
             Преподаватель ZagranEasy
           </div>
 
-          <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-[#0F1B3D] sm:text-[28px]">{teacher.name}</h3>
+          <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-white sm:text-[28px]">{teacher.name}</h3>
 
           {tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1.5">
               {tags.map((tag) => (
-                <span key={tag} className="rounded-full bg-[#F5F7FB] px-3 py-1 text-[12.5px] font-semibold text-[#0F1B3D]">
+                <span key={tag} className="rounded-full bg-white/8 px-3 py-1 text-[12.5px] font-semibold text-white/80">
                   {tag}
                 </span>
               ))}
             </div>
           )}
 
-          {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-slate-600">{teacher.bio}</p>}
+          {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-white/65">{teacher.bio}</p>}
 
           <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:flex-row">
             <a
               href="#finder"
               onClick={onClose}
-              className="flex-1 rounded-2xl bg-[#2880DE] px-6 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(50,85,173,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#2066B2]"
+              className="flex-1 rounded-2xl bg-gradient-to-r from-[#2880DE] to-[#22D3EE] px-6 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(34,211,238,0.3)] transition-all duration-200 hover:-translate-y-0.5"
             >
               Записаться на пробный урок
             </a>

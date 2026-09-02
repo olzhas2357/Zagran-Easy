@@ -3,23 +3,34 @@ import { LANGUAGE_STEPS } from "@/lib/language-data";
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-14 sm:py-20">
+    <section id="how-it-works" className="bg-[#0B132B] py-12 sm:py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <h2 className="max-w-[560px] text-[26px] font-extrabold tracking-tight text-[#0F1B3D] sm:text-[38px]">
+          <h2 className="max-w-[560px] text-[24px] font-extrabold tracking-tight text-white sm:text-[34px]">
             Начать обучение проще, чем кажется
           </h2>
         </FadeIn>
 
-        <div className="mt-9 grid grid-cols-1 gap-5 sm:mt-12 sm:grid-cols-4 sm:gap-6">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-4 sm:gap-4">
           {LANGUAGE_STEPS.map((s, i) => (
             <FadeIn key={s.step} delay={i * 0.07}>
-              <div className="relative flex h-full flex-col gap-2.5 rounded-[20px] border border-[#E7ECF6] bg-white p-6">
-                <div className="text-[13px] font-extrabold text-[#2880DE]">{s.step}</div>
-                <div className="text-[16px] font-bold text-[#0F1B3D]">{s.title}</div>
-                <div className="text-[13.5px] leading-relaxed text-slate-500">{s.text}</div>
+              <div className="group relative flex h-full flex-col gap-2 rounded-[18px] border border-[#2880DE]/30 bg-white/[0.04] p-5 backdrop-blur-md shadow-[0_0_20px_rgba(40,128,222,0.12)] transition-all duration-300 hover:border-[#3B93F5]/60 hover:bg-white/[0.07] hover:shadow-[0_0_25px_rgba(59,147,245,0.25)]">
+                {/* Неоновый подсвет сверху карточки */}
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-[2px] rounded-t-[18px] bg-gradient-to-r from-transparent via-[#22D3EE] to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+
+                <div className="text-[12px] font-extrabold tracking-wider text-[#22D3EE] drop-shadow-[0_0_6px_rgba(34,211,238,0.6)]">
+                  {s.step}
+                </div>
+                <div className="text-[15px] font-bold text-white tracking-tight">
+                  {s.title}
+                </div>
+                <div className="text-[13px] leading-relaxed text-white/60">
+                  {s.text}
+                </div>
+
+                {/* Соединительная стрелочка / линия */}
                 {i < LANGUAGE_STEPS.length - 1 && (
-                  <div className="absolute top-1/2 -right-3 hidden h-px w-6 -translate-y-1/2 bg-[#DDE4F5] sm:block" />
+                  <div className="absolute top-1/2 -right-2.5 hidden h-px w-5 -translate-y-1/2 bg-gradient-to-r from-[#22D3EE]/50 to-transparent sm:block" />
                 )}
               </div>
             </FadeIn>

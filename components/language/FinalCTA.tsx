@@ -3,12 +3,12 @@ import { waUrl } from "@/lib/utils";
 
 export function FinalCTA() {
   return (
-    <section className="px-4 pb-14 sm:px-10 sm:pb-20">
+    <section className="bg-[#0B132B] px-4 pb-14 pt-10 sm:px-10 sm:pb-20 sm:pt-14">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
-          <div className="relative overflow-hidden rounded-[28px] bg-[#2880DE] px-6 py-12 text-center text-white sm:px-14 sm:py-16">
-            <div className="pointer-events-none absolute -right-16 -top-16 h-[240px] w-[240px] rounded-full bg-white/8" />
-            <div className="pointer-events-none absolute -bottom-20 -left-10 h-[220px] w-[220px] rounded-full bg-white/6" />
+          <div className="relative overflow-hidden rounded-[28px] px-6 py-12 text-center text-white sm:px-14 sm:py-16" style={{ background: "linear-gradient(135deg, #123fa6 0%, #0B3B8C 40%, #0E7FAE 75%, #123fa6 100%)" }}>
+            <div className="pointer-events-none absolute -right-16 -top-16 h-[240px] w-[240px] rounded-full bg-[#22D3EE]/25 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-[220px] w-[220px] rounded-full bg-[#8B7FF5]/20 blur-2xl" />
             <h2 className="relative text-[26px] font-extrabold tracking-tight sm:text-[42px]">
               Готовы начать учить язык?
             </h2>
@@ -20,7 +20,7 @@ export function FinalCTA() {
                 href={waUrl("Здравствуйте! Хочу подобрать языковой курс.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-2xl bg-white px-7 py-4 text-[15.5px] font-semibold text-[#2880DE] transition-colors hover:bg-[#EEF2FB]"
+                className="rounded-2xl bg-white px-7 py-4 text-[15.5px] font-semibold text-[#2880DE] shadow-[0_0_0_0_rgba(34,211,238,0)] transition-all hover:bg-[#EEF2FB] hover:shadow-[0_0_0_6px_rgba(34,211,238,0.22)]"
               >
                 Подобрать курс →
               </a>
