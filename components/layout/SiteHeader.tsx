@@ -14,12 +14,13 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { theme } = useTheme();
-  // /language — единственная страница с переключаемой тёмной темой. Хедер
-  // общий для всего сайта, поэтому тёмный вид применяем только когда мы
-  // реально на /language и выбрана тёмная тема — иначе на других страницах
-  // хедер оставался бы тёмным по инерции от сохранённого выбора темы.
   const isLanguage = pathname?.startsWith("/language");
-  const isDark = isLanguage && theme === "dark";
+  // "/" и "/language" — единственные страницы с переключаемой тёмной темой.
+  // Хедер общий для всего сайта, поэтому тёмный вид применяем только на этих
+  // маршрутах — иначе на других страницах (без dark:-стилей) хедер оставался
+  // бы тёмным по инерции от сохранённого глобального выбора темы.
+  const isThemedRoute = pathname === "/" || isLanguage;
+  const isDark = isThemedRoute && theme === "dark";
 
   return (
     <header
@@ -59,7 +60,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          {isLanguage && (
+          {isThemedRoute && (
             <ThemeToggle
               className={`flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border transition-colors ${
                 isDark
@@ -94,7 +95,7 @@ export function SiteHeader() {
           </a>
         </div>
 
-        {isLanguage && (
+        {isThemedRoute && (
           <ThemeToggle
             className={`ml-auto flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border md:hidden ${
               isDark ? "border-white/15 bg-white/[0.06] text-white/80" : "border-ze-border bg-white text-ze-muted"
@@ -106,7 +107,7 @@ export function SiteHeader() {
           onClick={() => setOpen((v) => !v)}
           aria-label="Меню"
           className={`flex h-11 w-11 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border md:hidden ${
-            isLanguage ? "ml-2" : "ml-auto"
+            isThemedRoute ? "ml-2" : "ml-auto"
           } ${isDark ? "border-white/15 bg-white/[0.06]" : "border-ze-border bg-white"}`}
         >
           <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />

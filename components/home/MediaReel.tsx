@@ -114,8 +114,8 @@ export function MediaReel({ items }: { items: typeof MEDIA_REEL_ITEMS }) {
       )}
       {isVisible && !reduceMotion && (
         <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent sm:w-16" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent sm:w-16" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent sm:w-16 dark:from-[#0B132B]" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent sm:w-16 dark:from-[#0B132B]" />
         </>
       )}
     </div>

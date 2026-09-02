@@ -55,16 +55,16 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white">
+      <section className="relative overflow-hidden border-b border-ze-border bg-gradient-to-b from-[#F4F7FD] to-white dark:border-white/10 dark:bg-[#0B132B] dark:bg-none">
         <GradientSpots variant="hero" />
         <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 sm:flex-row sm:gap-14 sm:px-10 sm:py-20">
           <div className="min-w-0 flex-1">
-            <h1 className="mt-4.5 text-[35px] font-extrabold leading-[1.05] tracking-tight text-balance sm:text-[60px]">
+            <h1 className="mt-4.5 text-[35px] font-extrabold leading-[1.05] tracking-tight text-balance dark:text-white sm:text-[60px]">
               Поступление за рубеж —
               <br />
-              <span className="text-[#3255ad]">проще, чем кажется</span>
+              <span className="text-[#3255ad] dark:text-[#8FD9F5]">проще, чем кажется</span>
             </h1>
-            <p className="mt-4 max-w-[520px] text-[15.5px] leading-relaxed text-ze-muted sm:text-[19px]">
+            <p className="mt-4 max-w-[520px] text-[15.5px] leading-relaxed text-ze-muted sm:text-[19px] dark:text-white/65">
               Помогаем выбрать университет, поступить, переехать и оставаться рядом на протяжении всего
               образовательного пути.
             </p>
@@ -79,18 +79,18 @@ export default async function HomePage() {
               </a>
               <Link
                 href="/education"
-                className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ze-primary hover:text-ze-primary hover:shadow-[0_6px_16px_rgba(15,23,42,0.06)]"
+                className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ze-primary hover:text-ze-primary hover:shadow-[0_6px_16px_rgba(15,23,42,0.06)] dark:border-white/20 dark:bg-white/[0.06] dark:text-white dark:hover:border-white/40 dark:hover:bg-white/10"
               >
                 Посмотреть университеты
               </Link>
             </div>
-            <div className="mt-10.5 inline-flex items-center gap-2.5 rounded-full border border-ze-border/80 bg-white/70 py-1.5 pl-1.5 pr-4 text-[13.5px] text-ze-muted shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur-sm">
+            <div className="mt-10.5 inline-flex items-center gap-2.5 rounded-full border border-ze-border/80 bg-white/70 py-1.5 pl-1.5 pr-4 text-[13.5px] text-ze-muted shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.06] dark:text-white/60">
               <div className="flex">
-                <div className="h-8 w-8 rounded-full border-2 border-white bg-[#DCE6FA]" />
-                <div className="-ml-2.5 h-8 w-8 rounded-full border-2 border-white bg-[#C7D8F7]" />
-                <div className="-ml-2.5 h-8 w-8 rounded-full border-2 border-white bg-[#B0C9F4]" />
+                <div className="h-8 w-8 rounded-full border-2 border-white bg-[#DCE6FA] dark:border-[#0B132B] dark:bg-[#2D4A8A]" />
+                <div className="-ml-2.5 h-8 w-8 rounded-full border-2 border-white bg-[#C7D8F7] dark:border-[#0B132B] dark:bg-[#3B5FA0]" />
+                <div className="-ml-2.5 h-8 w-8 rounded-full border-2 border-white bg-[#B0C9F4] dark:border-[#0B132B] dark:bg-[#4A75B8]" />
               </div>
-              <span className="font-medium text-ze-ink">3&nbsp;200+</span>&nbsp;клиентов уже уехали с нами
+              <span className="font-medium text-ze-ink dark:text-white">3&nbsp;200+</span>&nbsp;клиентов уже уехали с нами
             </div>
           </div>
 
@@ -150,15 +150,15 @@ export default async function HomePage() {
 
 
       {/* О компании + реел-лента */}
-      <section className="py-11 sm:py-16">
+      <section className="py-11 sm:py-16 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <FadeIn>
             <div className="max-w-[640px]">
-              <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
                 {ABOUT.eyebrow}
               </div>
-              <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px]">{ABOUT.heading}</h2>
-              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">{ABOUT.body}</p>
+              <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">{ABOUT.heading}</h2>
+              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px] dark:text-white/65">{ABOUT.body}</p>
             </div>
           </FadeIn>
         </div>
@@ -168,17 +168,17 @@ export default async function HomePage() {
       </section>
 
       {/* Наши услуги */}
-      <section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10">
+      <section className="mx-auto max-w-6xl px-4 pt-8 sm:px-10 dark:bg-[#0B132B]">
         <FadeIn>
           <div className="max-w-[640px]">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
               <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
               Наши услуги
             </div>
-            <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+            <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">
               Всё необходимое для вашего образования
             </h2>
-            <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+            <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px] dark:text-white/65">
               От выбора университета до адаптации, обучения и первых шагов в карьере.
             </p>
           </div>
@@ -221,7 +221,7 @@ export default async function HomePage() {
                 <TiltCard maxTilt={6} className="h-full">
                   <Link
                     href="/education"
-                    className="group flex h-full flex-col gap-3 rounded-[22px] border border-ze-border/80 bg-white p-4.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_18px_36px_rgba(15,23,42,0.09)] sm:p-6"
+                    className="group flex h-full flex-col gap-3 rounded-[22px] border border-ze-border/80 bg-white p-4.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_18px_36px_rgba(15,23,42,0.09)] sm:p-6 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none dark:hover:border-white/20"
                   >
                     <div
                       className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg} transition-transform duration-300 group-hover:scale-105`}
@@ -229,10 +229,10 @@ export default async function HomePage() {
                       <s.Icon className={`h-5.5 w-5.5 sm:h-6 sm:w-6 ${colors.text}`} strokeWidth={1.75} />
                     </div>
                     <div>
-                      <div className="text-[14.5px] font-bold leading-snug sm:text-[17px]">{s.title}</div>
+                      <div className="text-[14.5px] font-bold leading-snug sm:text-[17px] dark:text-white">{s.title}</div>
                       <div className={`mt-1.5 h-[3px] w-7 rounded-full ${underline}`} />
                     </div>
-                    <div className="flex-1 text-[12px] leading-relaxed text-ze-muted sm:text-[13.5px]">{s.text}</div>
+                    <div className="flex-1 text-[12px] leading-relaxed text-ze-muted sm:text-[13.5px] dark:text-white/60">{s.text}</div>
                     <div className={`inline-flex w-fit items-center gap-1 text-[12.5px] font-semibold ${colors.text} sm:text-[13.5px]`}>
                       Подробнее
                       <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
@@ -246,21 +246,21 @@ export default async function HomePage() {
       </section>
 
       {/* Статистика */}
-      <section className="relative px-4 py-5 sm:px-10">
+      <section className="relative px-4 py-5 sm:px-10 dark:bg-[#0B132B]">
         <div className="relative mx-auto max-w-6xl">
           <GradientSpots variant="section" />
-          <div className="relative grid grid-cols-1 gap-4.5 rounded-[20px] border border-[#E4EBF8] bg-[#F5F8FE] p-6 sm:grid-cols-3 sm:gap-8 sm:p-9">
+          <div className="relative grid grid-cols-1 gap-4.5 rounded-[20px] border border-[#E4EBF8] bg-[#F5F8FE] p-6 sm:grid-cols-3 sm:gap-8 sm:p-9 dark:border-white/10 dark:bg-white/[0.04]">
             {STATS.map((s, i) => (
               <div
                 key={s.label}
-                className={`flex flex-col gap-1 ${i > 0 ? "border-t border-[#DDE6F5] pt-4.5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0" : ""}`}
+                className={`flex flex-col gap-1 ${i > 0 ? "border-t border-[#DDE6F5] pt-4.5 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0 dark:border-white/10" : ""}`}
               >
                 <AnimatedCounter
                   value={s.value}
                   suffix={s.suffix}
-                  className="text-[32px] font-extrabold leading-none tracking-tight text-ze-primary sm:text-[46px]"
+                  className="text-[32px] font-extrabold leading-none tracking-tight text-ze-primary sm:text-[46px] dark:text-[#8FD9F5]"
                 />
-                <div className="text-[13.5px] font-medium text-ze-muted sm:text-[15px]">{s.label}</div>
+                <div className="text-[13.5px] font-medium text-ze-muted sm:text-[15px] dark:text-white/60">{s.label}</div>
               </div>
             ))}
           </div>
@@ -268,24 +268,24 @@ export default async function HomePage() {
       </section>
 
       {/* Университеты для студентов */}
-      <section id="study" className="border-y border-ze-border bg-[#F8FAFC] py-11 sm:py-19">
+      <section id="study" className="border-y border-ze-border bg-[#F8FAFC] py-11 sm:py-19 dark:border-white/10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <div className="mb-8 flex items-end justify-between gap-4 sm:mb-11">
             <div className="max-w-[560px]">
-              <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">
+              <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary dark:text-[#8FD9F5]">
                 Университеты для студентов
               </div>
-              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight text-ze-ink sm:text-[38px]">
+              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight text-ze-ink sm:text-[38px] dark:text-white">
                 Найдём университет, который подходит именно вам
               </h2>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px]">
+              <p className="mt-3 text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px] dark:text-white/65">
                 Сравнивайте университеты, программы, стоимость обучения, требования и возможности поступления в
                 одном месте.
               </p>
             </div>
             <Link
               href="/education"
-              className="hidden flex-none text-[14.5px] font-semibold text-ze-primary sm:block"
+              className="hidden flex-none text-[14.5px] font-semibold text-ze-primary sm:block dark:text-[#8FD9F5]"
             >
               Найти университет →
             </Link>
@@ -295,7 +295,7 @@ export default async function HomePage() {
               <FadeIn key={c.id} className="w-full sm:w-[300px]">
                 <Link
                   href="/education"
-                  className="group block overflow-hidden rounded-[22px] border border-ze-border/70 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_20px_44px_rgba(15,23,42,0.1)]"
+                  className="group block overflow-hidden rounded-[22px] border border-ze-border/70 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_20px_44px_rgba(15,23,42,0.1)] dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20"
                 >
                   <div className="aspect-[4/5] overflow-hidden">
                     <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
@@ -303,13 +303,13 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="p-4 sm:p-5">
-                    <div className="text-[16px] font-bold text-ze-ink">
+                    <div className="text-[16px] font-bold text-ze-ink dark:text-white">
                       {c.flag} {c.name}
                     </div>
-                    <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">
+                    <div className="mt-1.5 text-[13px] leading-snug text-ze-muted dark:text-white/60">
                       {universityCountByCountry.get(c.id) || 0} университетов · {c.cities.slice(0, 2).join(", ")}
                     </div>
-                    <div className="mt-3 inline-flex items-center rounded-lg bg-ze-primary/8 px-2.5 py-1 text-[13.5px] font-semibold text-ze-primary">
+                    <div className="mt-3 inline-flex items-center rounded-lg bg-ze-primary/8 px-2.5 py-1 text-[13.5px] font-semibold text-ze-primary dark:bg-white/10 dark:text-[#8FD9F5]">
                       {formatPrice(cheapestByCountry.get(c.id) || 0)} / год
                     </div>
                   </div>
@@ -319,7 +319,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/education"
-            className="mt-6 block text-center text-[14.5px] font-semibold text-ze-primary sm:hidden"
+            className="mt-6 block text-center text-[14.5px] font-semibold text-ze-primary sm:hidden dark:text-[#8FD9F5]"
           >
             Найти университет →
           </Link>
@@ -330,17 +330,17 @@ export default async function HomePage() {
       <TurkeyExperience />
 
       {/* Долгосрочная поддержка */}
-      <section className="py-11 sm:py-19">
+      <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <FadeIn>
             <div className="max-w-[640px]">
-              <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
                 Долгосрочная поддержка
               </div>
-              <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+              <h2 className="mt-3.5 text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">
                 Мы не заканчиваем работу после поступления
               </h2>
-              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+              <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px] dark:text-white/65">
                 Наша задача — помочь студенту не только поступить, но и успешно адаптироваться, учиться и строить
                 карьеру.
               </p>
@@ -356,12 +356,12 @@ export default async function HomePage() {
               const colors = SERVICE_COLORS[c.color];
               return (
                 <FadeIn key={c.title} delay={i * 0.05}>
-                  <div className="flex h-full flex-col gap-3 rounded-[22px] border border-ze-border/80 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:p-6">
+                  <div className="flex h-full flex-col gap-3 rounded-[22px] border border-ze-border/80 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:p-6 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none dark:hover:border-white/20">
                     <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg}`}>
                       <c.Icon className={`h-6 w-6 ${colors.text}`} strokeWidth={1.75} />
                     </div>
-                    <div className="text-[16px] font-bold">{c.title}</div>
-                    <div className="text-[13px] leading-relaxed text-ze-muted">{c.text}</div>
+                    <div className="text-[16px] font-bold dark:text-white">{c.title}</div>
+                    <div className="text-[13px] leading-relaxed text-ze-muted dark:text-white/60">{c.text}</div>
                   </div>
                 </FadeIn>
               );
@@ -371,7 +371,7 @@ export default async function HomePage() {
       </section>
 
       {/* Рассрочка */}
-      <section className="px-4 sm:px-10">
+      <section className="px-4 sm:px-10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl py-5">
           <div className="relative flex flex-col items-stretch gap-5.5 overflow-hidden rounded-[22px] bg-gradient-to-br from-[#1a56db] to-[#0f3d9e] p-6.5 text-white sm:flex-row sm:items-center sm:gap-8 sm:p-11">
             <div className="pointer-events-none absolute -right-15 -top-15 h-[220px] w-[220px] rounded-full bg-white/8 blur-[2px]" />
@@ -398,13 +398,13 @@ export default async function HomePage() {
       </section>
 
       {/* Студентам и родителям */}
-      <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19">
+      <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19 dark:border-white/10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <FadeIn>
-            <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <div className="inline-flex items-center rounded-full border border-ze-border bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
               Для всей семьи
             </div>
-            <h2 className="mt-3.5 max-w-[560px] text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+            <h2 className="mt-3.5 max-w-[560px] text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">
               Родители знают, что их ребёнок не один
             </h2>
           </FadeIn>
@@ -432,16 +432,16 @@ export default async function HomePage() {
               const colors = SERVICE_COLORS[card.color];
               return (
                 <FadeIn key={card.title} delay={i * 0.06}>
-                  <div className="h-full rounded-[22px] border border-ze-border/80 bg-white p-5.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(15,23,42,0.08)] sm:p-7">
+                  <div className="h-full rounded-[22px] border border-ze-border/80 bg-white p-5.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(15,23,42,0.08)] sm:p-7 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none">
                     <div className="flex items-center gap-3">
                       <div className={`flex h-11 w-11 flex-none items-center justify-center rounded-2xl ${colors.bg}`}>
                         <card.Icon className={`h-5.5 w-5.5 ${colors.text}`} strokeWidth={1.75} />
                       </div>
-                      <div className="text-[17px] font-bold text-ze-ink">{card.title}</div>
+                      <div className="text-[17px] font-bold text-ze-ink dark:text-white">{card.title}</div>
                     </div>
                     <ul className="mt-5 flex flex-col gap-3">
                       {card.items.map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-[14.5px] text-ze-ink">
+                        <li key={item} className="flex items-center gap-2.5 text-[14.5px] text-ze-ink dark:text-white/75">
                           <CheckCircle2 className={`h-4.5 w-4.5 flex-none ${colors.text}`} strokeWidth={2} />
                           {item}
                         </li>
@@ -456,10 +456,10 @@ export default async function HomePage() {
       </section>
 
       {/* Почему ZagranEasy */}
-      <section className="py-11 sm:py-19">
+      <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <FadeIn>
-            <h2 className="max-w-[560px] text-[22px] font-extrabold tracking-tight sm:text-[32px]">
+            <h2 className="max-w-[560px] text-[22px] font-extrabold tracking-tight sm:text-[32px] dark:text-white">
               Почему выбирают ZagranEasy
             </h2>
           </FadeIn>
@@ -473,12 +473,12 @@ export default async function HomePage() {
               const colors = SERVICE_COLORS[b.color];
               return (
                 <FadeIn key={b.title} delay={i * 0.05}>
-                  <div className="flex h-full flex-col items-center gap-2.5 rounded-[22px] border border-ze-border/70 bg-white p-4.5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:items-start sm:p-6 sm:text-left">
+                  <div className="flex h-full flex-col items-center gap-2.5 rounded-[22px] border border-ze-border/70 bg-white p-4.5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:items-start sm:p-6 sm:text-left dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20">
                     <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg}`}>
                       <b.Icon className={`h-6 w-6 ${colors.text}`} strokeWidth={1.75} />
                     </div>
-                    <div className="text-[16px] font-bold">{b.title}</div>
-                    <div className="text-[13px] leading-relaxed text-ze-muted">{b.text}</div>
+                    <div className="text-[16px] font-bold dark:text-white">{b.title}</div>
+                    <div className="text-[13px] leading-relaxed text-ze-muted dark:text-white/60">{b.text}</div>
                   </div>
                 </FadeIn>
               );
@@ -488,33 +488,33 @@ export default async function HomePage() {
       </section>
 
       {/* Квиз */}
-      <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19">
+      <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19 dark:border-white/10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-[800px] px-4 sm:px-10">
           <LandingQuiz />
         </div>
       </section>
 
       {/* Отзывы */}
-      <section className="py-11 sm:py-19">
+      <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <ReviewsCarousel reviews={reviews} />
         </div>
       </section>
 
       {/* Финальный CTA */}
-      <section className="px-4 pb-11 sm:px-10 sm:pb-19">
+      <section className="px-4 pb-11 sm:px-10 sm:pb-19 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl">
           <FadeIn>
-            <div className="relative flex flex-col items-center gap-4 overflow-hidden rounded-[28px] border border-ze-border/70 bg-gradient-to-b from-[#F4F8FE] to-white p-8 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-16">
+            <div className="relative flex flex-col items-center gap-4 overflow-hidden rounded-[28px] border border-ze-border/70 bg-gradient-to-b from-[#F4F8FE] to-white p-8 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-16 dark:border-white/10 dark:bg-white/[0.04] dark:bg-none dark:shadow-none">
               <div className="pointer-events-none absolute -left-20 -top-24 h-[280px] w-[280px] rounded-full bg-[#1a56db]/8 blur-[100px]" />
               <div className="pointer-events-none absolute -right-16 -bottom-28 h-[260px] w-[260px] rounded-full bg-[#25d366]/8 blur-[100px]" />
 
-              <div className="relative inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary">
+              <div className="relative inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
                 <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
                 Начните сегодня
               </div>
-              <h2 className="relative text-[25px] font-extrabold tracking-tight sm:text-[40px]">Готовы начать?</h2>
-              <p className="relative max-w-[480px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+              <h2 className="relative text-[25px] font-extrabold tracking-tight sm:text-[40px] dark:text-white">Готовы начать?</h2>
+              <p className="relative max-w-[480px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[16.5px] dark:text-white/65">
                 Расскажите о своих целях — мы поможем определить следующий шаг.
               </p>
               <div className="relative mt-2 flex flex-wrap justify-center gap-2.5">
@@ -528,7 +528,7 @@ export default async function HomePage() {
                 </a>
                 <Link
                   href="/education"
-                  className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ze-primary hover:text-ze-primary"
+                  className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ze-primary hover:text-ze-primary dark:border-white/20 dark:bg-white/[0.06] dark:text-white dark:hover:border-white/40"
                 >
                   Посмотреть университеты
                 </Link>

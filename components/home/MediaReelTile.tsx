@@ -7,12 +7,12 @@ type MediaReelItem = (typeof MEDIA_REEL_ITEMS)[number];
 // пока фотоматериалы не собраны (см. zagraneasy-requirements.json → photos_count).
 export function MediaReelTile({ item, index, src }: { item: MediaReelItem; index: number; src?: string }) {
   return (
-    <div className="relative aspect-9/16 w-[150px] flex-none overflow-hidden rounded-2xl border border-ze-border sm:w-[180px]">
+    <div className="relative aspect-9/16 w-[150px] flex-none overflow-hidden rounded-2xl border border-ze-border sm:w-[180px] dark:border-white/10">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={item.label} loading="lazy" className="h-full w-full object-cover" />
       ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] px-3 text-center font-mono text-[10.5px] text-slate-400">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] px-3 text-center font-mono text-[10.5px] text-slate-400 dark:bg-[repeating-linear-gradient(135deg,#131E3A_0_10px,#0F1830_10px_20px)] dark:text-white/30">
           <span>#{String(index + 1).padStart(2, "0")}</span>
           <span>{item.label}</span>
         </div>

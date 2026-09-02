@@ -13,14 +13,14 @@ const STEPS = [
 
 export function StudentJourney() {
   return (
-    <section className="py-11 sm:py-19">
+    <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
           <div className="max-w-[640px]">
-            <h2 className="text-[25px] font-extrabold tracking-tight sm:text-[36px]">
+            <h2 className="text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">
               Полное сопровождение студента
             </h2>
-            <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px]">
+            <p className="mt-3.5 text-[15px] leading-relaxed text-ze-muted sm:text-[16.5px] dark:text-white/65">
               Мы рядом на каждом этапе — от первой консультации до первых шагов в карьере.
             </p>
           </div>
@@ -35,11 +35,11 @@ export function StudentJourney() {
                   <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-ze-primary text-[13px] font-bold text-white">
                     {s.n}
                   </div>
-                  {i < STEPS.length - 1 && <div className="mt-1 w-px flex-1 bg-ze-border" />}
+                  {i < STEPS.length - 1 && <div className="mt-1 w-px flex-1 bg-ze-border dark:bg-white/10" />}
                 </div>
                 <div className="pb-2">
-                  <div className="text-[15px] font-semibold">{s.title}</div>
-                  <div className="mt-1 text-[13.5px] leading-snug text-ze-muted">{s.text}</div>
+                  <div className="text-[15px] font-semibold dark:text-white">{s.title}</div>
+                  <div className="mt-1 text-[13.5px] leading-snug text-ze-muted dark:text-white/60">{s.text}</div>
                 </div>
               </div>
             </FadeIn>
@@ -54,13 +54,13 @@ export function StudentJourney() {
                 <div
                   className={`absolute left-0 right-0 top-0 h-px ${i % 4 === 0 ? "left-4" : ""} ${
                     i % 4 === 3 ? "right-4" : ""
-                  } bg-ze-border`}
+                  } bg-ze-border dark:bg-white/10`}
                 />
                 <div className="absolute -top-[15px] left-0 flex h-8 w-8 items-center justify-center rounded-full bg-ze-primary text-[12px] font-bold text-white">
                   {s.n}
                 </div>
-                <div className="mt-3 text-[15px] font-semibold">{s.title}</div>
-                <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">{s.text}</div>
+                <div className="mt-3 text-[15px] font-semibold dark:text-white">{s.title}</div>
+                <div className="mt-1.5 text-[13px] leading-snug text-ze-muted dark:text-white/60">{s.text}</div>
               </div>
             </FadeIn>
           ))}

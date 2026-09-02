@@ -22,7 +22,7 @@ export function CoverPhoto({
 
   return (
     <div
-      className={`flex h-full w-full items-center justify-center bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] font-mono text-[10.5px] text-slate-400 ${className}`}
+      className={`flex h-full w-full items-center justify-center bg-[repeating-linear-gradient(135deg,#EEF1F6_0_10px,#E5EAF2_10px_20px)] font-mono text-[10.5px] text-slate-400 dark:bg-[repeating-linear-gradient(135deg,#131E3A_0_10px,#0F1830_10px_20px)] dark:text-white/30 ${className}`}
     >
       {label ?? `фото — ${alt}`}
     </div>
