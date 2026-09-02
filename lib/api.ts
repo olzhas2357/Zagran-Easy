@@ -8,7 +8,7 @@
 // Ошибки — HttpExceptionFilter: { success: false, statusCode, message }.
 // ============================================================
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://zagran-easy-backend-production.up.railway.app/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
 interface ApiOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
