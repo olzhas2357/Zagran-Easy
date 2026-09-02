@@ -106,6 +106,7 @@ export default async function HomePage() {
                 range={6}
                 duration={5}
                 delay={0}
+                loading="eager"
               />
 
               {/* Перекрывающее фото — справа снизу */}
@@ -117,6 +118,7 @@ export default async function HomePage() {
                 duration={4.2}
                 delay={0.4}
                 rotateRange={2}
+                loading="eager"
               />
 
               <HeroCelebration />

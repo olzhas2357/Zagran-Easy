@@ -7,15 +7,17 @@ export function CoverPhoto({
   alt,
   label,
   className = "",
+  loading = "lazy",
 }: {
   src?: string | null;
   alt: string;
   label?: string;
   className?: string;
+  loading?: "lazy" | "eager";
 }) {
   if (src && src.startsWith("http")) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} loading="lazy" className={`h-full w-full object-cover ${className}`} />;
+    return <img src={src} alt={alt} loading={loading} className={`h-full w-full object-cover ${className}`} />;
   }
 
   return (

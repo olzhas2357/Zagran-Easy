@@ -153,7 +153,8 @@ create table profiles (
   role text check (role in ('admin','manager')) not null default 'manager',
   phone text,
   regions text[] default '{}',                    -- "Турция, Кипр" — за что отвечает менеджер
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Автосоздание профиля при регистрации нового пользователя Supabase Auth

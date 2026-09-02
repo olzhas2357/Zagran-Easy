@@ -101,6 +101,62 @@ export interface PendingReview {
   createdAt: string;
 }
 
+export async function getTeacherDashboard(teacherId: string): Promise<{
+  stats: DashboardStats;
+  nextLesson: NextLesson | null;
+  pendingReviews: PendingReview[];
+}> {
+  const token = await getToken();
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+
+  const [studentsRes, lessonsRes, assignmentsRes] = await Promise.all([
+    apiGet<unknown[]>(`/teachers/${teacherId}/students`, token),
+    apiGet<Record<string, unknown>[]>(`/scheduled-lessons?from=${now.toISOString()}`, token),
+    apiGet<Record<string, unknown>[]>("/assignments?status=pending", token),
+  ]);
+
+  const lessons = lessonsRes.data || [];
+  const lessonsToday = lessons.filter((row) => (row.scheduled_at as string) >= startOfToday).length;
+  const nextLessonRow = lessons
+    .filter((row) => new Date(row.scheduled_at as string).getTime() >= now.getTime())
+    .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))[0];
+
+  const nextLesson = nextLessonRow
+    ? {
+        id: nextLessonRow.id as string,
+        title: nextLessonRow.title as string,
+        description: (nextLessonRow.description as string) ?? null,
+        scheduledAt: nextLessonRow.scheduled_at as string,
+        durationMinutes: nextLessonRow.duration_minutes as number,
+        meetingUrl: (nextLessonRow.meeting_url as string) ?? null,
+        studentCount: ((nextLessonRow.student_ids as string[]) || []).length,
+      }
+    : null;
+
+  const pendingReviews = (assignmentsRes.data || []).slice(0, 5).map((row) => {
+    const studentRow = (Array.isArray(row.students) ? row.students[0] : row.students) as Record<string, unknown> | undefined;
+    const studentProfile = unwrapProfile(studentRow || {});
+    return {
+      id: row.id as string,
+      studentName: (studentProfile?.full_name as string) || "Без имени",
+      taskTitle: (row.title as string) || "Задание",
+      createdAt: (row.created_at as string) || (row.due_date as string) || "",
+    };
+  });
+
+  return {
+    stats: {
+      studentsCount: studentsRes.data?.length ?? 0,
+      lessonsToday,
+      pendingReviewCount: assignmentsRes.data?.length ?? 0,
+      attendanceRate: null,
+    },
+    nextLesson,
+    pendingReviews,
+  };
+}
+
 // Бэкенд сам ограничивает список ролью teacher → teacher_id текущего пользователя.
 export async function getPendingReviews(_teacherId: string, limit = 5): Promise<PendingReview[]> {
   const token = await getToken();

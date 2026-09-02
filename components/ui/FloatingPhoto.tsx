@@ -15,6 +15,7 @@ export function FloatingPhoto({
   duration = 4,
   delay = 0,
   rotateRange = 2,
+  loading = "lazy",
 }: {
   src: string;
   alt: string;
@@ -23,6 +24,7 @@ export function FloatingPhoto({
   duration?: number;
   delay?: number;
   rotateRange?: number;
+  loading?: "lazy" | "eager";
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -45,7 +47,7 @@ export function FloatingPhoto({
       }}
       whileHover={{ scale: 1.06, rotate: 0, transition: { duration: 0.25 } }}
     >
-      <CoverPhoto src={src} alt={alt} />
+      <CoverPhoto src={src} alt={alt} loading={loading} />
     </motion.div>
   );
 }

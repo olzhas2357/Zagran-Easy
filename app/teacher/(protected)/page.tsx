@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Users, BookOpen, ClipboardCheck, Flame, Video, FileText, CalendarX2, CheckCircle2, ArrowRight } from "lucide-react";
-import { getCurrentTeacher, getDashboardStats, getNextLesson, getPendingReviews } from "@/lib/teacher-data";
+import { getCurrentTeacher, getTeacherDashboard } from "@/lib/teacher-data";
 
 function formatLessonTime(iso: string) {
   const date = new Date(iso);
@@ -38,11 +38,7 @@ export default async function TeacherDashboardPage() {
   const teacher = await getCurrentTeacher();
   if (!teacher) return null;
 
-  const [stats, nextLesson, pendingReviews] = await Promise.all([
-    getDashboardStats(teacher.id),
-    getNextLesson(teacher.id),
-    getPendingReviews(teacher.id, 5),
-  ]);
+  const { stats, nextLesson, pendingReviews } = await getTeacherDashboard(teacher.id);
 
   return (
     <div className="flex flex-col gap-8 p-5 sm:p-8">
