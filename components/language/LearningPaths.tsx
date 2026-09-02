@@ -1,83 +1,166 @@
-import { GraduationCap, BookOpenCheck, PenSquare, ArrowUpRight, MessageCircle } from "lucide-react";
+import { ArrowUpRight, MessageCircle, Check } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { LANGUAGE_PATHS } from "@/lib/language-data";
+import { LANGUAGE_PATHS, LANGUAGE_COURSES } from "@/lib/language-data";
 import { waUrl } from "@/lib/utils";
 
-const PATH_STYLE: Record<string, { Icon: typeof GraduationCap; bg: string; text: string; ring: string }> = {
-  hsk: { Icon: PenSquare, bg: "bg-[#FDF2E9]", text: "text-[#C2610A]", ring: "group-hover:border-[#F3C08C]" },
-  ielts: { Icon: BookOpenCheck, bg: "bg-[#EAF1FF]", text: "text-[#2880DE]", ring: "group-hover:border-[#A9C7F5]" },
-  sat: { Icon: GraduationCap, bg: "bg-[#EEF9F2]", text: "text-[#1E8E4E]", ring: "group-hover:border-[#A8DDBB]" },
+// Единая сине-неоновая палитра: все три направления — оттенки синего/голубого/фиолетового,
+// чтобы карточки чувствовались частью одной системы, а не тремя разными стилями.
+const PATH_STYLE: Record<string, { gradient: string; glow: string; soft: string; text: string; label: string }> = {
+  hsk: {
+    gradient: "linear-gradient(135deg, #2880DE 0%, #8B7FF5 100%)",
+    glow: "rgba(139,127,245,0.45)",
+    soft: "rgba(139,127,245,0.16)",
+    text: "#C9C2FF",
+    label: "汉",
+  },
+  ielts: {
+    gradient: "linear-gradient(135deg, #3B93F5 0%, #123fa6 100%)",
+    glow: "rgba(34,211,238,0.45)",
+    soft: "rgba(34,211,238,0.16)",
+    text: "#8FD9F5",
+    label: "En",
+  },
+  sat: {
+    gradient: "linear-gradient(135deg, #3B6DF0 0%, #C026D3 100%)",
+    glow: "rgba(192,38,212,0.4)",
+    soft: "rgba(192,38,212,0.16)",
+    text: "#E3A9F0",
+    label: "US",
+  },
 };
 
 export function LearningPaths() {
+  const hsk = LANGUAGE_PATHS.find((p) => p.id === "hsk")!;
+  const others = LANGUAGE_PATHS.filter((p) => p.id !== "hsk");
+  const hskCourse = LANGUAGE_COURSES.find((c) => c.id === "hsk");
+
   return (
-    <section id="paths" className="py-14 sm:py-20">
-      <div className="mx-auto max-w-6xl px-4 sm:px-10">
+    <section
+      id="paths"
+      className="relative overflow-hidden bg-[#0B132B] py-14 sm:py-20"
+    >
+      <div
+        className="pointer-events-none absolute -left-24 top-10 h-[360px] w-[360px] rounded-full opacity-30 blur-3xl"
+        style={{ background: "radial-gradient(circle, #8B7FF5 0%, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute -right-16 bottom-0 h-[320px] w-[320px] rounded-full opacity-25 blur-3xl"
+        style={{ background: "radial-gradient(circle, #22D3EE 0%, transparent 70%)" }}
+      />
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <div className="max-w-[640px]">
-            <div className="text-[12.5px] font-semibold uppercase tracking-wide text-[#2880DE]">Направления</div>
-            <h2 className="mt-2 text-[26px] font-extrabold tracking-tight text-[#0F1B3D] sm:text-[38px]">
+          <div className="flex items-end justify-between gap-6">
+            <h2 className="max-w-[560px] text-[26px] font-extrabold tracking-tight text-white sm:text-[38px]">
               Три экзамена — одна цель: ваше поступление
             </h2>
-            <p className="mt-3 text-[14.5px] leading-relaxed text-slate-500 sm:text-[16px]">
-              Выберите направление подготовки в зависимости от того, куда вы планируете поступать.
+            <p className="hidden max-w-[280px] text-right text-[13.5px] leading-relaxed text-white/60 sm:block">
+              Выберите направление в зависимости от того, куда вы планируете поступать.
             </p>
           </div>
         </FadeIn>
 
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-11 sm:grid-cols-3">
-          {LANGUAGE_PATHS.map((path, i) => {
-            const style = PATH_STYLE[path.id];
-            const href = path.hasCourse ? "#finder" : waUrl(`Здравствуйте! Интересует подготовка к ${path.exam}.`);
-            const external = !path.hasCourse;
+        <div className="mt-9 grid grid-cols-1 gap-5 sm:mt-11 lg:grid-cols-[1.3fr_1fr]">
+          {/* HSK — spotlighted because it's the primary path */}
+          <FadeIn>
+            <a
+              href="#finder"
+              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[28px] p-7 text-white shadow-[0_20px_50px_rgba(4,12,40,0.45)] transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(139,127,245,0.4)] sm:p-9"
+              style={{ background: PATH_STYLE.hsk.gradient }}
+            >
+              <div
+                className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-30 blur-2xl"
+                style={{ background: "#8B7FF5" }}
+              />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-[11.5px] font-bold">
+                    {hsk.country}
+                  </span>
+                  <div className="mt-4 text-[30px] font-extrabold tracking-tight sm:text-[40px]">{hsk.exam}</div>
+                  <div className="mt-1 text-[15px] font-semibold text-white/85">{hsk.title}</div>
+                </div>
+                <span className="flex h-14 w-14 flex-none items-center justify-center rounded-2xl bg-white/15 text-[19px] font-extrabold">
+                  {PATH_STYLE.hsk.label}
+                </span>
+              </div>
 
-            return (
-              <FadeIn key={path.id} delay={i * 0.07}>
-                <a
-                  href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  className={`group relative flex h-full flex-col gap-4 overflow-hidden rounded-[24px] border border-[#E7ECF6] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(15,27,61,0.1)] sm:p-7 ${style.ring}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${style.bg}`}>
-                      <style.Icon className={`h-6 w-6 ${style.text}`} strokeWidth={1.75} />
-                    </div>
-                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide ${style.bg} ${style.text}`}>
-                      {path.country}
+              <p className="relative mt-5 max-w-[420px] text-[14px] leading-relaxed text-white/80">
+                {hsk.description}
+              </p>
+
+              <div className="relative mt-6 flex flex-wrap items-center gap-2.5 border-t border-white/15 pt-5">
+                {hskCourse && (
+                  <>
+                    <span className="rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] font-semibold">
+                      {hskCourse.level}
                     </span>
-                  </div>
+                    <span className="rounded-full bg-white/10 px-3 py-1.5 text-[12.5px] font-semibold">
+                      {hskCourse.duration}
+                    </span>
+                  </>
+                )}
+                <span className="ml-auto inline-flex items-center gap-1.5 text-[14.5px] font-bold">
+                  Подобрать курс
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.5} />
+                </span>
+              </div>
+            </a>
+          </FadeIn>
 
-                  <div>
-                    <div className="text-[22px] font-extrabold tracking-tight text-[#0F1B3D]">{path.exam}</div>
-                    <div className="mt-0.5 text-[14.5px] font-semibold text-slate-700">{path.title}</div>
-                  </div>
-
-                  <p className="flex-1 text-[13.5px] leading-relaxed text-slate-500">{path.description}</p>
-
-                  <span className={`inline-flex w-fit items-center gap-1.5 text-[13.5px] font-semibold ${style.text}`}>
-                    {path.hasCourse ? (
-                      <>
-                        Подобрать курс
-                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.25} />
-                      </>
-                    ) : (
-                      <>
+          {/* IELTS + SAT — side cards with WhatsApp action */}
+          <div className="grid grid-cols-1 gap-5">
+            {others.map((path, i) => {
+              const style = PATH_STYLE[path.id];
+              return (
+                <FadeIn key={path.id} delay={0.08 + i * 0.06}>
+                  <a
+                    href={waUrl(`Здравствуйте! Интересует подготовка к ${path.exam}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative flex h-full items-start gap-4 overflow-hidden rounded-[24px] border border-white/12 bg-white/[0.06] p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09] hover:shadow-[0_20px_44px_var(--glow)]"
+                    style={{ ["--glow" as string]: style.glow }}
+                  >
+                    <span
+                      className="pointer-events-none absolute inset-x-0 top-0 h-1"
+                      style={{ background: style.gradient }}
+                    />
+                    <span
+                      className="flex h-11 w-11 flex-none items-center justify-center rounded-xl text-[14px] font-extrabold text-white"
+                      style={{ background: style.gradient }}
+                    >
+                      {style.label}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-[19px] font-extrabold tracking-tight text-white">{path.exam}</div>
+                        <span
+                          className="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
+                          style={{ backgroundColor: style.soft, color: style.text }}
+                        >
+                          {path.country}
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-[13.5px] leading-relaxed text-white/65">{path.description}</p>
+                      <span className="mt-3 inline-flex items-center gap-1.5 text-[13.5px] font-semibold" style={{ color: style.text }}>
                         <MessageCircle className="h-4 w-4" strokeWidth={2} />
                         Оставить заявку
-                      </>
-                    )}
-                  </span>
-                </a>
-              </FadeIn>
-            );
-          })}
-        </div>
+                      </span>
+                    </div>
+                  </a>
+                </FadeIn>
+              );
+            })}
 
-        <p className="mt-5 text-[13px] text-slate-400">
-          Курс с расписанием и преподавателем пока оформлен только для IELTS — по HSK и SAT свяжемся с вами лично и
-          подберём формат.
-        </p>
+            <FadeIn delay={0.2}>
+              <div className="flex items-start gap-2.5 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3.5 text-[12.5px] leading-relaxed text-white/60">
+                <Check className="mt-0.5 h-3.5 w-3.5 flex-none text-[#C9C2FF]" strokeWidth={2.5} />
+                Курс с расписанием и преподавателем сейчас оформлен только для HSK — по IELTS и SAT свяжемся с вами
+                лично и подберём формат.
+              </div>
+            </FadeIn>
+          </div>
+        </div>
       </div>
     </section>
   );

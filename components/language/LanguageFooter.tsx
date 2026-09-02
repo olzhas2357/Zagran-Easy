@@ -32,7 +32,7 @@ const COLUMNS = [
 
 export function LanguageFooter() {
   return (
-    <footer className="border-t border-[#E7ECF6] bg-[#0F1B3D] text-white">
+    <footer className="border-t border-white/10 bg-[#0B132B] text-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-10 sm:py-16">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-4 sm:gap-8">
           <div>
