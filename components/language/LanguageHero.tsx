@@ -16,7 +16,7 @@ export function LanguageHero() {
         <div className="min-w-0 flex-1">
           <FadeIn>
             <div className="flex flex-wrap items-center gap-1.5">
-              {["HSK", "IELTS", "SAT"].map((exam) => (
+              {["HSK", "IELTS"].map((exam) => (
                 <span
                   key={exam}
                   className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[12.5px] font-bold text-blue-700 dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]"
@@ -26,7 +26,7 @@ export function LanguageHero() {
               ))}
             </div>
             <h1 className="mt-4 text-[32px] font-extrabold leading-[1.08] tracking-tight text-balance text-ze-ink sm:text-[54px] dark:text-white">
-              Подготовьтесь к HSK, IELTS или SAT с преподавателем, который поможет достичь результата
+              Подготовьтесь к HSK, IELTS с преподавателем, который поможет достичь результата
             </h1>
             <p className="mt-4 max-w-[540px] text-[15px] leading-relaxed text-slate-600 sm:text-[17.5px] dark:text-white/65">
               Практические занятия, сильные преподаватели и программа, созданная для тех, кто готовится к

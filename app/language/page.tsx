@@ -17,12 +17,12 @@ import { fetchPublicCourses, fetchPublicTeachers } from "@/lib/data";
 import { MotivationMarquee } from "@/components/language/MotivationMarquee";
 
 export const metadata: Metadata = {
-  title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
+  title: "Подготовка к HSK, IELTS — ZagranEasy",
   description:
-    "Онлайн-подготовка к HSK, IELTS и SAT с преподавателем. Курсы английского языка, сильные преподаватели, практика и результат для поступления за рубеж.",
+    "Онлайн-подготовка к HSK, IELTS с преподавателем. Курсы английского языка, сильные преподаватели, практика и результат для поступления за рубеж.",
   openGraph: {
-    title: "Подготовка к HSK, IELTS и SAT — ZagranEasy",
-    description: "Онлайн-подготовка к HSK, IELTS и SAT с преподавателем. Поступление в Китай, США и другие страны.",
+    title: "Подготовка к HSK, IELTS — ZagranEasy",
+    description: "Онлайн-подготовка к HSK, IELTS с преподавателем. Поступление в Китай, США и другие страны.",
     url: "https://zagraneasy.kz/language",
   },
 };
@@ -39,8 +39,8 @@ export default async function LanguagePage() {
       <Problems />
       <MotivationMarquee />
       <HowItWorks />
-      <Teachers teachers={teachers} />
-      <Courses courses={courses}/>
+      {/* <Teachers teachers={teachers} />
+      <Courses courses={courses}/> */}
       <Results />
       <Reviews />
       <Pricing />

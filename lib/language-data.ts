@@ -128,7 +128,6 @@ export const LANGUAGE_GOALS: LanguageGoal[] = [
   { id: "work", label: "Работа" },
   { id: "travel", label: "Путешествия" },
   { id: "hsk", label: "HSK" },
-  { id: "sat", label: "SAT" },
 ];
 
 export interface LanguagePath {
@@ -142,7 +141,7 @@ export interface LanguagePath {
 }
 
 // Три направления подготовки. Курс/цена/преподаватель показываются только там,
-// где реально есть данные (IELTS) — для HSK и SAT ведём на заявку, а не выдумываем цифры.
+// где реально есть данные (IELTS) — для HSK ведём на заявку, а не выдумываем цифры.
 export const LANGUAGE_PATHS: LanguagePath[] = [
   {
     id: "hsk",
@@ -161,15 +160,6 @@ export const LANGUAGE_PATHS: LanguagePath[] = [
     description: "Системная подготовка к IELTS с преподавателем-экспертом по всем четырём модулям.",
     goalId: "ielts",
     hasCourse: true,
-  },
-  {
-    id: "sat",
-    exam: "SAT",
-    country: "США",
-    title: "Подготовка к SAT",
-    description: "Математика, Reading и Writing для поступления в университеты США.",
-    goalId: "sat",
-    hasCourse: false,
   },
 ];
 
@@ -232,25 +222,33 @@ export interface LanguagePricingPlan {
 
 export const LANGUAGE_PRICING: LanguagePricingPlan[] = [
   {
-    id: "self",
-    name: "Самостоятельно",
-    description: "Учебные материалы + задания.",
-    price: "$29 / месяц",
+    id: "standard",
+    name: "Standard",
+    description: "Группа 5–6 человек + преподаватель.",
+    price: "99990 / месяц",
     cta: "Выбрать",
   },
   {
-    id: "group",
-    name: "В группе",
-    description: "Живые занятия + преподаватель.",
-    price: "$99 / месяц",
+    id: "pro",
+    name: "Pro",
+    description: "Группа 3–4 человека + преподаватель.",
+    price: "129990 / месяц",
     cta: "Выбрать",
     highlighted: true,
   },
   {
-    id: "individual",
-    name: "Индивидуально",
-    description: "Персональная программа + преподаватель.",
-    price: "$199 / месяц",
+    id: "premium_duo",
+    name: "Premium Duo",
+    description: "2 человека + преподаватель.",
+    price: "159990 / месяц",
+    cta: "Выбрать",
+  },
+
+  {
+    id: "premium",
+    name: "Premium",
+    description: "1 человек + преподаватель.",
+    price: "159990 / месяц",
     cta: "Выбрать",
   },
 ];
@@ -276,7 +274,7 @@ export const LANGUAGE_FAQ: LanguageFaqItem[] = [
   {
     id: "faq-3",
     question: "Какие языки доступны?",
-    answer: "Английский язык с подготовкой к IELTS, а также направления по китайскому (HSK) и подготовке к SAT — уточняйте формат и старт по вашему направлению.",
+    answer: "Английский язык с подготовкой к IELTS, а также направления по китайскому (HSK) — уточняйте формат и старт по вашему направлению.",
   },
   {
     id: "faq-4",

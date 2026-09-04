@@ -1,3 +1,27 @@
+  <section id="results" class="py-20 px-0 max-w-full overflow-hidden">
+        <div class="text-center px-6 mb-12">
+            <span class="inline-block bg-primary/10 text-primary dark:text-[#60a5fa] px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-4" data-i18n="about_res_badge">Наши результаты</span>
+            <h2 class="text-3xl md:text-5xl font-black tracking-tighter mb-4 dark:text-white text-balance" data-i18n="about_res_title">Официальные зачисления и сертификаты</h2>
+            <p class="text-lg text-on-surface-variant dark:text-slate-400 max-w-2xl mx-auto text-pretty" data-i18n="about_res_desc">Подлинные письма о зачислении (Acceptance Letters) наших студентов в ведущие зарубежные ВУЗы и наши лицензии.</p>
+        </div>
+
+        <div class="swiper certsSwiper w-full py-10 px-4">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 1" loading="lazy"></div>
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 2" loading="lazy"></div>
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 3" loading="lazy"></div>
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 4" loading="lazy"></div>
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 5" loading="lazy"></div>
+                <div class="swiper-slide border border-outline-variant dark:border-slate-700 shadow-xl bg-white dark:bg-slate-800"><img src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png" class="w-full h-auto object-contain" alt="Сертификат о зачислении 6" loading="lazy"></div>
+            </div>
+            <div class="swiper-pagination mt-10 relative flex justify-center"></div>
+        </div>
+    </section>
+
+
+
+
+
 # Full UI/UX & Development Prompt — ZagranEasy Language Courses
 
 Создай полноценный современный landing page для **ZagranEasy**, образовательной платформы, которая помогает студентам изучать иностранные языки и готовиться к обучению за рубежом.

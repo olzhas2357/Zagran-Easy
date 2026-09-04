@@ -22,13 +22,13 @@ const PATH_STYLE: Record<string, { gradient: string; glow: string; badgeClass: s
     linkClass: "text-sky-700 dark:text-[#8FD9F5]",
     label: "En",
   },
-  sat: {
-    gradient: "linear-gradient(135deg, #3B6DF0 0%, #C026D3 100%)",
-    glow: "rgba(192,38,212,0.4)",
-    badgeClass: "bg-fuchsia-50 text-fuchsia-700 dark:bg-white/10 dark:text-[#E3A9F0]",
-    linkClass: "text-fuchsia-700 dark:text-[#E3A9F0]",
-    label: "US",
-  },
+  // sat: {
+  //   gradient: "linear-gradient(135deg, #3B6DF0 0%, #C026D3 100%)",
+  //   glow: "rgba(192,38,212,0.4)",
+  //   badgeClass: "bg-fuchsia-50 text-fuchsia-700 dark:bg-white/10 dark:text-[#E3A9F0]",
+  //   linkClass: "text-fuchsia-700 dark:text-[#E3A9F0]",
+  //   label: "US",
+  // },
 };
 
 export function LearningPaths() {
@@ -154,7 +154,7 @@ export function LearningPaths() {
             <FadeIn delay={0.2}>
               <div className="flex items-start gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-[12.5px] leading-relaxed text-slate-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/60">
                 <Check className="mt-0.5 h-3.5 w-3.5 flex-none text-purple-600 dark:text-[#C9C2FF]" strokeWidth={2.5} />
-                Курс с расписанием и преподавателем сейчас оформлен только для HSK — по IELTS и SAT свяжемся с вами
+                Курс с расписанием и преподавателем сейчас оформлен только для HSK — по IELTS свяжемся с вами
                 лично и подберём формат.
               </div>
             </FadeIn>

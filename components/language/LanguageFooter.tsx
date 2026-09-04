@@ -57,14 +57,14 @@ export function LanguageFooter() {
               >
                 WhatsApp
               </a>
-              <a
+              {/* <a
                 href="https://t.me/zagraneasy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[13px] font-semibold text-slate-600 hover:text-ze-ink dark:text-white/70 dark:hover:text-white"
               >
                 Telegram
-              </a>
+              </a> */}
             </div>
           </div>
 
