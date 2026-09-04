@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Clock, Video, ClipboardList, ChevronRight } from "lucide-react";
 import { getCurrentUser, getMyApplication } from "@/lib/account-data";
 import { fetchAllUniversities } from "@/lib/data";
+import { getMyLessonsSplit, getMyAssignments, getMyGoal } from "@/lib/student-data";
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { GoalCard } from "@/components/account/GoalCard";
 import { waUrl } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Кабинет студента — ZagranEasy" };
+
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+}
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
@@ -15,6 +22,12 @@ export default async function AccountPage() {
   const application = await getMyApplication(user.id);
   const universities = application ? await fetchAllUniversities() : [];
   const university = application?.universityId ? universities.find((u) => u.id === application.universityId) || null : null;
+
+  const { upcoming: upcomingLessons } = await getMyLessonsSplit();
+  const nextLesson = upcomingLessons[0] ?? null;
+  const assignments = await getMyAssignments();
+  const pendingHomeworkCount = assignments.filter((a) => a.status !== "completed").length;
+  const goal = await getMyGoal();
 
   return (
     <div className="bg-ze-surface">
@@ -42,6 +55,51 @@ export default async function AccountPage() {
             <SignOutButton redirectTo="/account/login" />
           </div>
         </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Link
+            href={nextLesson ? `/account/lessons/${nextLesson.id}` : "/account/lessons"}
+            className="flex items-center justify-between gap-3 rounded-[18px] border border-ze-border bg-white p-4.5 transition-colors hover:border-slate-300 sm:p-5.5"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-[#EBF1FE]">
+                <Video className="h-5 w-5 text-ze-primary" strokeWidth={1.75} />
+              </span>
+              <div className="min-w-0">
+                <div className="text-[15px] font-bold">Ближайший урок</div>
+                {nextLesson ? (
+                  <div className="mt-0.5 flex items-center gap-1 truncate text-[13px] text-ze-muted">
+                    <Clock className="h-3.5 w-3.5 flex-none" strokeWidth={1.75} />
+                    {formatDateTime(nextLesson.scheduledAt)}
+                  </div>
+                ) : (
+                  <div className="mt-0.5 text-[13px] text-ze-muted">Уроков пока не назначено</div>
+                )}
+              </div>
+            </div>
+            <ChevronRight className="h-4.5 w-4.5 flex-none text-ze-muted" strokeWidth={1.75} />
+          </Link>
+
+          <Link
+            href="/account/homework"
+            className="flex items-center justify-between gap-3 rounded-[18px] border border-ze-border bg-white p-4.5 transition-colors hover:border-slate-300 sm:p-5.5"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-amber-50">
+                <ClipboardList className="h-5 w-5 text-amber-700" strokeWidth={1.75} />
+              </span>
+              <div className="min-w-0">
+                <div className="text-[15px] font-bold">Домашние задания</div>
+                <div className="mt-0.5 text-[13px] text-ze-muted">
+                  {pendingHomeworkCount > 0 ? `${pendingHomeworkCount} ожидают выполнения` : "Всё выполнено"}
+                </div>
+              </div>
+            </div>
+            <ChevronRight className="h-4.5 w-4.5 flex-none text-ze-muted" strokeWidth={1.75} />
+          </Link>
+        </div>
+
+        <GoalCard goal={goal} />
 
         {!application && (
           <div className="mt-8 rounded-2xl border border-dashed border-[#D6DEEA] bg-white px-6 py-14 text-center">

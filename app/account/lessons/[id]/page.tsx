@@ -1,0 +1,77 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { ArrowLeft, Clock, Video, FolderOpen, FileText } from "lucide-react";
+import { getCurrentStudent, getMyLessonById } from "@/lib/student-data";
+
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+}
+
+export default async function StudentLessonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const student = await getCurrentStudent();
+  if (!student) redirect("/account/login");
+
+  const lesson = await getMyLessonById(id);
+  if (!lesson) notFound();
+
+  return (
+    <div className="bg-ze-surface">
+      <div className="mx-auto max-w-3xl px-4 py-9 sm:px-10 sm:py-11">
+        <Link href="/account/lessons" className="flex w-fit items-center gap-1.5 text-[13.5px] font-semibold text-ze-primary hover:underline">
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          Мои уроки
+        </Link>
+
+        <div className="mt-4 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
+          <h1 className="text-[22px] font-extrabold tracking-tight text-ze-ink sm:text-[24px]">{lesson.title}</h1>
+          <div className="mt-2 flex items-center gap-1.5 text-[13.5px] text-ze-muted">
+            <Clock className="h-4 w-4" strokeWidth={1.75} />
+            {formatDateTime(lesson.scheduledAt)} · {lesson.durationMinutes} мин
+          </div>
+          {lesson.description && <p className="mt-4 text-[14.5px] leading-relaxed text-ze-ink">{lesson.description}</p>}
+
+          {lesson.meetingUrl && (
+            <div className="mt-5">
+              <a
+                href={lesson.meetingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-fit items-center gap-2 rounded-xl bg-ze-primary px-5 py-3 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-primary-dark"
+              >
+                <Video className="h-4.5 w-4.5" strokeWidth={2} />
+                Подключиться
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-5 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <div className="flex items-center gap-2 text-[13px] font-bold text-ze-ink">
+            <FolderOpen className="h-4 w-4 text-ze-muted" strokeWidth={1.75} />
+            Материалы
+          </div>
+          {lesson.materials.length > 0 ? (
+            <ul className="mt-3 flex flex-col gap-2">
+              {lesson.materials.map((m, i) => (
+                <li key={m.url + i}>
+                  <a
+                    href={m.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-[13.5px] font-medium text-ze-primary hover:underline"
+                  >
+                    <FileText className="h-3.5 w-3.5 flex-none" strokeWidth={1.75} />
+                    <span className="truncate">{m.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="mt-2 text-[13px] text-ze-muted">Материалов нет.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
