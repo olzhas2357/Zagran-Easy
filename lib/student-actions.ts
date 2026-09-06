@@ -56,6 +56,9 @@ export async function setMyGoal(input: SetGoalInput): Promise<{ success: boolean
 
 // POST /tasks/:id/submit (роль student) создаёт запись в task_attempts —
 // это и есть "отправка ответа", отдельного эндпоинта на /assignments нет.
+// `answer` — строка для текстовых типов (writing/vocabulary/...) или JSON-строка
+// (массив/объект) для структурированных типов (multiple_select/matching/fill_blanks) —
+// см. lib/task-types.ts и разбор на бэкенде в tasks.service.ts submit().
 export async function submitAssignmentAnswer(
   taskId: string,
   answer: string,

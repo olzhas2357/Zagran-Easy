@@ -1,15 +1,7 @@
 import Link from "next/link";
 import { Plus, ClipboardList, Sparkles } from "lucide-react";
 import { getTasks } from "@/lib/teacher-data";
-
-const TYPE_LABEL: Record<string, string> = {
-  single_choice: "Один вариант",
-  multiple_choice: "Несколько вариантов",
-  text: "Текстовый ответ",
-  essay: "Эссе",
-  listening: "Аудирование",
-  speaking: "Говорение",
-};
+import { TASK_TYPE_LABEL } from "@/lib/task-types";
 
 const DIFFICULTY_LABEL: Record<string, string> = {
   easy: "Лёгкая",
@@ -58,7 +50,7 @@ export default async function TeacherTasksPage() {
                   )}
                 </div>
                 <div className="mt-1 truncate text-[13px] text-ze-muted">
-                  {(t.type && TYPE_LABEL[t.type]) || t.type} {t.section && `· ${t.section}`}
+                  {(t.type && TASK_TYPE_LABEL[t.type]) || t.type} {t.section && `· ${t.section}`}
                 </div>
                 {t.question && <p className="mt-1.5 line-clamp-2 text-[13.5px] leading-relaxed text-ze-ink">{t.question}</p>}
               </div>

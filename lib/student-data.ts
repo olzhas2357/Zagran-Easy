@@ -150,6 +150,7 @@ export interface StudentAssignmentDetail extends StudentAssignmentListItem {
   taskId: string | null;
   taskQuestion: string | null;
   taskType: string | null;
+  taskOptions: Record<string, unknown> | null;
   answerText: string | null;
   reviewComment: string | null;
   reviewErrors: string | null;
@@ -169,6 +170,7 @@ export async function getMyAssignmentById(assignmentId: string): Promise<Student
     taskId: (task?.id as string) ?? null,
     taskQuestion: (pickFirst(task || {}, ["question", "prompt", "description", "title"]) as string) ?? null,
     taskType: (pickFirst(task || {}, ["type", "task_type"]) as string) ?? null,
+    taskOptions: (task?.options as Record<string, unknown>) ?? null,
     answerText: (row.answer_text as string) ?? null,
     reviewComment: (row.review_comment as string) ?? null,
     reviewErrors: (row.review_errors as string) ?? null,

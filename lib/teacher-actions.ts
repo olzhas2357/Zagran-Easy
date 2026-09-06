@@ -137,6 +137,9 @@ export interface NewTaskInput {
   explanation: string;
   xpReward: number | null;
   autoCheck: boolean;
+  // Структурированные данные для multiple_choice/multiple_select/matching/fill_blanks —
+  // см. lib/task-types.ts. Для остальных типов не заполняется.
+  options?: Record<string, unknown>;
 }
 
 export async function createTask(input: NewTaskInput): Promise<{ success: boolean; id?: string; error?: string }> {
@@ -154,6 +157,7 @@ export async function createTask(input: NewTaskInput): Promise<{ success: boolea
       question: input.question.trim(),
       section: input.section.trim() || undefined,
       difficulty: input.difficulty.trim() || undefined,
+      options: input.options ?? undefined,
       correct_answer: input.correctAnswer.trim() || undefined,
       explanation: input.explanation.trim() || undefined,
       xp_reward: input.xpReward ?? undefined,
@@ -203,7 +207,8 @@ export async function createAssignment(
 }
 
 export interface ReviewInput {
-  attemptId: string;
+  assignmentId: string;
+  taskId: string;
   score: number;
   comment: string;
   errors: string;
@@ -212,14 +217,19 @@ export interface ReviewInput {
 export async function reviewAssignment(input: ReviewInput): Promise<{ success: boolean; error?: string }> {
   const token = await getToken();
   const res = await apiPatch(
-    `/assignments/${input.attemptId}/review`,
-    { score: input.score, comment: input.comment.trim() || undefined, errors: input.errors.trim() || undefined },
+    `/assignments/${input.assignmentId}/review`,
+    {
+      task_id: input.taskId,
+      score: input.score,
+      comment: input.comment.trim() || undefined,
+      errors: input.errors.trim() || undefined,
+    },
     token
   );
   if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/teacher/assignments");
-  revalidatePath(`/teacher/assignments/${input.attemptId}`);
+  revalidatePath(`/teacher/assignments/${input.assignmentId}`);
   revalidatePath("/teacher");
   return { success: true };
 }

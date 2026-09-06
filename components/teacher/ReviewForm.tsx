@@ -10,13 +10,15 @@ const inputClass =
 const textareaClass = `${inputClass} resize-none`;
 
 export function ReviewForm({
-  attemptId,
+  assignmentId,
+  taskId,
   initialScore,
   initialComment,
   initialErrors,
   alreadyReviewed,
 }: {
-  attemptId: string;
+  assignmentId: string;
+  taskId: string;
   initialScore: number | null;
   initialComment: string | null;
   initialErrors: string | null;
@@ -39,7 +41,7 @@ export function ReviewForm({
     if (!Number.isFinite(scoreNum)) return setError("Укажите оценку");
 
     startTransition(async () => {
-      const res = await reviewAssignment({ attemptId, score: scoreNum, comment, errors });
+      const res = await reviewAssignment({ assignmentId, taskId, score: scoreNum, comment, errors });
       if (!res.success) {
         setError(res.error || "Не удалось отправить оценку");
         return;

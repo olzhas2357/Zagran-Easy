@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Star } from "lucide-react";
 import { getCurrentStudent, getMyAssignmentById } from "@/lib/student-data";
-import { AssignmentAnswerForm } from "@/components/account/AssignmentAnswerForm";
+import { AssignmentAnswerDispatcher } from "@/components/account/AssignmentAnswerDispatcher";
+import { formatAnswerForDisplay } from "@/lib/task-types";
 
 export default async function StudentHomeworkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -42,10 +43,18 @@ export default async function StudentHomeworkDetailPage({ params }: { params: Pr
           {isReviewed ? (
             <>
               <div className="text-[13px] font-semibold text-ze-muted">Ваш ответ</div>
-              <div className="mt-2.5 whitespace-pre-wrap text-[14.5px] leading-relaxed text-ze-ink">{assignment.answerText}</div>
+              <div className="mt-2.5 whitespace-pre-wrap text-[14.5px] leading-relaxed text-ze-ink">
+                {formatAnswerForDisplay(assignment.taskType, assignment.taskOptions, assignment.answerText)}
+              </div>
             </>
           ) : assignment.taskId ? (
-            <AssignmentAnswerForm taskId={assignment.taskId} initialAnswer={assignment.answerText} />
+            <AssignmentAnswerDispatcher
+              taskId={assignment.taskId}
+              taskType={assignment.taskType}
+              taskQuestion={assignment.taskQuestion}
+              taskOptions={assignment.taskOptions}
+              initialAnswer={assignment.answerText}
+            />
           ) : (
             <div className="text-[13.5px] text-ze-muted">Задание пока не привязано к упражнению — обратитесь к преподавателю.</div>
           )}

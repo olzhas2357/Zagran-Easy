@@ -277,6 +277,7 @@ export interface TaskListItem {
   section: string | null;
   difficulty: string | null;
   question: string;
+  options: Record<string, unknown> | null;
   xpReward: number | null;
 }
 
@@ -293,6 +294,7 @@ export async function getTasks(): Promise<TaskListItem[]> {
       section: (row.section as string) ?? null,
       difficulty: (row.difficulty as string) ?? null,
       question: (row.question as string) || "",
+      options: (row.options as Record<string, unknown>) ?? null,
       xpReward: (row.xp_reward as number) ?? null,
     }))
     .sort((a, b) => a.title.localeCompare(b.title));
@@ -408,9 +410,17 @@ export async function getAssignments(_teacherId: string): Promise<AssignmentList
 }
 
 export interface AssignmentDetail extends AssignmentListItem {
-  taskQuestion: string | null;
-  taskType: string | null;
+  tasks: AssignmentTaskDetail[];
+}
+
+export interface AssignmentTaskDetail {
+  id: string;
+  title: string;
+  question: string | null;
+  type: string | null;
+  options: Record<string, unknown> | null;
   answerText: string | null;
+  reviewScore: number | null;
   reviewComment: string | null;
   reviewErrors: string | null;
 }
@@ -424,15 +434,23 @@ export async function getAssignmentById(teacherId: string, assignmentId: string)
   if (row.teacher_id !== teacherId) return null;
 
   const tasks = (row.tasks as Record<string, unknown>[]) || [];
-  const task = tasks[0];
 
   return {
     ...mapAssignmentRow(row),
-    taskQuestion: (pickFirst(task || {}, ["question", "prompt", "description", "title"]) as string) ?? null,
-    taskType: (pickFirst(task || {}, ["type", "task_type"]) as string) ?? null,
-    answerText: (row.answer_text as string) ?? null,
-    reviewComment: (row.review_comment as string) ?? null,
-    reviewErrors: (row.review_errors as string) ?? null,
+    tasks: tasks.map((task) => {
+      const attempt = (task.attempt as Record<string, unknown>) || {};
+      return {
+        id: task.id as string,
+        title: (task.title as string) || "Задание",
+        question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
+        type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
+        options: (task.options as Record<string, unknown>) ?? null,
+        answerText: (attempt.answer as string) ?? null,
+        reviewScore: (attempt.review_score as number) ?? null,
+        reviewComment: (attempt.review_comment as string) ?? null,
+        reviewErrors: (attempt.review_errors as string) ?? null,
+      };
+    }),
   };
 }
 
