@@ -73,7 +73,10 @@ export function UserForm({ mode = "create", userId }: UserFormProps) {
 
   useEffect(() => {
     if (role !== "student" || !token) return;
-    apiGet<TeacherOption[]>("/teachers?limit=100", token).then((res) => setTeachers(res.data || []));
+    apiGet<TeacherOption[]>("/teachers?limit=100", token).then((res) => {
+      setTeachers(Array.isArray(res.data) ? res.data : []);
+      if (res.error) setError(res.error);
+    });
   }, [role, token]);
 
   useEffect(() => {

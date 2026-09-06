@@ -7,12 +7,10 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
 
 export const metadata: Metadata = {
-  title: PAGE_META["/about"].title,
-  description: PAGE_META["/about"].description,
+  title: PAGE_META["/about"]?.title ?? "О нас",
+  description: PAGE_META["/about"]?.description ?? "Описание по умолчанию",
   openGraph: {
-    title: PAGE_META["/about"].title,
-    description: PAGE_META["/about"].description,
-    url: "https://zagraneasy.kz/about",
+    title: PAGE_META["/about"]?.title ?? "О нас",
   },
 };
 

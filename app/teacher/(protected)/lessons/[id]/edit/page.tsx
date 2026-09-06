@@ -35,6 +35,7 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
           durationMinutes: lesson.durationMinutes,
           studentIds: lesson.studentIds,
           meetingUrl: lesson.meetingUrl,
+          meetingProvider: lesson.meetingProvider,
           materials: lesson.materials,
           homeworkTaskIds: lesson.homeworkTaskIds,
         }}

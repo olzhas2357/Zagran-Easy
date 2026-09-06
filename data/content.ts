@@ -3,8 +3,8 @@ import { WorkCountry, Property, Review } from "@/lib/types";
 // ============ WORK ============
 export const workCountries: WorkCountry[] = [
   { id: "w-tr", slug: "turkey", name: "Турция", flag: "🇹🇷", industries: ["Отельный бизнес", "IT", "Строительство"], description: "Вакансии в отельном бизнесе, IT и строительстве.", salaryRange: "$800 — $2 000", imageUrl: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1200&q=80" },
-  { id: "w-pl", slug: "poland", name: "Польша", flag: "🇵🇱", industries: ["Производство", "Логистика", "IT"], description: "Лидер в производстве и логистике.", salaryRange: "$1 200 — $3 000", imageUrl: "https://images.unsplash.com/photo-1607427293702-036933bbe97d?w=1200&q=80" },
-  { id: "w-de", slug: "germany", name: "Германия", flag: "🇩🇪", industries: ["Инженерия", "Медицина", "IT"], description: "Работа для инженеров и медиков.", salaryRange: "$2 500 — $5 000", imageUrl: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80" },
+  { id: "w-pl", slug: "poland", name: "Китай", flag: "🇨🇳", industries: ["Производство", "Логистика", "IT"], description: "Лидер в производстве и логистике.", salaryRange: "$1 200 — $3 000", imageUrl: "https://34travel.me/media/posts/5ce3ab778a926-top.jpg" },
+  { id: "w-de", slug: "germany", name: "Италия", flag: "🇮🇹", industries: ["Инженерия", "Медицина", "IT"], description: "Работа для инженеров и медиков.", salaryRange: "$2 500 — $5 000", imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv00Yq_DIBGJOA4Fs_WpBkAyLVC4gy2k8PBdgJTZj9ipI7eYP4hEj28eA&s=10" },
 ];
 
 // ============ VISA STEPS ============

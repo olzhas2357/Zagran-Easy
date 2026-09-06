@@ -29,6 +29,7 @@ export interface LessonFormInitial {
   durationMinutes: number;
   studentIds: string[];
   meetingUrl: string | null;
+  meetingProvider: "zoom" | "meet" | null;
   materials: { name: string; url: string }[];
   homeworkTaskIds: string[];
 }
@@ -66,6 +67,7 @@ export function LessonForm({
   const [duration, setDuration] = useState(lesson?.durationMinutes ?? 60);
   const [studentIds, setStudentIds] = useState<string[]>(lesson?.studentIds ?? []);
   const [meetingUrl, setMeetingUrl] = useState(lesson?.meetingUrl ?? "");
+  const [meetingProvider, setMeetingProvider] = useState<"zoom" | "meet">(lesson?.meetingProvider || "meet");
   const [materials, setMaterials] = useState<{ name: string; url: string }[]>(lesson?.materials ?? []);
   const [homeworkTaskIds, setHomeworkTaskIds] = useState<string[]>(lesson?.homeworkTaskIds ?? []);
 
@@ -107,6 +109,7 @@ export function LessonForm({
           scheduledAt,
           durationMinutes: duration,
           meetingUrl,
+          meetingProvider,
           materials,
           homeworkTaskIds,
         });
@@ -125,6 +128,7 @@ export function LessonForm({
         durationMinutes: duration,
         studentIds,
         meetingUrl,
+        meetingProvider,
         materials,
         homeworkTaskIds,
       });
@@ -202,9 +206,17 @@ export function LessonForm({
         )}
       </Field>
 
-      <Field label="Ссылка Zoom/Meet">
-        <input value={meetingUrl} onChange={(e) => setMeetingUrl(e.target.value)} placeholder="https://..." className={inputClass} />
-      </Field>
+      <div className="grid grid-cols-[140px_1fr] gap-2.5">
+        <Field label="Платформа">
+          <select value={meetingProvider} onChange={(e) => setMeetingProvider(e.target.value as "zoom" | "meet")} className={inputClass}>
+            <option value="meet">Google Meet</option>
+            <option value="zoom">Zoom</option>
+          </select>
+        </Field>
+        <Field label="Ссылка на урок">
+          <input value={meetingUrl} onChange={(e) => setMeetingUrl(e.target.value)} placeholder="https://..." className={inputClass} />
+        </Field>
+      </div>
 
       <Field label="Материалы">
         <div className="flex flex-col gap-2">

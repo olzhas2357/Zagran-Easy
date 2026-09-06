@@ -7,11 +7,11 @@ import { VisaTimeline } from "@/components/visa/VisaTimeline";
 import { PAGE_META } from "@/lib/navigation";
 
 export const metadata: Metadata = {
-  title: PAGE_META["/visa-usa"].title,
-  description: PAGE_META["/visa-usa"].description,
+  title: PAGE_META["/visa-usa"]?.title ?? "Виза в США",
+  description: PAGE_META["/visa-usa"]?.description ?? "Оформление визы в США",
   openGraph: {
-    title: PAGE_META["/visa-usa"].title,
-    description: PAGE_META["/visa-usa"].description,
+    title: PAGE_META["/visa-usa"]?.title ?? "Виза в США",
+    description: PAGE_META["/visa-usa"]?.description ?? "Оформление визы в США",
     url: "https://zagraneasy.kz/visa-usa",
   },
 };

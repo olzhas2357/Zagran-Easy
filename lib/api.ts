@@ -77,6 +77,10 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
     return { data: null as T, error: message || "Ошибка сервера" };
   }
 
+  if (!("data" in json)) {
+    return { data: null as T, error: `Ответ API без поля data (${res.status} ${path})` };
+  }
+
   if (isPaginated(json.data)) {
     return { data: json.data.data as T, total: json.data.total, page: json.data.page, limit: json.data.limit };
   }

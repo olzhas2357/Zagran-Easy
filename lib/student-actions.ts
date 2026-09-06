@@ -9,6 +9,36 @@ import { revalidatePath } from "next/cache";
 import { apiPost, apiPatch } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 
+export async function uploadSpeakingAudio(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Запись не найдена" };
+  if (!file.type.startsWith("audio/")) return { success: false, error: "Файл записи должен быть аудио" };
+  if (file.size > 20 * 1024 * 1024) return { success: false, error: "Запись не должна быть больше 20 МБ" };
+
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+
+  const upload = new FormData();
+  upload.set("file", file);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+
+  try {
+    const res = await fetch(`${API_URL}/uploads?bucket=speaking-audio`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: upload,
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok || json.success === false) return { success: false, error: json.message || "Не удалось загрузить запись" };
+    return { success: true, url: json.data?.url || json.url };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
+}
+
 export interface SetGoalInput {
   goalId: string | null;
   examType: string;

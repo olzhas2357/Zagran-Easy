@@ -72,6 +72,7 @@ export interface NextLesson {
   scheduledAt: string;
   durationMinutes: number;
   meetingUrl: string | null;
+  meetingProvider: "zoom" | "meet" | null;
   studentCount: number;
 }
 
@@ -90,6 +91,7 @@ export async function getNextLesson(teacherId: string): Promise<NextLesson | nul
     scheduledAt: data.scheduled_at as string,
     durationMinutes: data.duration_minutes as number,
     meetingUrl: (data.meeting_url as string) ?? null,
+    meetingProvider: data.meeting_provider === "zoom" || data.meeting_provider === "meet" ? data.meeting_provider : null,
     studentCount: ((data.student_ids as string[]) || []).length,
   };
 }
@@ -122,7 +124,7 @@ export async function getTeacherDashboard(teacherId: string): Promise<{
     .filter((row) => new Date(row.scheduled_at as string).getTime() >= now.getTime())
     .sort((a, b) => (a.scheduled_at as string).localeCompare(b.scheduled_at as string))[0];
 
-  const nextLesson = nextLessonRow
+  const nextLesson: NextLesson | null = nextLessonRow
     ? {
         id: nextLessonRow.id as string,
         title: nextLessonRow.title as string,
@@ -130,6 +132,7 @@ export async function getTeacherDashboard(teacherId: string): Promise<{
         scheduledAt: nextLessonRow.scheduled_at as string,
         durationMinutes: nextLessonRow.duration_minutes as number,
         meetingUrl: (nextLessonRow.meeting_url as string) ?? null,
+        meetingProvider: nextLessonRow.meeting_provider === "zoom" || nextLessonRow.meeting_provider === "meet" ? nextLessonRow.meeting_provider : null,
         studentCount: ((nextLessonRow.student_ids as string[]) || []).length,
       }
     : null;
@@ -206,9 +209,25 @@ function mapTeacherStudentRow(row: Record<string, unknown>): StudentListItem {
 
 export async function getStudents(teacherId: string): Promise<StudentListItem[]> {
   const token = await getToken();
-  const res = await apiGet<Record<string, unknown>[]>(`/teachers/${teacherId}/students`, token);
-  if (res.error || !res.data) return [];
-  return res.data.map(mapTeacherStudentRow);
+  const res = await apiGet<Record<string, unknown>[]>("/teachers/me/students", token);
+  if (res.error || !res.data) {
+    console.error("Failed to load teacher students", {
+      teacherId,
+      hasToken: Boolean(token),
+      hasData: res.data !== null && res.data !== undefined,
+      error: String(res.error || "API не вернул data"),
+    });
+    return [];
+  }
+  const rows = Array.isArray(res.data)
+    ? res.data
+    : ((res.data as unknown as Record<string, unknown>).data as Record<string, unknown>[]) || [];
+  return rows
+    .filter((row) => {
+      const student = (row.students as Record<string, unknown>) || row;
+      return !student.teacher_id || student.teacher_id === teacherId;
+    })
+    .map(mapTeacherStudentRow);
 }
 
 export interface StudentDetail extends StudentListItem {
@@ -308,6 +327,7 @@ export interface LessonListItem {
   studentCount: number;
   status: string | null;
   meetingUrl: string | null;
+  meetingProvider: "zoom" | "meet" | null;
 }
 
 function mapLessonRow(row: Record<string, unknown>): LessonListItem {
@@ -319,6 +339,7 @@ function mapLessonRow(row: Record<string, unknown>): LessonListItem {
     studentCount: ((row.student_ids as string[]) || []).length,
     status: (row.status as string) ?? null,
     meetingUrl: (row.meeting_url as string) ?? null,
+    meetingProvider: row.meeting_provider === "zoom" || row.meeting_provider === "meet" ? row.meeting_provider : null,
   };
 }
 

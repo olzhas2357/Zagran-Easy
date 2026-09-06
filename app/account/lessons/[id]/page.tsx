@@ -44,6 +44,12 @@ export default async function StudentLessonPage({ params }: { params: Promise<{ 
               </a>
             </div>
           )}
+          <Link
+            href={`/account/lessons/${lesson.id}/board`}
+            className="mt-3 flex w-fit items-center gap-2 rounded-xl border border-ze-border bg-white px-5 py-3 text-[14px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
+          >
+            Открыть доску урока
+          </Link>
         </div>
 
         <div className="mt-5 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

@@ -1,8 +1,11 @@
+"use client";
+
 import { AssignmentAnswerForm } from "./AssignmentAnswerForm";
 import { MultipleChoiceAnswer } from "./MultipleChoiceAnswer";
 import { MultipleSelectAnswer } from "./MultipleSelectAnswer";
 import { MatchingAnswer } from "./MatchingAnswer";
 import { FillBlanksAnswer } from "./FillBlanksAnswer";
+import { SpeakingAnswer } from "./SpeakingAnswer";
 import type { FillBlanksOptions, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
 
 /**
@@ -48,7 +51,10 @@ export function AssignmentAnswerDispatcher({
     );
   }
 
-  // vocabulary/grammar/reading/listening/writing/speaking — текстовый ответ
-  // (для speaking аудиозапись пока не реализована, см. известные ограничения).
+  if (taskType === "speaking") {
+    return <SpeakingAnswer taskId={taskId} initialAnswer={initialAnswer} />;
+  }
+
+  // vocabulary/grammar/reading/listening/writing — текстовый ответ.
   return <AssignmentAnswerForm taskId={taskId} initialAnswer={initialAnswer} />;
 }

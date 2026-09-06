@@ -15,6 +15,7 @@ export interface UpdateLessonInput {
   scheduledAt: string; // ISO
   durationMinutes: number;
   meetingUrl: string;
+  meetingProvider: "zoom" | "meet";
   materials: { name: string; url: string }[];
   homeworkTaskIds: string[];
 }
@@ -26,6 +27,7 @@ export interface NewLessonInput {
   durationMinutes: number;
   studentIds: string[];
   meetingUrl: string;
+  meetingProvider: "zoom" | "meet";
   materials: { name: string; url: string }[];
   homeworkTaskIds: string[];
 }
@@ -44,6 +46,7 @@ export async function createLesson(input: NewLessonInput): Promise<{ success: bo
       scheduled_at: input.scheduledAt,
       duration_minutes: input.durationMinutes,
       meeting_url: input.meetingUrl.trim() || undefined,
+      meeting_provider: input.meetingProvider,
       materials: input.materials,
       homework_task_ids: input.homeworkTaskIds,
     },
@@ -102,6 +105,7 @@ export async function updateLesson(
       scheduled_at: input.scheduledAt,
       duration_minutes: input.durationMinutes,
       meeting_url: input.meetingUrl.trim() || undefined,
+      meeting_provider: input.meetingProvider,
       materials: input.materials,
       homework_task_ids: input.homeworkTaskIds,
     },
@@ -124,6 +128,23 @@ export async function cancelLesson(lessonId: string): Promise<{ success: boolean
   revalidatePath("/teacher/lessons");
   revalidatePath(`/teacher/lessons/${lessonId}`);
   return { success: true };
+}
+
+export async function saveLessonBoard(
+  lessonId: string,
+  boardData: Record<string, unknown>,
+  version: number,
+): Promise<{ success: boolean; version?: number; error?: string }> {
+  const token = await getToken();
+  const res = await apiPatch<{ version: number }>(
+    `/scheduled-lessons/${lessonId}/board`,
+    { board_data: boardData, version },
+    token,
+  );
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось сохранить доску" };
+  revalidatePath(`/teacher/lessons/${lessonId}/board`);
+  revalidatePath(`/account/lessons/${lessonId}/board`);
+  return { success: true, version: res.data.version };
 }
 
 export interface NewTaskInput {

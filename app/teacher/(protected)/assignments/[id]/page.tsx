@@ -60,9 +60,13 @@ export default async function TeacherAssignmentPage({ params }: { params: Promis
                 <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
                   <div className="text-[13px] font-semibold text-ze-muted">Ответ ученика</div>
                   {task.answerText ? (
-                    <div className="mt-2.5 whitespace-pre-wrap text-[14.5px] leading-relaxed text-ze-ink">
-                      {formatAnswerForDisplay(task.type, task.options, task.answerText)}
-                    </div>
+                    task.type === "speaking" ? (
+                      <audio controls src={task.answerText} className="mt-3 w-full" />
+                    ) : (
+                      <div className="mt-2.5 whitespace-pre-wrap text-[14.5px] leading-relaxed text-ze-ink">
+                        {formatAnswerForDisplay(task.type, task.options, task.answerText)}
+                      </div>
+                    )
                   ) : (
                     <div className="mt-2.5 text-[13.5px] text-ze-muted">Ответ ещё не отправлен.</div>
                   )}

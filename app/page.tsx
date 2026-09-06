@@ -184,35 +184,39 @@ export default async function HomePage() {
           </div>
         </FadeIn>
         <div className="mt-7 grid grid-cols-2 gap-3.5 sm:mt-10 sm:grid-cols-4 sm:gap-5">
-          {[
-            {
-              id: "education",
-              Icon: GraduationCap,
-              title: "Образование",
-              text: "Программы и возможности для получения новых знаний и квалификации",
-              color: "blue",
-            },
-            {
-              id: "language",
-              Icon: Languages,
-              title: "Языковое образование",
-              text: "Языковые курсы, подготовка к экзаменам и обучение за рубежом",
-              color: "emerald",
-            },
-            {
-              id: "students",
-              Icon: User,
-              title: "Студент",
-              text: "Поступление, обучение, адаптация и развитие карьеры",
-              color: "violet",
-            },
-            {
-              id: "universities",
-              Icon: Landmark,
-              title: "Университеты",
-              text: "Помогаем университетам находить студентов и развивать международные программы",
-              color: "amber",
-            },
+          {[  
+          {
+            id: "education",
+            Icon: GraduationCap,
+            title: "Образование",
+            text: "Программы и возможности для получения новых знаний и квалификации",
+            color: "blue",
+            href: "/education",
+          },
+          {
+            id: "language",
+            Icon: Languages,
+            title: "Языковое образование",
+            text: "Языковые курсы, подготовка к экзаменам и обучение за рубежом",
+            color: "emerald",
+            href: "/language",
+          },
+          {
+            id: "students",
+            Icon: User,
+            title: "Студент",
+            text: "Поступление, обучение, адаптация и развитие карьеры",
+            color: "violet",
+            href: "/about",
+          },
+          {
+            id: "universities",
+            Icon: Landmark,
+            title: "Университеты",
+            text: "Помогаем университетам находить студентов и развивать международные программы",
+            color: "amber",
+            href: "/education",
+          },
           ].map((s, i) => {
             const colors = SERVICE_COLORS[s.color];
             const underline = colors.text.replace("text-", "bg-");

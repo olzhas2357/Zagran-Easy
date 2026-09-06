@@ -13,6 +13,36 @@ export async function getCurrentStudent(): Promise<{ id: string; email?: string 
   return { id: user.id, email: user.email };
 }
 
+export interface StudentTeacherProfile {
+  id: string;
+  fullName: string;
+  phone: string | null;
+  bio: string | null;
+  specializations: string[];
+  imageUrl: string | null;
+}
+
+export async function getMyTeacherProfile(): Promise<StudentTeacherProfile | null> {
+  const token = await getToken();
+  const studentRes = await apiGet<Record<string, unknown>>('/students/me', token);
+  if (studentRes.error || !studentRes.data || typeof studentRes.data.teacher_id !== 'string') return null;
+
+  const teacherRes = await apiGet<Record<string, unknown>>(`/teachers/${studentRes.data.teacher_id}`, token);
+  if (teacherRes.error || !teacherRes.data) return null;
+
+  const profile = (teacherRes.data.profiles as Record<string, unknown>) || {};
+  return {
+    id: teacherRes.data.id as string,
+    fullName: (profile.full_name as string) || 'Преподаватель',
+    phone: (profile.phone as string) ?? null,
+    bio: (teacherRes.data.bio as string) ?? null,
+    specializations: Array.isArray(teacherRes.data.specializations)
+      ? (teacherRes.data.specializations as string[])
+      : [],
+    imageUrl: (teacherRes.data.image_url as string) ?? null,
+  };
+}
+
 function pickFirst(row: Record<string, unknown>, keys: string[]): unknown {
   for (const key of keys) {
     if (row[key] !== undefined && row[key] !== null) return row[key];
@@ -27,6 +57,7 @@ export interface StudentLessonListItem {
   durationMinutes: number;
   status: string | null;
   meetingUrl: string | null;
+  meetingProvider: "zoom" | "meet" | null;
 }
 
 function mapLessonRow(row: Record<string, unknown>): StudentLessonListItem {
@@ -37,6 +68,7 @@ function mapLessonRow(row: Record<string, unknown>): StudentLessonListItem {
     durationMinutes: (row.duration_minutes as number) ?? 60,
     status: (row.status as string) ?? null,
     meetingUrl: (row.meeting_url as string) ?? null,
+    meetingProvider: row.meeting_provider === "zoom" || row.meeting_provider === "meet" ? row.meeting_provider : null,
   };
 }
 
@@ -147,11 +179,17 @@ export async function getMyGoal(): Promise<StudentGoal | null> {
 }
 
 export interface StudentAssignmentDetail extends StudentAssignmentListItem {
-  taskId: string | null;
-  taskQuestion: string | null;
-  taskType: string | null;
-  taskOptions: Record<string, unknown> | null;
+  tasks: StudentAssignmentTask[];
+}
+
+export interface StudentAssignmentTask {
+  id: string;
+  title: string;
+  question: string | null;
+  type: string | null;
+  options: Record<string, unknown> | null;
   answerText: string | null;
+  reviewScore: number | null;
   reviewComment: string | null;
   reviewErrors: string | null;
 }
@@ -163,16 +201,22 @@ export async function getMyAssignmentById(assignmentId: string): Promise<Student
 
   const row = res.data;
   const tasks = (row.tasks as Record<string, unknown>[]) || [];
-  const task = tasks[0];
 
   return {
     ...mapAssignmentRow(row),
-    taskId: (task?.id as string) ?? null,
-    taskQuestion: (pickFirst(task || {}, ["question", "prompt", "description", "title"]) as string) ?? null,
-    taskType: (pickFirst(task || {}, ["type", "task_type"]) as string) ?? null,
-    taskOptions: (task?.options as Record<string, unknown>) ?? null,
-    answerText: (row.answer_text as string) ?? null,
-    reviewComment: (row.review_comment as string) ?? null,
-    reviewErrors: (row.review_errors as string) ?? null,
+    tasks: tasks.map((task) => {
+      const attempt = (task.attempt as Record<string, unknown>) || {};
+      return {
+        id: task.id as string,
+        title: (task.title as string) || "Задание",
+        question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
+        type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
+        options: (task.options as Record<string, unknown>) ?? null,
+        answerText: (attempt.answer as string) ?? null,
+        reviewScore: (attempt.review_score as number) ?? null,
+        reviewComment: (attempt.review_comment as string) ?? null,
+        reviewErrors: (attempt.review_errors as string) ?? null,
+      };
+    }),
   };
 }

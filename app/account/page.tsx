@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Clock, Video, ClipboardList, ChevronRight, MessageCircle, UserRound, Search } from "lucide-react";
 import { getCurrentUser, getMyApplication } from "@/lib/account-data";
 import { fetchAllUniversities } from "@/lib/data";
-import { getMyLessonsSplit, getMyAssignments, getMyGoal } from "@/lib/student-data";
+import { getMyLessonsSplit, getMyAssignments, getMyGoal, getMyTeacherProfile } from "@/lib/student-data";
 import { GoalCard } from "@/components/account/GoalCard";
 import { waUrl } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ export default async function AccountPage() {
   const pendingHomeworkCount = assignments.filter((a) => a.status !== "completed").length;
   const completedLessonsCount = pastLessons.length;
   const goal = await getMyGoal();
+  const teacher = await getMyTeacherProfile();
 
   const ASSIGNMENT_ACTIVITY_LABEL: Record<string, string> = {
     completed: "Задание проверено",
@@ -181,7 +182,29 @@ export default async function AccountPage() {
 
         <GoalCard goal={goal} />
 
-        {!application && (
+        {teacher && (
+          <div className="mt-6 rounded-[18px] border border-ze-border bg-white p-4.5 sm:p-5.5">
+            <div className="text-[15px] font-bold">Ваш преподаватель</div>
+            <div className="mt-4 flex items-start gap-3.5">
+              <div className="flex h-12 w-12 flex-none items-center justify-center overflow-hidden rounded-full bg-[#EBF1FE] text-[16px] font-bold text-ze-primary">
+                {teacher.imageUrl ? (
+                  <img src={teacher.imageUrl} alt={teacher.fullName} className="h-full w-full object-cover" />
+                ) : (
+                  teacher.fullName.slice(0, 1).toUpperCase()
+                )}
+              </div>
+              <div className="min-w-0">
+                <div className="text-[15px] font-bold text-ze-ink">{teacher.fullName}</div>
+                {teacher.specializations.length > 0 && (
+                  <div className="mt-1 text-[13px] text-ze-muted">{teacher.specializations.join(" · ")}</div>
+                )}
+                {teacher.bio && <p className="mt-2 text-[13.5px] leading-relaxed text-ze-ink">{teacher.bio}</p>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* {!application && (
           <div className="mt-8 rounded-2xl border border-dashed border-[#D6DEEA] bg-white px-6 py-14 text-center">
             <div className="text-[17px] font-bold">Заявок пока нет</div>
             <p className="mx-auto mt-2 max-w-[420px] text-[14px] text-ze-muted">
@@ -191,9 +214,9 @@ export default async function AccountPage() {
               Подобрать университет
             </Link>
           </div>
-        )}
+        )} */}
 
-        {application && (
+        {/* {application && (
           <>
             <div className="mt-6 rounded-[18px] border border-ze-border bg-white p-4.5 sm:p-5.5">
               <div className="text-[15px] font-bold">Статус поступления</div>
@@ -294,7 +317,7 @@ export default async function AccountPage() {
               </div>
             </div>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

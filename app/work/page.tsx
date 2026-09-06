@@ -7,11 +7,11 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
 
 export const metadata: Metadata = {
-  title: PAGE_META["/work"].title,
-  description: PAGE_META["/work"].description,
+  title: PAGE_META["/work"]?.title ?? "Работа за рубежом",
+  description: PAGE_META["/work"]?.description ?? "Трудоустройство за границей",
   openGraph: {
-    title: PAGE_META["/work"].title,
-    description: PAGE_META["/work"].description,
+    title: PAGE_META["/work"]?.title ?? "Работа за рубежом",
+    description: PAGE_META["/work"]?.description ?? "Трудоустройство за границей",
     url: "https://zagraneasy.kz/work",
   },
 };

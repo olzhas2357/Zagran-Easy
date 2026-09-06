@@ -56,6 +56,12 @@ export default async function TeacherLessonPage({ params }: { params: Promise<{ 
               </a>
             </div>
           )}
+          <Link
+            href={`/teacher/lessons/${lesson.id}/board`}
+            className="mt-3 flex w-fit items-center gap-2 rounded-xl border border-ze-border bg-white px-5 py-3 text-[14px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
+          >
+            Открыть доску урока
+          </Link>
         </div>
 
         {/* Sidebar: supporting information, secondary to the lesson itself */}

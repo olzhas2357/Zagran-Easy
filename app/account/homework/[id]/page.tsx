@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getCurrentStudent, getMyAssignmentById } from "@/lib/student-data";
-import { AssignmentAnswerDispatcher } from "@/components/account/AssignmentAnswerDispatcher";
-import { formatAnswerForDisplay } from "@/lib/task-types";
+import { AssignmentQuestions } from "@/components/account/AssignmentQuestions";
 
 export default async function StudentHomeworkDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,8 +11,6 @@ export default async function StudentHomeworkDetailPage({ params }: { params: Pr
 
   const assignment = await getMyAssignmentById(id);
   if (!assignment) notFound();
-
-  const isReviewed = assignment.status === "completed";
 
   return (
     <div className="bg-ze-surface">
@@ -32,54 +29,9 @@ export default async function StudentHomeworkDetailPage({ params }: { params: Pr
           )}
         </div>
 
-        {assignment.taskQuestion && assignment.taskQuestion !== assignment.taskTitle && (
-          <div className="mt-5 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
-            <div className="text-[13px] font-semibold text-ze-muted">Задание</div>
-            <p className="mt-2 text-[14.5px] leading-relaxed text-ze-ink">{assignment.taskQuestion}</p>
-          </div>
-        )}
-
-        <div className="mt-5 rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
-          {isReviewed ? (
-            <>
-              <div className="text-[13px] font-semibold text-ze-muted">Ваш ответ</div>
-              <div className="mt-2.5 whitespace-pre-wrap text-[14.5px] leading-relaxed text-ze-ink">
-                {formatAnswerForDisplay(assignment.taskType, assignment.taskOptions, assignment.answerText)}
-              </div>
-            </>
-          ) : assignment.taskId ? (
-            <AssignmentAnswerDispatcher
-              taskId={assignment.taskId}
-              taskType={assignment.taskType}
-              taskQuestion={assignment.taskQuestion}
-              taskOptions={assignment.taskOptions}
-              initialAnswer={assignment.answerText}
-            />
-          ) : (
-            <div className="text-[13.5px] text-ze-muted">Задание пока не привязано к упражнению — обратитесь к преподавателю.</div>
-          )}
+        <div className="mt-5">
+          <AssignmentQuestions tasks={assignment.tasks} assignmentStatus={assignment.status} />
         </div>
-
-        {isReviewed && (
-          <div className="mt-5 rounded-[20px] border border-[#DFE8FA] bg-[#F5F8FE] p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-[13px] font-semibold text-ze-muted">Оценка преподавателя</div>
-              {assignment.reviewScore !== null && (
-                <span className="flex items-center gap-1 text-[15px] font-bold text-ze-ink">
-                  <Star className="h-4 w-4 text-amber-500" strokeWidth={2} fill="currentColor" />
-                  {assignment.reviewScore}
-                </span>
-              )}
-            </div>
-            {assignment.reviewComment && <p className="mt-3 text-[14px] leading-relaxed text-ze-ink">{assignment.reviewComment}</p>}
-            {assignment.reviewErrors && (
-              <div className="mt-3 border-t border-[#DFE8FA] pt-3">
-                <div className="text-[12.5px] font-semibold text-ze-muted">Ошибки и рекомендации</div>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-ze-ink">{assignment.reviewErrors}</p>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
