@@ -8,11 +8,11 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
 
 export const metadata: Metadata = {
-  title: PAGE_META["/tours"].title,
-  description: PAGE_META["/tours"].description,
+  title: PAGE_META["/tours"]?.title ?? "Туры",
+  description: PAGE_META["/tours"]?.description ?? "",
   openGraph: {
-    title: PAGE_META["/tours"].title,
-    description: PAGE_META["/tours"].description,
+    title: PAGE_META["/tours"]?.title ?? "Туры",
+    description: PAGE_META["/tours"]?.description ?? "",
     url: "https://zagraneasy.kz/tours",
   },
 };

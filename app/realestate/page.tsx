@@ -7,11 +7,11 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
 
 export const metadata: Metadata = {
-  title: PAGE_META["/realestate"].title,
-  description: PAGE_META["/realestate"].description,
+  title: PAGE_META["/realestate"]?.title ?? "Недвижимость",
+  description: PAGE_META["/realestate"]?.description ?? "",
   openGraph: {
-    title: PAGE_META["/realestate"].title,
-    description: PAGE_META["/realestate"].description,
+    title: PAGE_META["/realestate"]?.title ?? "Недвижимость",
+    description: PAGE_META["/realestate"]?.description ?? "" ,
     url: "https://zagraneasy.kz/realestate",
   },
 };

@@ -69,14 +69,20 @@ export default async function HomePage() {
               образовательного пути.
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5">
-              <a
+              {/* <a
                 href={waUrl("Здравствуйте! Хочу получить консультацию.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_22px_rgba(26,86,219,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ze-accent-dark hover:shadow-[0_12px_28px_rgba(26,86,219,0.34)]"
               >
                 Получить консультацию
-              </a>
+              </a> */}
+              <Link
+                href="/quiz"
+                className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_22px_rgba(26,86,219,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ze-accent-dark hover:shadow-[0_12px_28px_rgba(26,86,219,0.34)]"
+              >
+                Получить консультацию
+              </Link>
               <Link
                 href="/education"
                 className="rounded-2xl border border-[#DDE4F0] bg-white px-[22px] py-4 text-[16px] font-semibold text-ze-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ze-primary hover:text-ze-primary hover:shadow-[0_6px_16px_rgba(15,23,42,0.06)] dark:border-white/20 dark:bg-white/[0.06] dark:text-white dark:hover:border-white/40 dark:hover:bg-white/10"
@@ -199,7 +205,7 @@ export default async function HomePage() {
             title: "Языковое образование",
             text: "Языковые курсы, подготовка к экзаменам и обучение за рубежом",
             color: "emerald",
-            href: "/language",
+            href: "/languages",
           },
           {
             id: "students",

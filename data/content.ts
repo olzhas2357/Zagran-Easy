@@ -35,7 +35,7 @@ export const properties: Property[] = [
 export const realEstateRegions = [
   { name: "Стамбул", desc: "Центр мировых инвестиций", imageUrl: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=1200&q=80" },
   { name: "Анталия", desc: "Лучшие виллы на побережье", imageUrl: "https://images.unsplash.com/photo-1600240644455-3edc55c375fe?w=1200&q=80" },
-  { name: "Алания", desc: "Доступное жильё у моря", imageUrl: "https://images.unsplash.com/photo-1499346552081-e94e4b195e97?w=1200&q=80" },
+  { name: "Алания", desc: "Доступное жильё у моря", imageUrl: "https://cdn2.tu-tu.ru/image/pagetree_node_data/2/3ca6dafaf63ed4241ec564cfe2721591/" },
   { name: "Кипр", desc: "Налоговые льготы и европейский уровень жизни", imageUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80" },
 ];
 
