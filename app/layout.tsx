@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { SITE } from "@/lib/constants";
@@ -25,9 +26,11 @@ const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('ze-theme'
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning className={inter.variable}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
       </head>
       <body suppressHydrationWarning className="flex min-h-full flex-col font-sans text-ze-ink">
         <AppShell>{children}</AppShell>

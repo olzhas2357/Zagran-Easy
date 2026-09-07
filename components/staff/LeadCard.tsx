@@ -24,6 +24,12 @@ const SOURCE_LABEL: Record<Lead["source"], string> = {
   callback: "Обратный звонок",
 };
 
+function getSourceLabel(lead: Lead): string {
+  return lead.source === "quiz" && lead.quizAnswers?.formType === "student_form"
+    ? "Анкета абитуриента"
+    : SOURCE_LABEL[lead.source];
+}
+
 export function LeadCard({ lead }: { lead: Lead }) {
   const [expanded, setExpanded] = useState(false);
   const [activities, setActivities] = useState<LeadActivity[] | null>(null);
@@ -64,19 +70,22 @@ export function LeadCard({ lead }: { lead: Lead }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`rounded-md px-2.5 py-1 text-[12px] font-bold ${STATUS_STYLE[lead.status]}`}>{STATUS_LABEL[lead.status]}</span>
-            <span className="text-[12.5px] font-semibold text-ze-muted">{SOURCE_LABEL[lead.source]} · {lead.service}</span>
+            <span className="text-[12.5px] font-semibold text-ze-muted">{getSourceLabel(lead)} · {lead.service}</span>
           </div>
           <div className="mt-2 text-[16px] font-bold">{lead.name || lead.phone || "Без контакта"}</div>
           {lead.phone && lead.name && <div className="mt-0.5 text-[13.5px] text-ze-muted">{lead.phone}</div>}
           {lead.message && <p className="mt-2 max-w-[520px] text-[14px] leading-relaxed text-slate-700">{lead.message}</p>}
           {lead.quizAnswers && (
             <div className="mt-2 text-[13px] text-ze-muted">
-              {lead.quizAnswers.goal} · {lead.quizAnswers.budget} · {lead.quizAnswers.timeline}
+              {Object.entries(lead.quizAnswers)
+                .filter(([key, value]) => key !== "formType" && Boolean(value))
+                .map(([, value]) => value)
+                .join(" · ")}
             </div>
           )}
         </div>
         <div className="flex flex-none flex-col items-end gap-2">
-          <div className="text-[12.5px] text-slate-400">{new Date(lead.createdAt).toLocaleString("ru-RU")}</div>
+          <div className="text-[12.5px] text-slate-400">{new Date(lead.createdAt).toLocaleString("ru-RU", { timeZone: "Asia/Almaty" })}</div>
           <div className="flex gap-1.5">
             {(["new", "in_progress", "done"] as const).map((s) => (
               <button

@@ -121,7 +121,7 @@ export interface Lead {
   name: string | null;
   phone: string | null;
   message: string | null;
-  quizAnswers?: { goal: string; budget: string; timeline: string } | null;
+  quizAnswers?: Record<string, string | undefined> | null;
   status: "new" | "in_progress" | "done";
   assignedTo: string | null;
   createdAt: string;

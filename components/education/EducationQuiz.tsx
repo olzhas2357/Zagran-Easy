@@ -28,6 +28,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
   const [answers, setAnswers] = useState<(number | null)[]>([null, null, null]);
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const done = step >= 3;
@@ -60,20 +61,35 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
     setAnswers([null, null, null]);
     setPhone("");
     setSubmitted(false);
+    setSubmitError(null);
   }
 
   const summary = answers.map((a, i) => (a === null ? null : questions[i].opts[a])).filter(Boolean).join(" · ");
 
   function handleSubmit() {
     if (!isValidPhone(phone)) return;
+    setSubmitError(null);
     startTransition(async () => {
-      await createLead({
-        source: "quiz",
-        service: "education",
-        phone,
-        message: `Подбор вуза: ${summary}. Найдено: ${matches.map((m) => m.name).join(", ")}`,
-      });
-      setSubmitted(true);
+      try {
+        const result = await createLead({
+          source: "quiz",
+          service: "education",
+          phone,
+          message: `Подбор вуза: ${summary}. Найдено: ${matches.map((m) => m.name).join(", ")}`,
+          quizAnswers: {
+            country: answers[0] === null ? undefined : questions[0].opts[answers[0]],
+            budget: answers[1] === null ? undefined : questions[1].opts[answers[1]],
+            ielts: answers[2] === null ? undefined : questions[2].opts[answers[2]],
+          },
+        });
+        if (!result.success) {
+          setSubmitError(result.error ?? "Не получилось сохранить подборку. Попробуйте ещё раз.");
+          return;
+        }
+        setSubmitted(true);
+      } catch {
+        setSubmitError("Не получилось сохранить подборку. Проверьте связь и попробуйте ещё раз.");
+      }
     });
   }
 
@@ -173,6 +189,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
               {isPending ? "Отправляем…" : "Сохранить подборку"}
             </button>
           </div>
+          {submitError && <p className="text-[13.5px] font-medium text-red-600" role="alert">{submitError}</p>}
           <button onClick={reset} className="mt-3.5 text-[13.5px] font-semibold text-ze-muted hover:text-ze-ink">
             Пройти заново
           </button>

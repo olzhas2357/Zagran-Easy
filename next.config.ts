@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
+  },
   experimental: {
     // Дефолт 1MB мал для загрузки фото/презентаций через Server Actions (lib/staff-actions.ts → uploadUniversityFile).
     serverActions: {

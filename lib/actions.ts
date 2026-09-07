@@ -9,16 +9,12 @@ import { apiPost } from "./api";
 
 // ---- Типы для actions ----
 interface LeadInput {
-  source: "quiz" | "form" | "callback";
+  source: "quiz" | "form" | "callback" | "whatsapp";
   service: string;
   name?: string;
   phone?: string;
   message?: string;
-  quizAnswers?: {
-    goal: string;
-    budget: string;
-    timeline: string;
-  };
+  quizAnswers?: Record<string, string | undefined>;
 }
 
 interface ActionResult {

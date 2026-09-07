@@ -12,22 +12,19 @@ export function waUrl(message: string, phone: string = SITE.phoneClean): string 
 }
 
 // Формирует текст заявки для WhatsApp из квиза
-export function waQuizMessage(answers: {
-  goal: string;
-  budget: string;
-  timeline: string;
-}): string {
-  const goalMap: Record<string, string> = {
-    education: "Обучение за рубежом",
-    tours: "Туры",
-    work: "Работа за границей",
-    visa: "Виза в США",
+export function waQuizMessage(answers: Record<string, string | undefined>): string {
+  const fieldLabels: Record<string, string> = {
+    country: "Страна",
+    when: "Срок поступления",
+    budget: "Бюджет",
+    prepTiming: "Начало подготовки",
+    level: "Желаемый уровень языка",
   };
   return [
     "Здравствуйте! Прошёл квиз на сайте.",
-    `Цель: ${goalMap[answers.goal] || answers.goal}`,
-    `Бюджет: ${answers.budget}`,
-    `Сроки: ${answers.timeline}`,
+    ...Object.entries(answers)
+      .filter(([, value]) => value)
+      .map(([key, value]) => `${fieldLabels[key] ?? key}: ${value}`),
     "",
     "Хочу бесплатную консультацию.",
   ].join("\n");
