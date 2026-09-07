@@ -7,6 +7,7 @@ import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 import type { TeacherProfile } from "./types";
+import type { CourseModule, RealLanguageCourse } from "./language-data";
 
 function unwrapProfile(row: Record<string, unknown>): Record<string, unknown> | undefined {
   const p = row.profiles;
@@ -288,6 +289,58 @@ export async function getTaskBank(): Promise<TaskOption[]> {
   return tasks.map((t) => ({ id: t.id, title: t.title, type: t.type }));
 }
 
+export async function getTeacherCourse(courseId: string): Promise<(RealLanguageCourse & { sections: CourseModule[] }) | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/courses/${courseId}`, token);
+  if (res.error || !res.data) return null;
+  const sectionsRes = await apiGet<Record<string, unknown>[]>(`/courses/${courseId}/sections`, token);
+  return {
+    id: String(res.data.id ?? courseId),
+    slug: String(res.data.slug ?? ""),
+    title: String(res.data.title ?? ""),
+    exam_type: String(res.data.exam_type ?? ""),
+    level_from: String(res.data.level_from ?? ""),
+    level_to: String(res.data.level_to ?? ""),
+    description: String(res.data.description ?? ""),
+    total_lessons: Number(res.data.total_lessons ?? 0),
+    total_tasks: Number(res.data.total_tasks ?? 0),
+    estimated_hours: Number(res.data.estimated_hours ?? 0),
+    image_url: res.data.image_url ? String(res.data.image_url) : null,
+    is_active: Boolean(res.data.is_active),
+    sort_order: Number(res.data.sort_order ?? 0),
+    created_at: String(res.data.created_at ?? ""),
+    sections: (sectionsRes.data ?? []).map((row) => ({
+      id: String(row.id ?? ""),
+      course_id: String(row.course_id ?? courseId),
+      slug: String(row.slug ?? ""),
+      title: String(row.title ?? ""),
+      icon: String(row.icon ?? "📘"),
+      sort_order: Number(row.sort_order ?? 0),
+      lessons: Array.isArray(row.lessons) ? row.lessons as CourseModule["lessons"] : [],
+    })),
+  };
+}
+
+export async function getTeacherCourses(): Promise<RealLanguageCourse[]> {
+  const token = await getToken();
+  let res = await apiGet<Record<string, unknown>[]>("/courses/manage?limit=100", token);
+  if (res.error || !res.data) {
+    console.error("Failed to load teacher courses from manage endpoint", { error: String(res.error || "empty response"), hasToken: Boolean(token) });
+    res = await apiGet<Record<string, unknown>[]>("/courses?limit=100", token);
+  }
+  if (res.error || !res.data) {
+    console.error("Failed to load teacher courses", { error: String(res.error || "empty response"), hasToken: Boolean(token) });
+    return [];
+  }
+  return res.data.map((row) => ({
+    id: String(row.id ?? ""), slug: String(row.slug ?? ""), title: String(row.title ?? ""),
+    exam_type: String(row.exam_type ?? ""), level_from: String(row.level_from ?? ""), level_to: String(row.level_to ?? ""),
+    description: String(row.description ?? ""), total_lessons: Number(row.total_lessons ?? 0), total_tasks: Number(row.total_tasks ?? 0),
+    estimated_hours: Number(row.estimated_hours ?? 0), image_url: row.image_url ? String(row.image_url) : null,
+    is_active: Boolean(row.is_active), sort_order: Number(row.sort_order ?? 0), created_at: String(row.created_at ?? ""),
+  }));
+}
+
 export interface TaskListItem {
   id: string;
   title: string;
@@ -440,6 +493,7 @@ export interface AssignmentTaskDetail {
   question: string | null;
   type: string | null;
   options: Record<string, unknown> | null;
+  audioUrl: string | null;
   answerText: string | null;
   reviewScore: number | null;
   reviewComment: string | null;
@@ -466,6 +520,7 @@ export async function getAssignmentById(teacherId: string, assignmentId: string)
         question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
         type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
         options: (task.options as Record<string, unknown>) ?? null,
+        audioUrl: (task.audio_url as string) ?? null,
         answerText: (attempt.answer as string) ?? null,
         reviewScore: (attempt.review_score as number) ?? null,
         reviewComment: (attempt.review_comment as string) ?? null,

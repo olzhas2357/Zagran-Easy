@@ -15,19 +15,21 @@ export const metadata: Metadata = {
 };
 
 const TEAM = [
-  { name: "Асель Нурланова", role: "Основатель, руководитель", initials: "АН" },
-  { name: "Данияр Сериков", role: "Руководитель отдела образования", initials: "ДС" },
-  { name: "Мадина Ахметова", role: "Визовый специалист", initials: "МА" },
-  { name: "Ержан Болатов", role: "Менеджер по работе за рубежом", initials: "ЕБ" },
-  { name: "Алия Тулегенова", role: "Менеджер по недвижимости", initials: "АТ" },
-  { name: "Санжар Есенов", role: "Менеджер по турам", initials: "СЕ" },
+  { name: "Нурбол", role: "Основатель, руководитель", initials: "АН" },
+  { name: "Олжас Қошқарбай", role: "Руководитель отдела образования", initials: "ОҚ" },
+  // { name: "Мадина Ахметова", role: "Визовый специалист", initials: "МА" },
+  { name: "Досжан Ысмаилов", role: "Менеджер по работе за рубежом", initials: "ДЫ" },
+  // { name: "Алия Тулегенова", role: "Менеджер по недвижимости", initials: "АТ" },
+  // { name: "Санжар Есенов", role: "Менеджер по турам", initials: "СЕ" },
 ];
 
 const ACCEPTANCE_LETTERS = [
-  "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=900&q=80",
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=900&q=80",
-  "https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=900&q=80",
-  "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?w=900&q=80",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png",
+  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
 ];
 
 export default function AboutPage() {
@@ -88,24 +90,61 @@ export default function AboutPage() {
           ))}
         </div>
       </div>
+{/* Acceptance letters gallery */}
+    <section
+      id="results"
+      className="relative overflow-hidden border-y border-ze-border bg-ze-surface py-16 sm:py-24"
+    >
+      <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[600px] -translate-x-1/2 rounded-full bg-blue-500/[0.035] blur-3xl dark:bg-blue-400/[0.05]" />
 
-      {/* Acceptance letters gallery */}
-      <div className="border-y border-ze-border bg-ze-surface py-14 sm:py-19">
-        <div className="mx-auto max-w-6xl px-4 sm:px-10">
-          <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Результаты</div>
-          <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[36px]">
-            Реальные письма о зачислении
-          </h2>
-          <p className="mt-3 max-w-[600px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px]">
-            Часть подтверждённых зачислений наших клиентов в университеты-партнёры.
-          </p>
-          <div className="mt-8 max-w-[720px]">
-            <FadeIn>
-              <PhotoGallery images={ACCEPTANCE_LETTERS} alt="Письмо о зачислении" />
-            </FadeIn>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-10">
+        <FadeIn>
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/70 bg-blue-50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600 dark:border-blue-400/20 dark:bg-blue-400/[0.08] dark:text-blue-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              Наши результаты
+            </div>
+
+            <h2 className="mt-5 text-[28px] font-black tracking-[-0.04em] text-ze-ink sm:text-[42px] dark:text-white">
+              Официальные зачисления
+              <br className="hidden sm:block" />
+              <span className="text-ze-primary"> и сертификаты</span>
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-2xl text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px] dark:text-white/55">
+              Подлинные письма о зачислении наших студентов
+              в зарубежные университеты. Каждый результат —
+              подтверждение проделанной работы.
+            </p>
           </div>
-        </div>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <div className="mx-auto mt-12 max-w-5xl sm:mt-16">
+            <PhotoGallery
+              images={ACCEPTANCE_LETTERS}
+              alt="Письмо о зачислении студента"
+              variant="documents"
+            />
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.15}>
+          <div className="mt-10 flex items-center justify-center gap-2 text-center text-[12px] text-ze-muted dark:text-white/40">
+            <svg
+              className="h-4 w-4 text-emerald-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            Документы представлены с разрешения студентов
+          </div>
+        </FadeIn>
       </div>
+    </section>
 
       {/* Contact block */}
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-10 sm:py-19">

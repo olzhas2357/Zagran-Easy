@@ -75,6 +75,7 @@ export function AssignmentQuestions({ tasks, assignmentStatus }: { tasks: Studen
             taskType={task.type}
             taskQuestion={task.question}
             taskOptions={task.options}
+            taskAudioUrl={task.audioUrl}
             initialAnswer={task.answerText}
           />
         )}

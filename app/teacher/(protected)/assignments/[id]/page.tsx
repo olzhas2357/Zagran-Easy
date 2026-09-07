@@ -55,6 +55,7 @@ export default async function TeacherAssignmentPage({ params }: { params: Promis
                     )}
                   </div>
                   {task.question && <p className="mt-2 text-[14.5px] leading-relaxed text-ze-ink">{task.question}</p>}
+                  {task.type === "listening" && task.audioUrl && <audio controls src={task.audioUrl} className="mt-4 w-full" />}
                 </div>
 
                 <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">

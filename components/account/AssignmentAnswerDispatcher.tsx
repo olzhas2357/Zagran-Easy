@@ -6,6 +6,7 @@ import { MultipleSelectAnswer } from "./MultipleSelectAnswer";
 import { MatchingAnswer } from "./MatchingAnswer";
 import { FillBlanksAnswer } from "./FillBlanksAnswer";
 import { SpeakingAnswer } from "./SpeakingAnswer";
+import { ListeningAnswer } from "./ListeningAnswer";
 import type { FillBlanksOptions, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
 
 /**
@@ -19,12 +20,14 @@ export function AssignmentAnswerDispatcher({
   taskType,
   taskQuestion,
   taskOptions,
+  taskAudioUrl,
   initialAnswer,
 }: {
   taskId: string;
   taskType: string | null;
   taskQuestion: string | null;
   taskOptions: Record<string, unknown> | null;
+  taskAudioUrl: string | null;
   initialAnswer: string | null;
 }) {
   if (taskType === "multiple_choice" && taskOptions) {
@@ -53,6 +56,10 @@ export function AssignmentAnswerDispatcher({
 
   if (taskType === "speaking") {
     return <SpeakingAnswer taskId={taskId} initialAnswer={initialAnswer} />;
+  }
+
+  if (taskType === "listening" && taskAudioUrl) {
+    return <ListeningAnswer taskId={taskId} audioUrl={taskAudioUrl} initialAnswer={initialAnswer} />;
   }
 
   // vocabulary/grammar/reading/listening/writing — текстовый ответ.

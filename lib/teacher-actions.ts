@@ -6,7 +6,7 @@
 // ============================================================
 
 import { revalidatePath } from "next/cache";
-import { apiPatch, apiPost } from "./api";
+import { apiDelete, apiPatch, apiPost } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 
 export interface UpdateLessonInput {
@@ -89,6 +89,25 @@ export async function uploadLessonMaterial(
   }
 }
 
+export async function uploadListeningAudio(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Файл не выбран" };
+  if (!file.type.startsWith("audio/") && file.type !== "video/mp4") return { success: false, error: "Выберите аудио или MP4-файл" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  const upload = new FormData();
+  upload.set("file", file);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const response = await fetch(`${API_URL}/uploads?bucket=listening-audio`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: upload });
+    const json = await response.json();
+    if (!response.ok || json.success === false) return { success: false, error: json.message || "Не удалось загрузить аудио" };
+    return { success: true, url: json.data?.url || json.url };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
+}
+
 export async function updateLesson(
   lessonId: string,
   input: UpdateLessonInput
@@ -130,6 +149,122 @@ export async function cancelLesson(lessonId: string): Promise<{ success: boolean
   return { success: true };
 }
 
+export interface NewCourseInput {
+  slug: string;
+  title: string;
+  examType: string;
+  description: string;
+  levelFrom: string;
+  levelTo: string;
+  totalLessons: number;
+  totalTasks: number;
+  estimatedHours: number;
+  isActive: boolean;
+  imageUrl: string;
+}
+
+export async function createCourse(input: NewCourseInput): Promise<{ success: boolean; id?: string; slug?: string; error?: string }> {
+  if (!input.title.trim()) return { success: false, error: "Укажите название курса" };
+  if (!input.slug.trim()) return { success: false, error: "Укажите slug курса" };
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug.trim())) {
+    return { success: false, error: "Slug может содержать только латинские буквы, цифры и дефисы" };
+  }
+  if (!input.examType.trim()) return { success: false, error: "Укажите экзамен или направление" };
+
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>(
+    "/courses",
+    {
+      slug: input.slug.trim().toLowerCase(),
+      title: input.title.trim(),
+      exam_type: input.examType.trim(),
+      description: input.description.trim() || undefined,
+      level_from: input.levelFrom.trim() || undefined,
+      level_to: input.levelTo.trim() || undefined,
+      total_lessons: input.totalLessons,
+      total_tasks: input.totalTasks,
+      estimated_hours: input.estimatedHours,
+      is_active: input.isActive,
+      image_url: input.imageUrl.trim() || undefined,
+    },
+    token,
+  );
+
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать курс" };
+
+  revalidatePath("/teacher/courses");
+  revalidatePath("/courses/[slug]", "page");
+  return { success: true, id: res.data.id, slug: input.slug.trim().toLowerCase() };
+}
+
+export async function updateCourse(courseId: string, input: NewCourseInput): Promise<{ success: boolean; slug?: string; error?: string }> {
+  const token = await getToken();
+  const res = await apiPatch(
+    `/courses/${courseId}`,
+    {
+      slug: input.slug.trim().toLowerCase(),
+      title: input.title.trim(),
+      exam_type: input.examType.trim(),
+      description: input.description.trim() || undefined,
+      level_from: input.levelFrom.trim() || undefined,
+      level_to: input.levelTo.trim() || undefined,
+      total_lessons: input.totalLessons,
+      total_tasks: input.totalTasks,
+      estimated_hours: input.estimatedHours,
+      is_active: input.isActive,
+      image_url: input.imageUrl.trim() || undefined,
+    },
+    token,
+  );
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/teacher/courses");
+  revalidatePath(`/teacher/courses/${courseId}/edit`);
+  revalidatePath(`/courses/${input.slug.trim().toLowerCase()}`);
+  return { success: true, slug: input.slug.trim().toLowerCase() };
+}
+
+export interface CourseSectionInput {
+  slug: string;
+  title: string;
+  icon: string;
+  sortOrder: number;
+}
+
+export async function createCourseSection(courseId: string, input: CourseSectionInput) {
+  const token = await getToken();
+  const res = await apiPost(`/courses/${courseId}/sections`, {
+    slug: input.slug,
+    title: input.title,
+    icon: input.icon || undefined,
+    sort_order: input.sortOrder,
+  }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/teacher/courses/${courseId}/edit`);
+  revalidatePath(`/courses/${input.slug}`);
+  return { success: true };
+}
+
+export async function updateCourseSection(courseId: string, sectionId: string, input: CourseSectionInput) {
+  const token = await getToken();
+  const res = await apiPatch(`/courses/${courseId}/sections/${sectionId}`, {
+    slug: input.slug,
+    title: input.title,
+    icon: input.icon || undefined,
+    sort_order: input.sortOrder,
+  }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/teacher/courses/${courseId}/edit`);
+  return { success: true };
+}
+
+export async function deleteCourseSection(courseId: string, sectionId: string) {
+  const token = await getToken();
+  const res = await apiDelete(`/courses/${courseId}/sections/${sectionId}`, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/teacher/courses/${courseId}/edit`);
+  return { success: true };
+}
+
 export async function saveLessonBoard(
   lessonId: string,
   boardData: Record<string, unknown>,
@@ -161,6 +296,7 @@ export interface NewTaskInput {
   // Структурированные данные для multiple_choice/multiple_select/matching/fill_blanks —
   // см. lib/task-types.ts. Для остальных типов не заполняется.
   options?: Record<string, unknown>;
+  audioUrl?: string;
 }
 
 export async function createTask(input: NewTaskInput): Promise<{ success: boolean; id?: string; error?: string }> {
@@ -183,6 +319,7 @@ export async function createTask(input: NewTaskInput): Promise<{ success: boolea
       explanation: input.explanation.trim() || undefined,
       xp_reward: input.xpReward ?? undefined,
       auto_check: input.autoCheck,
+      audio_url: input.audioUrl?.trim() || undefined,
     },
     token
   );

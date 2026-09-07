@@ -3,7 +3,7 @@
 import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
-import { createTask } from "@/lib/teacher-actions";
+import { createTask, uploadListeningAudio } from "@/lib/teacher-actions";
 import {
   MANUAL_ONLY_TYPES,
   STRUCTURED_TYPES,
@@ -231,6 +231,8 @@ export function TaskForm() {
   const [explanation, setExplanation] = useState("");
   const [xpReward, setXpReward] = useState("10");
   const [autoCheck, setAutoCheck] = useState(false);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [audioUploading, setAudioUploading] = useState(false);
 
   // Структурированные данные под каждый тип задания.
   const [choices, setChoices] = useState<ChoiceOption[]>([
@@ -282,6 +284,7 @@ export function TaskForm() {
         xpReward: xpReward.trim() ? Number(xpReward) : null,
         autoCheck: isManualOnly ? false : isStructured ? true : autoCheck,
         options,
+        audioUrl,
       });
       if (!res.success) {
         setError(res.error || "Не удалось создать задание");
@@ -344,6 +347,30 @@ export function TaskForm() {
       >
         <textarea value={question} onChange={(e) => setQuestion(e.target.value)} rows={5} className={textareaClass} />
       </Field>
+
+      {type === "listening" && (
+        <Field label="Аудио для аудирования" hint="Загрузите MP3, WAV или MP4. Студент услышит файл перед ответом.">
+          <input
+            type="file"
+            accept="audio/*,video/mp4"
+            disabled={audioUploading}
+            className="block w-full rounded-xl border border-dashed border-ze-border bg-white px-3.5 py-3 text-[13px] text-ze-muted"
+            onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              setAudioUploading(true);
+              const formData = new FormData();
+              formData.set("file", file);
+              const result = await uploadListeningAudio(formData);
+              setAudioUploading(false);
+              if (result.success && result.url) setAudioUrl(result.url);
+              else setError(result.error || "Не удалось загрузить аудио");
+            }}
+          />
+          {audioUploading && <div className="mt-1.5 text-[12.5px] text-ze-muted">Загружаем аудио…</div>}
+          {audioUrl && <audio controls src={audioUrl} className="mt-3 w-full" />}
+        </Field>
+      )}
 
       {isChoiceType && (
         <ChoicesEditor

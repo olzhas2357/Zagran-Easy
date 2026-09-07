@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Users, BookOpen, ClipboardList, ClipboardCheck, FolderOpen, UserCircle, Menu } from "lucide-react";
+import { LayoutGrid, Users, BookOpen, ClipboardList, ClipboardCheck, FolderOpen, GraduationCap, UserCircle, Menu } from "lucide-react";
 import type { TeacherProfile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/teacher/students", label: "Мои ученики", Icon: Users },
   { href: "/teacher/lessons", label: "Уроки", Icon: BookOpen },
   { href: "/teacher/tasks", label: "Банк заданий", Icon: ClipboardList },
+  { href: "/teacher/courses", label: "Мои курсы", Icon: GraduationCap },
   { href: "/teacher/assignments", label: "Проверка заданий", Icon: ClipboardCheck },
   { href: "/teacher/materials", label: "Материалы", Icon: FolderOpen },
   { href: "/teacher/profile", label: "Профиль", Icon: UserCircle },
