@@ -7,6 +7,7 @@ import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 import type { Profile, Lead, LeadActivity, University } from "./types";
+import { DEFAULT_CALCULATOR_SETTINGS, type CalculatorSettings } from "./calculator";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
   return {
@@ -124,6 +125,16 @@ export async function getLeadActivities(leadId: string): Promise<LeadActivity[]>
   const res = await apiGet<Record<string, unknown>[]>(`/leads/${leadId}/activities`, token);
   if (res.error || !res.data) return [];
   return res.data.map(mapActivityRow);
+}
+
+// Тарифы калькулятора — редактируются менеджером, хранятся в Supabase
+// (таблица calculator_settings). Отсутствующие ключи подстраховываются
+// значениями по умолчанию из lib/calculator.ts.
+export async function getCalculatorSettings(): Promise<CalculatorSettings> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>("/calculator-settings", token);
+  if (res.error || !res.data) return DEFAULT_CALCULATOR_SETTINGS;
+  return { ...DEFAULT_CALCULATOR_SETTINGS, ...res.data } as CalculatorSettings;
 }
 
 export async function getStaffProfiles(): Promise<Profile[]> {

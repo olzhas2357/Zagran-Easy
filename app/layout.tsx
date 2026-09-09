@@ -1,13 +1,27 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { SITE } from "@/lib/constants";
 
-const inter = Inter({
+// Самостоятельно захостенный Inter (пакет @fontsource-variable/inter) —
+// не зависит от сети/прокси в отличие от next/font/google.
+const inter = localFont({
+  src: [
+    {
+      path: "../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "../node_modules/@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+  ],
   variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

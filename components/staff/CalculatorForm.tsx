@@ -1,8 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Send } from "lucide-react";
-import { calculate, getExtrasForService, type ServiceType } from "@/lib/calculator";
+import { useMemo, useState, useTransition } from "react";
+import { Pencil, Send } from "lucide-react";
+import {
+  calculate,
+  formatMoney,
+  getEducationPackages,
+  getExtrasForService,
+  DEFAULT_CALCULATOR_SETTINGS,
+  type CalculatorSettings,
+  type EducationPackage,
+  type ServiceType,
+} from "@/lib/calculator";
+import { updateCalculatorSetting } from "@/lib/staff-actions";
 import { waUrl } from "@/lib/utils";
 
 const SERVICES: { value: ServiceType; label: string }[] = [
@@ -17,18 +27,33 @@ const COUNTRIES_BY_SERVICE: Partial<Record<ServiceType, { value: string; label: 
   ]
 };
 
-export function CalculatorForm() {
+export function CalculatorForm({ initialSettings }: { initialSettings?: CalculatorSettings }) {
+  const [settings, setSettings] = useState<CalculatorSettings>(initialSettings ?? DEFAULT_CALCULATOR_SETTINGS);
   const [service, setService] = useState<ServiceType>("education");
   const [country, setCountry] = useState("turkey");
+  const [program, setProgram] = useState<string>("support");
   const [duration, setDuration] = useState(10);
   const [extras, setExtras] = useState<string[]>([]);
+  const [editMode, setEditMode] = useState(false);
 
-  const availableExtras = getExtrasForService(service);
+  const availableExtras = getExtrasForService(service, settings);
   const countries = COUNTRIES_BY_SERVICE[service];
+  const packages = getEducationPackages(settings);
+  const isPackage = service === "education" && program !== "support";
 
   const result = useMemo(
-    () => calculate({ service, country: countries ? country : undefined, duration: service === "tours" ? duration : undefined, extras }),
-    [service, country, duration, extras, countries]
+    () =>
+      calculate(
+        {
+          service,
+          country: countries ? country : undefined,
+          program: service === "education" ? program : undefined,
+          duration: service === "tours" ? duration : undefined,
+          extras: isPackage ? undefined : extras,
+        },
+        settings
+      ),
+    [service, country, program, duration, extras, countries, isPackage, settings]
   );
 
   function toggleExtra(extra: string) {
@@ -38,6 +63,7 @@ export function CalculatorForm() {
   function changeService(s: ServiceType) {
     setService(s);
     setExtras([]);
+    setProgram("support");
     setCountry(COUNTRIES_BY_SERVICE[s]?.[0]?.value || "turkey");
   }
 
@@ -59,7 +85,58 @@ export function CalculatorForm() {
           ))}
         </div>
 
-        {countries && (
+        {service === "education" && (
+          <>
+            <div className="mt-5 text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">Программа</div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => setProgram("support")}
+                className={`rounded-full border px-3.5 py-2 text-[13.5px] font-semibold transition-colors ${
+                  program === "support" ? "border-ze-primary bg-ze-primary text-white" : "border-ze-border bg-white text-slate-700 hover:border-slate-300"
+                }`}
+              >
+                Только сопровождение
+              </button>
+              {packages.map((p) => (
+                <button
+                  key={p.value}
+                  onClick={() => setProgram(p.value)}
+                  className={`rounded-full border px-3.5 py-2 text-[13.5px] font-semibold transition-colors ${
+                    program === p.value ? "border-ze-primary bg-ze-primary text-white" : "border-ze-border bg-white text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {isPackage && (() => {
+              const selectedPackage = packages.find((p) => p.value === program);
+              if (!selectedPackage) return null;
+              return (
+                <dl className="mt-4 grid grid-cols-1 gap-3 rounded-xl bg-[#F7F9FC] p-4 text-[13.5px] sm:grid-cols-2">
+                  <div>
+                    <dt className="font-bold text-ze-muted">Цель</dt>
+                    <dd className="mt-0.5 text-ze-ink">{selectedPackage.goal}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-ze-muted">Срок подготовки</dt>
+                    <dd className="mt-0.5 text-ze-ink">{selectedPackage.duration}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-ze-muted">Формат занятий</dt>
+                    <dd className="mt-0.5 text-ze-ink">{selectedPackage.format}</dd>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <dt className="font-bold text-ze-muted">Что входит</dt>
+                    <dd className="mt-0.5 text-ze-ink">{selectedPackage.description}</dd>
+                  </div>
+                </dl>
+              );
+            })()}
+          </>
+        )}
+
+        {countries && !isPackage && (
           <>
             <div className="mt-5 text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">Страна</div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -91,7 +168,7 @@ export function CalculatorForm() {
           </>
         )}
 
-        {availableExtras.length > 0 && (
+        {availableExtras.length > 0 && !isPackage && (
           <>
             <div className="mt-5 text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">Доп. услуги</div>
             <div className="mt-3 flex flex-col gap-2">
@@ -104,6 +181,21 @@ export function CalculatorForm() {
             </div>
           </>
         )}
+
+        <div className="mt-6 border-t border-ze-border pt-4">
+          <button
+            onClick={() => setEditMode((v) => !v)}
+            className="flex items-center gap-1.5 text-[13px] font-semibold text-ze-primary hover:underline"
+          >
+            <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
+            {editMode ? "Скрыть редактирование тарифов" : "Редактировать тарифы"}
+          </button>
+          {editMode && (
+            <div className="mt-4">
+              <RatesEditor service={service} settings={settings} onSaved={setSettings} />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
@@ -112,16 +204,16 @@ export function CalculatorForm() {
           {result.items.map((item) => (
             <div key={item.label} className="flex justify-between border-b border-[#F1F4F9] py-3 text-[14px] last:border-0">
               <span className="text-slate-600">{item.label}</span>
-              <span className="font-semibold text-ze-ink">${item.amount.toLocaleString("ru-RU")}</span>
+              <span className="font-semibold text-ze-ink">{formatMoney(item.amount)}</span>
             </div>
           ))}
         </div>
         <div className="mt-3.5 flex items-center justify-between border-t border-ze-border pt-3.5">
           <span className="text-[15px] font-bold text-ze-ink">Итого</span>
-          <span className="text-[22px] font-extrabold text-ze-primary">${result.total.toLocaleString("ru-RU")}</span>
+          <span className="text-[22px] font-extrabold text-ze-primary">{formatMoney(result.total)}</span>
         </div>
         {result.note && <p className="mt-2.5 text-[13px] text-ze-muted">{result.note}</p>}
-        <a
+        {/* <a
           href={waUrl(result.waMessage)}
           target="_blank"
           rel="noopener noreferrer"
@@ -129,8 +221,317 @@ export function CalculatorForm() {
         >
           <Send className="h-4.5 w-4.5" strokeWidth={2} />
           Отправить клиенту в WhatsApp
-        </a>
+        </a> */}
       </div>
     </div>
+  );
+}
+
+// ---- Редактирование тарифов менеджером ----
+// Показывает поля только для тех тарифов, которые относятся к выбранной услуге,
+// сохраняет изменения через server action (Supabase, таблица calculator_settings).
+
+function RatesEditor({
+  service,
+  settings,
+  onSaved,
+}: {
+  service: ServiceType;
+  settings: CalculatorSettings;
+  onSaved: (next: CalculatorSettings) => void;
+}) {
+  if (service === "education") {
+    return (
+      <div className="flex flex-col gap-5">
+        <RateGroup
+          title="Сервисный сбор (сопровождение)"
+          fields={Object.entries(settings.education_fees).map(([key, value]) => ({ key, label: key, value }))}
+          onSave={async (next) => {
+            const value = Object.fromEntries(next.map((f) => [f.key, f.value]));
+            const res = await updateCalculatorSetting("education_fees", value);
+            if (res.success) onSaved({ ...settings, education_fees: value });
+            return res;
+          }}
+        />
+        <RateGroup
+          title="Доп. услуги"
+          fields={Object.entries(settings.education_extras).map(([key, value]) => ({ key, label: key, value }))}
+          onSave={async (next) => {
+            const value = Object.fromEntries(next.map((f) => [f.key, f.value]));
+            const res = await updateCalculatorSetting("education_extras", value);
+            if (res.success) onSaved({ ...settings, education_extras: value });
+            return res;
+          }}
+        />
+        <PackageDetailsEditor
+          packages={settings.education_packages}
+          onSave={async (value) => {
+            const res = await updateCalculatorSetting("education_packages", value);
+            if (res.success) onSaved({ ...settings, education_packages: value });
+            return res;
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (service === "visa") {
+    return (
+      <RateGroup
+        title="Тарифы визы в США"
+        fields={Object.entries(settings.visa_fees).map(([key, value]) => ({ key, label: key, value }))}
+        onSave={async (next) => {
+          const value = Object.fromEntries(next.map((f) => [f.key, f.value])) as CalculatorSettings["visa_fees"];
+          const res = await updateCalculatorSetting("visa_fees", value);
+          if (res.success) onSaved({ ...settings, visa_fees: value });
+          return res;
+        }}
+      />
+    );
+  }
+
+  if (service === "work") {
+    return (
+      <RateGroup
+        title="Тарифы трудоустройства"
+        fields={Object.entries(settings.work_fees).map(([key, value]) => ({ key, label: key, value }))}
+        onSave={async (next) => {
+          const value = Object.fromEntries(next.map((f) => [f.key, f.value]));
+          const res = await updateCalculatorSetting("work_fees", value);
+          if (res.success) onSaved({ ...settings, work_fees: value });
+          return res;
+        }}
+      />
+    );
+  }
+
+  if (service === "tours") {
+    return (
+      <RateGroup
+        title="Тарифы туров"
+        fields={Object.entries(settings.tours_fees).map(([key, value]) => ({ key, label: key, value }))}
+        onSave={async (next) => {
+          const value = Object.fromEntries(next.map((f) => [f.key, f.value])) as CalculatorSettings["tours_fees"];
+          const res = await updateCalculatorSetting("tours_fees", value);
+          if (res.success) onSaved({ ...settings, tours_fees: value });
+          return res;
+        }}
+      />
+    );
+  }
+
+  return (
+    <RateGroup
+      title="Тарифы недвижимости"
+      fields={Object.entries(settings.realestate_fees).map(([key, value]) => ({ key, label: key, value }))}
+      onSave={async (next) => {
+        const value = Object.fromEntries(next.map((f) => [f.key, f.value])) as CalculatorSettings["realestate_fees"];
+        const res = await updateCalculatorSetting("realestate_fees", value);
+        if (res.success) onSaved({ ...settings, realestate_fees: value });
+        return res;
+      }}
+    />
+  );
+}
+
+function RateGroup({
+  title,
+  fields,
+  onSave,
+}: {
+  title: string;
+  fields: { key: string; label: string; value: number }[];
+  onSave: (next: { key: string; label: string; value: number }[]) => Promise<{ success: boolean; error?: string }>;
+}) {
+  const [values, setValues] = useState(fields);
+  const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
+
+  function setValue(key: string, value: number) {
+    setValues((prev) => prev.map((f) => (f.key === key ? { ...f, value } : f)));
+  }
+
+  function save() {
+    setStatus("idle");
+    startTransition(async () => {
+      const res = await onSave(values);
+      setStatus(res.success ? "saved" : "error");
+    });
+  }
+
+  return (
+    <div>
+      <div className="text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">{title}</div>
+      <div className="mt-2.5 flex flex-col gap-2">
+        {values.map((f) => (
+          <div key={f.key} className="flex items-center justify-between gap-3">
+            <span className="text-[13.5px] text-slate-600">{f.label}</span>
+            <input
+              type="number"
+              min={0}
+              value={f.value}
+              onChange={(e) => setValue(f.key, Number(e.target.value) || 0)}
+              className="w-32 rounded-lg border border-ze-border px-2.5 py-1.5 text-[13.5px] outline-none transition-colors focus:border-ze-primary"
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-2.5 flex items-center gap-3">
+        <button
+          onClick={save}
+          disabled={isPending}
+          className="rounded-lg border border-ze-primary bg-ze-primary px-3 py-1.5 text-[13px] font-semibold text-white transition-opacity disabled:opacity-60"
+        >
+          {isPending ? "Сохранение…" : "Сохранить"}
+        </button>
+        {status === "saved" && <span className="text-[12.5px] text-emerald-600">Сохранено</span>}
+        {status === "error" && <span className="text-[12.5px] text-red-600">Ошибка сохранения</span>}
+      </div>
+    </div>
+  );
+}
+
+// Редактирование пакетов поступления (GLOBAL/CHINA) — сумма + текстовые детали
+// (цель, срок подготовки, формат занятий, состав), которые видит менеджер и клиент.
+function PackageDetailsEditor({
+  packages,
+  onSave,
+}: {
+  packages: Record<string, EducationPackage>;
+  onSave: (next: Record<string, EducationPackage>) => Promise<{ success: boolean; error?: string }>;
+}) {
+  const [values, setValues] = useState(packages);
+  const [isPending, startTransition] = useTransition();
+  const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
+
+  function setField(key: string, field: keyof EducationPackage, value: string | number) {
+    setValues((prev) => ({ ...prev, [key]: { ...prev[key], [field]: value } }));
+  }
+
+  function addProgram() {
+    const key = `program_${Date.now().toString(36)}`;
+    setValues((prev) => ({
+      ...prev,
+      [key]: { label: "Новая программа", amount: 0, goal: "", duration: "", format: "", description: "" },
+    }));
+  }
+
+  function removeProgram(key: string) {
+    setValues((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  }
+
+  function save() {
+    setStatus("idle");
+    startTransition(async () => {
+      const res = await onSave(values);
+      setStatus(res.success ? "saved" : "error");
+    });
+  }
+
+  return (
+    <div>
+      <div className="text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">Пакеты поступления (GLOBAL/CHINA)</div>
+      <div className="mt-2.5 flex flex-col gap-4">
+        {Object.entries(values).map(([key, pkg]) => (
+          <div key={key} className="rounded-xl border border-ze-border p-3">
+            <div className="flex items-center justify-between gap-3">
+              <input
+                value={pkg.label}
+                onChange={(e) => setField(key, "label", e.target.value)}
+                className="flex-1 rounded-lg border border-ze-border px-2.5 py-1.5 text-[13.5px] font-semibold outline-none transition-colors focus:border-ze-primary"
+              />
+              <input
+                type="number"
+                min={0}
+                value={pkg.amount}
+                onChange={(e) => setField(key, "amount", Number(e.target.value) || 0)}
+                className="w-32 rounded-lg border border-ze-border px-2.5 py-1.5 text-[13.5px] outline-none transition-colors focus:border-ze-primary"
+              />
+              <button
+                onClick={() => removeProgram(key)}
+                title="Удалить программу"
+                className="rounded-lg border border-ze-border px-2.5 py-1.5 text-[13px] font-semibold text-red-600 transition-colors hover:border-red-300 hover:bg-red-50"
+              >
+                Удалить
+              </button>
+            </div>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <LabeledInput label="Цель" value={pkg.goal} onChange={(v) => setField(key, "goal", v)} />
+              <LabeledInput label="Срок подготовки" value={pkg.duration} onChange={(v) => setField(key, "duration", v)} />
+              <LabeledInput label="Формат занятий" value={pkg.format} onChange={(v) => setField(key, "format", v)} className="sm:col-span-2" />
+              <LabeledTextarea label="Что входит (описание)" value={pkg.description} onChange={(v) => setField(key, "description", v)} className="sm:col-span-2" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-2.5 flex items-center gap-3">
+        <button
+          onClick={addProgram}
+          className="rounded-lg border border-dashed border-ze-primary px-3 py-1.5 text-[13px] font-semibold text-ze-primary transition-colors hover:bg-ze-primary/5"
+        >
+          + Добавить программу
+        </button>
+        <button
+          onClick={save}
+          disabled={isPending}
+          className="rounded-lg border border-ze-primary bg-ze-primary px-3 py-1.5 text-[13px] font-semibold text-white transition-opacity disabled:opacity-60"
+        >
+          {isPending ? "Сохранение…" : "Сохранить"}
+        </button>
+        {status === "saved" && <span className="text-[12.5px] text-emerald-600">Сохранено</span>}
+        {status === "error" && <span className="text-[12.5px] text-red-600">Ошибка сохранения</span>}
+      </div>
+    </div>
+  );
+}
+
+function LabeledInput({
+  label,
+  value,
+  onChange,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <label className={`flex flex-col gap-1 text-[12px] text-ze-muted ${className}`}>
+      {label}
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-lg border border-ze-border px-2.5 py-1.5 text-[13.5px] text-ze-ink outline-none transition-colors focus:border-ze-primary"
+      />
+    </label>
+  );
+}
+
+function LabeledTextarea({
+  label,
+  value,
+  onChange,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <label className={`flex flex-col gap-1 text-[12px] text-ze-muted ${className}`}>
+      {label}
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={2}
+        className="rounded-lg border border-ze-border px-2.5 py-1.5 text-[13.5px] text-ze-ink outline-none transition-colors focus:border-ze-primary"
+      />
+    </label>
   );
 }

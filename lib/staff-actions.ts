@@ -43,6 +43,15 @@ export async function markUniversityVerified(universityId: string) {
   return { success: true };
 }
 
+// Сохранение тарифа калькулятора (key = education_fees/education_packages/...).
+export async function updateCalculatorSetting(key: string, value: Record<string, unknown>) {
+  const token = await getToken();
+  const res = await apiPatch(`/calculator-settings/${key}`, { value }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/calculator");
+  return { success: true };
+}
+
 export async function toggleUniversityActive(universityId: string, isActive: boolean) {
   const token = await getToken();
   const res = await apiPatch(`/admin/universities/${universityId}/active`, { is_active: isActive }, token);
