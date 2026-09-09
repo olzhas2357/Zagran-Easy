@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Landmark, ClipboardList, Calculator, BookOpen, Menu } from "lucide-react";
+import { LayoutGrid, Landmark, ClipboardList, Calculator, BookOpen, CalendarDays, Menu } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/staff/universities", label: "Университеты", Icon: Landmark },
   { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
   { href: "/staff/calculator", label: "Калькулятор", Icon: Calculator },
+  { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
   { href: "/staff/directory", label: "Справочник", Icon: BookOpen },
 ];
 
