@@ -12,7 +12,7 @@ export interface NavItem {
 
 // Главное меню (публичное)
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Университеты", href: "/universities" },
+  { label: "Университеты", href: "/education" },
   { label: "Языковые курсы", href: "/language" },
   { label: "О нас", href: "/about" },
 ];
@@ -28,7 +28,7 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
   "/education": "Университеты",
-  "/universities": "Университеты",
+  // "/universities": "Университеты",
   "/language": "Языковые курсы",
   "/about": "О нас",
   "/faq": "FAQ",
