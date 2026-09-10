@@ -14,150 +14,305 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { theme } = useTheme();
+
   const isLanguage = pathname?.startsWith("/language");
-  // "/" и "/language" — единственные страницы с переключаемой тёмной темой.
-  // Хедер общий для всего сайта, поэтому тёмный вид применяем только на этих
-  // маршрутах — иначе на других страницах (без dark:-стилей) хедер оставался
-  // бы тёмным по инерции от сохранённого глобального выбора темы.
   const isThemedRoute = pathname === "/" || isLanguage;
   const isDark = isThemedRoute && theme === "dark";
 
+  const navItems = NAV_ITEMS.filter((item) => item.href !== "/");
+
   return (
     <header
-      className={`sticky top-0 z-40 border-b backdrop-blur-md ${
-        isDark ? "border-white/10 bg-[#0B132B]/92" : "border-ze-border bg-white/92"
+      className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
+        isDark
+          ? "border-white/[0.08] bg-[#0B132B]/80"
+          : "border-slate-200/70 bg-white/85"
       }`}
     >
-      <div className="mx-auto flex h-[62px] max-w-6xl items-center gap-3 px-4 sm:h-[72px] sm:px-10">
-        <Link href="/" className="flex flex-none items-center gap-2" onClick={() => setOpen(false)}>
-          <Image
-            src="/logo-icon.png"
-            alt="ZagranEasy"
-            width={669}
-            height={477}
-            priority
-            className="h-8 w-auto sm:h-10"
-          />
-          <span className={`text-[17px] font-bold tracking-tight ${isDark ? "text-white" : "text-ze-ink"}`}>
-            ZagranEasy
-          </span>
-        </Link>
+      <div className="mx-auto flex h-[68px] max-w-7xl items-center px-4 sm:h-[76px] sm:px-6 lg:px-8">
+        {/* LOGO */}
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="group flex shrink-0 items-center gap-2.5"
+        >
+          <div
+            className={`relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-[12px] transition-all duration-300 group-hover:scale-105 ${
+              isDark
+                ? "bg-white/[0.08] ring-1 ring-white/10"
+                : "bg-[#F5F8FF] ring-1 ring-slate-200"
+            }`}
+          >
+            <Image
+              src="/logo-icon.png"
+              alt="ZagranEasy"
+              width={669}
+              height={477}
+              priority
+              className="h-8 w-auto object-contain"
+            />
+          </div>
 
-        <nav className="ml-6 hidden items-center gap-1 md:flex">
-          {NAV_ITEMS.filter((item) => item.href !== "/").map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`rounded-[9px] px-3 py-2 text-[14.5px] font-medium transition-colors ${
-                isDark
-                  ? "text-white/70 hover:bg-white/10 hover:text-white"
-                  : "text-slate-700 hover:bg-[#F1F5FB] hover:text-ze-primary"
+          <div className="hidden sm:block">
+            <div
+              className={`text-[17px] font-bold leading-none tracking-[-0.02em] ${
+                isDark ? "text-white" : "text-ze-ink"
               }`}
             >
-              {item.label}
-            </Link>
-          ))}
+              ZagranEasy
+            </div>
+
+            <div
+              className={`mt-1 text-[9px] font-semibold uppercase tracking-[0.16em] ${
+                isDark ? "text-white/40" : "text-slate-400"
+              }`}
+            >
+              Education abroad
+            </div>
+          </div>
+        </Link>
+
+        {/* DESKTOP NAV */}
+        <nav className="ml-8 hidden items-center gap-1 lg:flex">
+          {navItems.map((item) => {
+            const active =
+              pathname === item.href ||
+              (item.href !== "/" && pathname?.startsWith(`${item.href}/`));
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative rounded-xl px-3.5 py-2.5 text-[14px] font-medium transition-all duration-200 ${
+                  active
+                    ? isDark
+                      ? "bg-white/[0.10] text-white"
+                      : "bg-[#F1F5FB] text-ze-primary"
+                    : isDark
+                      ? "text-white/65 hover:bg-white/[0.06] hover:text-white"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-ze-primary"
+                }`}
+              >
+                {item.label}
+
+                {active && (
+                  <motion.span
+                    layoutId="header-active"
+                    className={`absolute bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full ${
+                      isDark ? "bg-white" : "bg-ze-primary"
+                    }`}
+                  />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
+        {/* RIGHT ACTIONS */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
           {isThemedRoute && (
             <ThemeToggle
-              className={`flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border transition-colors ${
+              className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 ${
                 isDark
-                  ? "border-white/15 bg-white/[0.06] text-white/80 hover:text-white"
-                  : "border-ze-border bg-white text-ze-muted hover:text-ze-ink"
+                  ? "border-white/10 bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white"
+                  : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-ze-ink"
               }`}
             />
           )}
-          {/*
-            Личный кабинет клиента временно не используется — см. app/account.
-            Вернуть ссылку, когда кабинет снова понадобится.
 
           <Link
             href="/account"
-            className="flex items-center gap-2 rounded-[11px] border border-ze-border bg-white py-1.5 pl-1.5 pr-3 text-[13.5px] font-semibold text-ze-ink transition-colors hover:border-ze-primary"
+            className={`group flex h-10 items-center gap-2 rounded-xl border px-2.5 pr-3.5 text-[13.5px] font-semibold transition-all duration-200 ${
+              isDark
+                ? "border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.09]"
+                : "border-slate-200 bg-white text-ze-ink hover:border-ze-primary/30 hover:bg-[#F8FAFF]"
+            }`}
           >
-            <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-[#EBF1FE] text-[11px] font-bold text-ze-primary">
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold transition-transform duration-200 group-hover:scale-105 ${
+                isDark
+                  ? "bg-white/10 text-white"
+                  : "bg-[#EBF1FE] text-ze-primary"
+              }`}
+            >
               К
             </span>
-            Кабинет
+
+            <span>Кабинет</span>
           </Link>
-          */}
+
           <a
             href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
             target="_blank"
             rel="noopener noreferrer"
-            className={`rounded-xl px-5 py-2.5 text-[14.5px] font-semibold text-white transition-colors ${
-              isLanguage ? "bg-gradient-to-r from-[#2880DE] to-[#22D3EE]" : "bg-ze-primary hover:bg-ze-primary-dark"
+            className={`group relative flex h-10 items-center overflow-hidden rounded-xl px-5 text-[14px] font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+              isLanguage
+                ? "bg-gradient-to-r from-[#2880DE] to-[#22D3EE]"
+                : "bg-ze-primary hover:bg-ze-primary-dark"
             }`}
           >
-            Оставить заявку
+            <span className="relative z-10">Оставить заявку</span>
+
+            <span className="ml-2 relative z-10 transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+
+            <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-0" />
           </a>
         </div>
 
+        {/* MOBILE THEME */}
         {isThemedRoute && (
           <ThemeToggle
-            className={`ml-auto flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border md:hidden ${
-              isDark ? "border-white/15 bg-white/[0.06] text-white/80" : "border-ze-border bg-white text-ze-muted"
+            className={`ml-auto flex h-10 w-10 items-center justify-center rounded-xl border md:hidden ${
+              isDark
+                ? "border-white/10 bg-white/[0.05] text-white/80"
+                : "border-slate-200 bg-white text-slate-500"
             }`}
           />
         )}
 
+        {/* MOBILE MENU */}
         <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Меню"
-          className={`flex h-11 w-11 flex-none flex-col items-center justify-center gap-1 rounded-[11px] border md:hidden ${
-            isThemedRoute ? "ml-2" : "ml-auto"
-          } ${isDark ? "border-white/15 bg-white/[0.06]" : "border-ze-border bg-white"}`}
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-label={open ? "Закрыть меню" : "Открыть меню"}
+          aria-expanded={open}
+          className={`ml-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border md:hidden ${
+            isDark
+              ? "border-white/10 bg-white/[0.05]"
+              : "border-slate-200 bg-white"
+          }`}
         >
-          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
-          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
-          <span className={`h-0.5 w-4 rounded-full ${isDark ? "bg-white" : "bg-ze-ink"}`} />
+          <div className="relative h-4 w-5">
+            <motion.span
+              animate={{
+                rotate: open ? 45 : 0,
+                y: open ? 6 : 0,
+              }}
+              className={`absolute left-0 top-0 h-[2px] w-5 rounded-full ${
+                isDark ? "bg-white" : "bg-ze-ink"
+              }`}
+            />
+
+            <motion.span
+              animate={{
+                opacity: open ? 0 : 1,
+              }}
+              className={`absolute left-0 top-[6px] h-[2px] w-5 rounded-full ${
+                isDark ? "bg-white" : "bg-ze-ink"
+              }`}
+            />
+
+            <motion.span
+              animate={{
+                rotate: open ? -45 : 0,
+                y: open ? -6 : 0,
+              }}
+              className={`absolute left-0 top-3 h-[2px] w-5 rounded-full ${
+                isDark ? "bg-white" : "bg-ze-ink"
+              }`}
+            />
+          </div>
         </button>
       </div>
 
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            className={`flex flex-col gap-1 border-t px-4 pb-4 pt-2 md:hidden ${
-              isDark ? "border-white/10" : "border-ze-border"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className={`overflow-hidden border-t md:hidden ${
+              isDark
+                ? "border-white/[0.08] bg-[#0B132B]/95"
+                : "border-slate-200/70 bg-white/95"
             }`}
           >
-            {NAV_ITEMS.filter((item) => item.href !== "/").map((item) => (
+            <div className="mx-auto max-w-7xl px-4 pb-5 pt-3">
+              <nav className="flex flex-col gap-1">
+                {navItems.map((item, index) => {
+                  const active =
+                    pathname === item.href ||
+                    (item.href !== "/" &&
+                      pathname?.startsWith(`${item.href}/`));
+
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: index * 0.035,
+                        duration: 0.18,
+                      }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={`flex items-center justify-between rounded-xl px-3 py-3.5 text-[15px] font-medium ${
+                          active
+                            ? isDark
+                              ? "bg-white/[0.08] text-white"
+                              : "bg-[#F1F5FB] text-ze-primary"
+                            : isDark
+                              ? "text-white/80 hover:bg-white/[0.05]"
+                              : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        <span className="text-slate-400">→</span>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+
+              <div
+                className={`my-4 h-px ${
+                  isDark ? "bg-white/[0.08]" : "bg-slate-100"
+                }`}
+              />
+
               <Link
-                key={item.href}
-                href={item.href}
+                href="/account"
                 onClick={() => setOpen(false)}
-                className={`rounded-[10px] px-2.5 py-3 text-[16px] font-medium ${
-                  isDark ? "text-white" : "text-ze-ink"
+                className={`flex items-center gap-3 rounded-xl border px-3 py-3.5 text-[15px] font-semibold ${
+                  isDark
+                    ? "border-white/10 bg-white/[0.04] text-white"
+                    : "border-slate-200 bg-white text-ze-ink"
                 }`}
               >
-                {item.label}
+                <span
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold ${
+                    isDark
+                      ? "bg-white/10 text-white"
+                      : "bg-[#EBF1FE] text-ze-primary"
+                  }`}
+                >
+                  К
+                </span>
+
+                Кабинет
               </Link>
-            ))}
-            {/* Кабинет клиента временно не используется — см. app/account
-            <Link
-              href="/account"
-              onClick={() => setOpen(false)}
-              className="rounded-[10px] px-2.5 py-3 text-[16px] font-medium text-ze-ink"
-            >
-              Кабинет
-            </Link>
-            */}
-            <a
-              href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-2 rounded-xl px-5 py-3.5 text-center text-[15px] font-semibold text-white ${
-                isLanguage ? "bg-gradient-to-r from-[#2880DE] to-[#22D3EE]" : "bg-ze-primary"
-              }`}
-            >
-              Оставить заявку
-            </a>
+
+              <a
+                href={waUrl(
+                  "Здравствуйте! Хочу оставить заявку на консультацию."
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`mt-2 flex items-center justify-center rounded-xl px-5 py-3.5 text-[15px] font-semibold text-white ${
+                  isLanguage
+                    ? "bg-gradient-to-r from-[#2880DE] to-[#22D3EE]"
+                    : "bg-ze-primary"
+                }`}
+              >
+                Оставить заявку
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

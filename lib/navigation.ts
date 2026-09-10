@@ -12,16 +12,9 @@ export interface NavItem {
 
 // Главное меню (публичное)
 export const NAV_ITEMS: NavItem[] = [
-  // {
-  //   label: "Instagram",
-  //   href: "https://instagram.com/zagraneasy",
-  //   icon: "/files/image_insta.png",
-  // },
-  // {
-  //   label: "WhatsApp",
-  //   href: "https://wa.me/77479112606",
-  //   icon: "/files/image_whatsapp.png",
-  // },
+  { label: "Университеты", href: "/universities" },
+  { label: "Языковые курсы", href: "/language" },
+  { label: "О нас", href: "/about" },
 ];
 // Меню портала сотрудников
 export const STAFF_NAV_ITEMS: NavItem[] = [
@@ -35,12 +28,10 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
   "/education": "Университеты",
+  "/universities": "Университеты",
   "/language": "Языковые курсы",
   "/about": "О нас",
   "/faq": "FAQ",
-  "/staff": "Портал",
-  "/staff/calculator": "Калькулятор",
-  "/staff/directory": "Справочник",
 };
 
 // SEO мета-данные для каждой страницы
@@ -54,40 +45,25 @@ export const PAGE_META: Record<
       "Обучение, работа, туры, визы, недвижимость за рубежом. 3200+ клиентов. Алматы.",
   },
   "/education": {
-    title: "Обучение за рубежом — ZagranEasy",
+    title: "Университеты — ZagranEasy",
     description:
-      "3200+ зачислений в университеты Турции, Китая, Италии, Малайзии. Поступление без экзаменов, гранты до 100%.",
+      "Каталог университетов, цены, дедлайны и программы обучения за рубежом.",
+  },
+  "/universities": {
+    title: "Университеты — ZagranEasy",
+    description:
+      "Каталог университетов, цены, дедлайны и программы обучения за рубежом.",
   },
   "/language": {
     title: "Языковые курсы — ZagranEasy",
     description:
       "Онлайн-курсы английского языка: General English, IELTS Preparation, English for University, Speaking Club.",
   },
-  // "/tours": {
-  //   title: "Эксклюзивные туры — ZagranEasy",
-  //   description:
-  //     "Авторские маршруты: Китай, Италия, Таиланд. Перелёт, отель 4-5*, гид — всё включено. Рассрочка 0·0·12.",
-  // },
-  // "/work": {
-  //   title: "Работа за рубежом — ZagranEasy",
-  //   description:
-  //     "Трудоустройство в Турции, Польше, Германии. Рабочая виза, контракт, поддержка на месте.",
-  // },
-  // "/visa-usa": {
-  //   title: "Виза в США — ZagranEasy",
-  //   description:
-  //     "98% одобрений. DS-160, подготовка к интервью, запись в посольство. Полное сопровождение.",
-  // },
-  // "/realestate": {
-  //   title: "Недвижимость за рубежом — ZagranEasy",
-  //   description:
-  //     "Турция, Кипр, ОАЭ. Виллы, апартаменты, инвестиции. ВНЖ через покупку. Юридическое сопровождение.",
-  // },
-  // "/about": {
-  //   title: "О компании — ZagranEasy",
-  //   description:
-  //     "ТОО «ZAGRANEASY». Более 3200 клиентов, 98% успешных виз. Алматы, БЦ Нурлы Тау.",
-  // },
+  "/about": {
+    title: "О компании — ZagranEasy",
+    description:
+      "ИП «ZAGRANEASY». Более 3200 клиентов, 98% успешных виз. Алматы.",
+  },
   "/faq": {
     title: "Частые вопросы — ZagranEasy",
     description:
