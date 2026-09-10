@@ -146,11 +146,11 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
                   <Chip key={c} label={c} active={cities.includes(c)} onClick={() => toggleFrom(cities, setCities, c)} />
                 ))}
               </FilterGroup>
-              <FilterGroup label="Специальность">
+              {/* <FilterGroup label="Специальность">
                 {specialtyOptions.map((f) => (
                   <Chip key={f} label={f} active={specialties.includes(f)} onClick={() => toggleFrom(specialties, setSpecialties, f)} />
                 ))}
-              </FilterGroup>
+              </FilterGroup> */}
               <div>
                 <div className="flex items-baseline justify-between">
                   <div className="text-[12px] font-bold uppercase tracking-wide text-ze-muted">Цена за год</div>
@@ -167,7 +167,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
                 />
                 <div className="mt-0.5 flex justify-between text-[11.5px] text-slate-400">
                   <span>$1 000</span>
-                  <span>$9 000+</span>
+                  <span>$10 000+</span>
                 </div>
               </div>
               <FilterGroup label="Язык обучения">

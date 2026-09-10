@@ -32,11 +32,11 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
           {formatTuitionAmount(university.tuitionFrom)}
           {university.tuitionFrom > 0 && <span className="text-[14px] font-semibold text-ze-muted"> / год</span>}
         </div>
-        {university.tuitionFrom > 0 && (
+        {/* {university.tuitionFrom > 0 && (
           <div className="mt-3 flex items-center gap-2 rounded-[11px] bg-[#F5F8FE] px-3 py-2.5 text-[13px] text-slate-700">
             <span className="font-extrabold text-ze-primary">0·0·12</span> рассрочка {formatMonthlyInstallment(university.tuitionFrom)}
           </div>
-        )}
+        )} */}
         <div className="mt-3.5 flex flex-col gap-2">
           {applied ? (
             <div className="rounded-xl bg-emerald-50 px-3 py-3 text-center text-[13.5px] font-semibold text-emerald-700">
