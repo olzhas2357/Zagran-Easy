@@ -73,7 +73,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
       if (cities.length && !cities.includes(u.city)) return false;
       if (specialties.length && !u.specialties.some((f) => specialties.includes(f))) return false;
       if (languages.length && !u.languages.some((l) => languages.includes(l))) return false;
-      if (u.tuitionFrom > price) return false;
+      // if (u.tuitionFrom > price) return false;
       if (noIelts && u.ieltsRequired) return false;
       if (grantOnly && !u.hasGrant) return false;
       if (dormOnly && !u.hasDormitory) return false;
@@ -159,7 +159,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
                 <input
                   type="range"
                   min={1000}
-                  max={9000}
+                  max={100000}
                   step={500}
                   value={price}
                   onChange={(e) => setPrice(Number(e.target.value))}
