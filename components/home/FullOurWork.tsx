@@ -4,6 +4,7 @@ import { MEDIA_REEL_ITEMS } from "@/lib/constants";
 import { waUrl } from "@/lib/utils";
 
 const INCLUDES = [
+  "Языковой курс",
   "Подбор университета",
   "Подбор образовательной программы",
   "Подготовка документов",
@@ -16,13 +17,13 @@ const INCLUDES = [
 
 const PHOTOS = MEDIA_REEL_ITEMS.filter((i) => i.type === "photo").slice(0, 2);
 
-const PROGRAM_PRICE = 1_200_000;
-const SUPPORT_PRICE = 850_000;
-const EXTRA_PRICE = 150_000;
-const DISCOUNT = 100_000;
+// const PROGRAM_PRICE = 1_200_000;
+// const SUPPORT_PRICE = 850_000;
+// const EXTRA_PRICE = 150_000;
+// const DISCOUNT = 100_000;
 
-const TOTAL = PROGRAM_PRICE + SUPPORT_PRICE + EXTRA_PRICE - DISCOUNT;
-
+// const TOTAL = PROGRAM_PRICE + SUPPORT_PRICE + EXTRA_PRICE - DISCOUNT;
+const TOTAL = 1_790_000;
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU").format(price);
 
@@ -31,7 +32,7 @@ export function FullOurWork() {
     <section className="py-11 sm:py-20 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <div className="overflow-hidden rounded-[24px] border border-ze-border bg-ze-surface dark:border-white/10 dark:bg-white/[0.04]">
+          {/* <div className="overflow-hidden rounded-[24px] border border-ze-border bg-ze-surface dark:border-white/10 dark:bg-white/[0.04]"> */}
             <div className="flex flex-col lg:flex-row">
               {/* Photos */}
               <div className="grid grid-cols-2 gap-1 lg:w-[42%] lg:shrink-0">
@@ -54,7 +55,7 @@ export function FullOurWork() {
 
                 {/* Heading */}
                 <h2 className="mt-2.5 text-[25px] font-extrabold leading-[1.15] tracking-tight text-ze-text sm:text-[32px] dark:text-white">
-                  Поступление в Турцию / Китай
+                  Поступление в Турцию / Италия
                   <br />
                   без лишних забот
                 </h2>
@@ -76,11 +77,11 @@ export function FullOurWork() {
                       </div>
                     </div>
 
-                    <div className="shrink-0 text-right">
+                    {/* <div className="shrink-0 text-right">
                       <div className="text-[18px] font-extrabold text-ze-primary dark:text-[#8FD9F5]">
-                        {formatPrice(SUPPORT_PRICE)} ₸
+                        {formatPrice(TOTAL)} ₸
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Includes */}
@@ -114,7 +115,7 @@ export function FullOurWork() {
                 {/* Pricing */}
                 <div className="mt-5 rounded-2xl bg-ze-primary/[0.06] p-4 sm:p-5 dark:bg-white/[0.05]">
                   <div className="space-y-2.5 text-[13.5px]">
-                    <div className="flex items-center justify-between gap-4">
+                    {/* <div className="flex items-center justify-between gap-4">
                       <span className="text-ze-muted dark:text-white/60">
                         Стоимость программы
                       </span>
@@ -149,17 +150,17 @@ export function FullOurWork() {
                         − {formatPrice(DISCOUNT)} ₸
                       </span>
                     </div>
-                  </div>
+                  </div> */}
 
-                  <div className="my-4 h-px bg-ze-border dark:bg-white/10" />
+                  <div className="my-1 h-px bg-ze-border dark:bg-white/10" />
 
                   {/* Total */}
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <div className="text-[12px] font-medium text-ze-muted dark:text-white/50">
+                      {/* <div className="text-[12px] font-medium text-ze-muted dark:text-white/50">
                         Итоговая стоимость
-                      </div>
-                      <div className="mt-0.5 text-[25px] font-extrabold tracking-tight text-ze-text dark:text-white sm:text-[29px]">
+                      </div> */}
+                      <div className="mt-0.5 text-[35px] font-extrabold tracking-tight text-ze-text dark:text-white sm:text-[29px]">
                         {formatPrice(TOTAL)} ₸
                       </div>
                     </div>
