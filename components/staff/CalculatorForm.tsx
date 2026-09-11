@@ -35,11 +35,16 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
   const [duration, setDuration] = useState(10);
   const [extras, setExtras] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"full" | "installment" | "staged">("full");
+  const [paymentStatus, setPaymentStatus] = useState<"unpaid" | "awaiting" | "partial" | "paid" | "overdue">("awaiting");
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [installmentCount, setInstallmentCount] = useState(3);
 
   const availableExtras = getExtrasForService(service, settings);
   const countries = COUNTRIES_BY_SERVICE[service];
   const packages = getEducationPackages(settings);
   const isPackage = service === "education" && program !== "support";
+  const selectedPackage = packages.find((p) => p.value === program);
 
   const result = useMemo(
     () =>
@@ -55,6 +60,8 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
       ),
     [service, country, program, duration, extras, countries, isPackage, settings]
   );
+  const remainingAmount = Math.max(result.total - paidAmount, 0);
+  const installmentAmount = installmentCount > 0 ? Math.ceil(result.total / installmentCount) : result.total;
 
   function toggleExtra(extra: string) {
     setExtras((prev) => (prev.includes(extra) ? prev.filter((e) => e !== extra) : [...prev, extra]));
@@ -110,7 +117,6 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
               ))}
             </div>
             {isPackage && (() => {
-              const selectedPackage = packages.find((p) => p.value === program);
               if (!selectedPackage) return null;
               return (
                 <dl className="mt-4 grid grid-cols-1 gap-3 rounded-xl bg-[#F7F9FC] p-4 text-[13.5px] sm:grid-cols-2">
@@ -213,6 +219,96 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
           <span className="text-[22px] font-extrabold text-ze-primary">{formatMoney(result.total)}</span>
         </div>
         {result.note && <p className="mt-2.5 text-[13px] text-ze-muted">{result.note}</p>}
+        {isPackage && (
+          <div className="mt-5 border-t border-ze-border pt-5">
+            <div className="text-[12.5px] font-bold uppercase tracking-wide text-ze-muted">Оплата полного пакета</div>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-ze-muted">
+              Обучение в университете оплачивается отдельно. Ниже указана только стоимость сопровождения ZagranEasy.
+            </p>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1.5 block text-[13px] font-semibold text-slate-600">Способ оплаты</span>
+                <select
+                  value={paymentMethod}
+                  onChange={(event) => setPaymentMethod(event.target.value as typeof paymentMethod)}
+                  className="w-full rounded-xl border border-ze-border bg-white px-3 py-2.5 text-[13.5px] text-ze-ink outline-none focus:border-ze-primary"
+                >
+                  <option value="full">Полная оплата</option>
+                  <option value="installment">Рассрочка</option>
+                  <option value="staged">Поэтапная оплата</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[13px] font-semibold text-slate-600">Статус оплаты</span>
+                <select
+                  value={paymentStatus}
+                  onChange={(event) => {
+                    const nextStatus = event.target.value as typeof paymentStatus;
+                    setPaymentStatus(nextStatus);
+                    if (nextStatus === "paid") setPaidAmount(result.total);
+                    if (nextStatus === "unpaid" || nextStatus === "awaiting" || nextStatus === "overdue") setPaidAmount(0);
+                  }}
+                  className="w-full rounded-xl border border-ze-border bg-white px-3 py-2.5 text-[13.5px] text-ze-ink outline-none focus:border-ze-primary"
+                >
+                  <option value="unpaid">Не оплачено</option>
+                  <option value="awaiting">Ожидает оплаты</option>
+                  <option value="partial">Частично оплачено</option>
+                  <option value="paid">Оплачено полностью</option>
+                  <option value="overdue">Оплата просрочена</option>
+                </select>
+              </label>
+            </div>
+
+            {paymentMethod !== "full" && (
+              <label className="mt-3 block">
+                <span className="mb-1.5 block text-[13px] font-semibold text-slate-600">Количество платежей</span>
+                <input
+                  type="number"
+                  min={2}
+                  max={24}
+                  value={installmentCount}
+                  onChange={(event) => setInstallmentCount(Math.max(2, Math.min(24, Number(event.target.value) || 2)))}
+                  className="w-full rounded-xl border border-ze-border px-3 py-2.5 text-[13.5px] outline-none focus:border-ze-primary"
+                />
+              </label>
+            )}
+
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 rounded-xl bg-[#F7F9FC] p-4 text-[13.5px]">
+              <span className="text-slate-600">Стоимость пакета</span>
+              <span className="text-right font-semibold text-ze-ink">{formatMoney(result.total)}</span>
+              <span className="text-slate-600">Оплачено</span>
+              <label className="flex justify-end">
+                <input
+                  type="number"
+                  min={0}
+                  max={result.total}
+                  value={paidAmount}
+                  onChange={(event) => setPaidAmount(Math.max(0, Math.min(result.total, Number(event.target.value) || 0)))}
+                  className="w-32 rounded-lg border border-ze-border bg-white px-2.5 py-1.5 text-right text-[13px] outline-none focus:border-ze-primary"
+                />
+                <span className="sr-only">тенге</span>
+              </label>
+              <span className="text-slate-600">Остаток к оплате</span>
+              <span className="text-right font-bold text-ze-primary">{formatMoney(remainingAmount)}</span>
+              <span className="text-slate-600">К оплате сейчас</span>
+              <span className="text-right font-semibold text-ze-ink">
+                {formatMoney(paymentMethod === "full" ? remainingAmount : Math.min(installmentAmount, remainingAmount || installmentAmount))}
+              </span>
+            </div>
+
+            {paymentMethod !== "full" && (
+              <p className="mt-2.5 text-[12.5px] text-ze-muted">
+                График: {installmentCount} платежа по {formatMoney(installmentAmount)}. Последний платеж может отличаться на несколько тенге из-за округления.
+              </p>
+            )}
+            {paymentStatus === "paid" && (
+              <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-[13px] font-semibold text-emerald-800">
+                Полный пакет сопровождения ZagranEasy оплачен полностью.
+              </div>
+            )}
+          </div>
+        )}
         {/* <a
           href={waUrl(result.waMessage)}
           target="_blank"

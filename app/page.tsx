@@ -33,6 +33,7 @@ import { MediaReel } from "@/components/home/MediaReel";
 import { StudentJourney } from "@/components/home/StudentJourney";
 import { TurkeyExperience } from "@/components/home/TurkeyExperience";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { FullOurWork } from "@/components/home/FullOurWork";
 
 export default async function HomePage() {
   const [countries, universities, reviews, tours] = await Promise.all([
@@ -337,7 +338,9 @@ export default async function HomePage() {
       </section>
 
       <StudentJourney />
-      <TurkeyExperience />
+      {/* <TurkeyExperience /> */}
+
+      <FullOurWork/>
 
       {/* Долгосрочная поддержка */}
       <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
@@ -391,7 +394,7 @@ export default async function HomePage() {
                 0<span className="opacity-50">·</span>0<span className="opacity-50">·</span>12
               </div>
               <div className="mt-3 max-w-[520px] text-[14.5px] leading-relaxed text-white/86 sm:text-[16px]">
-                Рассрочка на обучение и туры: без первоначального взноса, без переплаты, 12 месяцев. Оформление в
+                Рассрочка на обучение: без первоначального взноса, без переплаты, 12 месяцев. Оформление в
                 офисе за 15 минут.
               </div>
             </div>

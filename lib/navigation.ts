@@ -28,7 +28,6 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
   "/education": "Университеты",
-  // "/universities": "Университеты",
   "/language": "Языковые курсы",
   "/about": "О нас",
   "/faq": "FAQ",
