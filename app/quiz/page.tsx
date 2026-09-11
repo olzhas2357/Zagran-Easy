@@ -24,7 +24,7 @@ const reactions = [
 export default function QuizPage() {
   return (
     <div className="relative isolate overflow-hidden bg-[#F7F9FC] py-8 sm:py-14">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[420px] bg-[linear-gradient(135deg,#E5F3FF_0%,#FDF7E8_52%,#F7F9FC_100%)]" />
+      <div className="absolute inset-x-0 top-0 -z-10 h-[1920px] bg-[linear-gradient(135deg,#E5F3FF_0%,#b7d9f4_32%,#F7F9FC_70%)]" />
       <div className="mx-auto grid max-w-6xl items-start gap-8 px-4 sm:px-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-14">
         <section className="pt-2 lg:sticky lg:top-24">
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/80 px-3.5 py-2 text-[13px] font-bold text-[#1A56DB] shadow-sm backdrop-blur">
