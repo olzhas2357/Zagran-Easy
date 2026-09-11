@@ -32,7 +32,7 @@ export function FullOurWork() {
     <section className="py-11 sm:py-20 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          {/* <div className="overflow-hidden rounded-[24px] border border-ze-border bg-ze-surface dark:border-white/10 dark:bg-white/[0.04]"> */}
+          <div className="overflow-hidden rounded-[24px] border border-ze-border bg-ze-surface dark:border-white/10 dark:bg-white/[0.04]">
             <div className="flex flex-col lg:flex-row">
               {/* Photos */}
               <div className="grid grid-cols-2 gap-1 lg:w-[42%] lg:shrink-0">
@@ -149,8 +149,8 @@ export function FullOurWork() {
                       <span className="font-semibold text-ze-primary dark:text-[#8FD9F5]">
                         − {formatPrice(DISCOUNT)} ₸
                       </span>
-                    </div>
-                  </div> */}
+                    </div> */}
+                  </div> 
 
                   <div className="my-1 h-px bg-ze-border dark:bg-white/10" />
 
