@@ -55,7 +55,7 @@ export function FullOurWork() {
 
                 {/* Heading */}
                 <h2 className="mt-2.5 text-[25px] font-extrabold leading-[1.15] tracking-tight text-ze-text sm:text-[32px] dark:text-white">
-                  Поступление в Турцию / Италия
+                  Поступление в Турцию / Италию
                   <br />
                   без лишних забот
                 </h2>
