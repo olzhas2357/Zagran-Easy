@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { SITE, STATS, ABOUT } from "@/lib/constants";
+import { SITE, STATS, ABOUT, HERO_COLLAGE, MEDIA_REEL_ITEMS } from "@/lib/constants";
 import { waUrl } from "@/lib/utils";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { PhotoGallery } from "@/components/ui/PhotoGallery";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
+import { GraduationCap, Stamp } from "lucide-react";
+import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
+import { FloatingBadge } from "@/components/ui/FloatingBadge";
+import { HeroCelebration } from "@/components/home/HeroCelebration";
+import { MediaReel } from "@/components/home/MediaReel";
 
 export const metadata: Metadata = {
   title: PAGE_META["/about"]?.title ?? "О нас",
@@ -93,6 +98,108 @@ export default function AboutPage() {
           ))}
         </div>
       </div>
+
+        <div className="relative w-full min-w-0 flex-1">
+            <div className="relative aspect-4/3 max-w-lg mx-auto">
+              
+              {/* Доминирующее фото — слева сверху */}
+{/* Большое фото — слева сверху */}
+          {/* Фото 1 — верх слева */}
+        <FloatingPhoto
+          src={HERO_COLLAGE[0].src}
+          alt={HERO_COLLAGE[0].label}
+          className="
+            absolute left-0 top-0
+            h-[46%] w-[48%]
+            rounded-3xl object-cover
+            border border-white/50 shadow-lg
+          "
+          range={6}
+          duration={5}
+          delay={0}
+          rotateRange={1.5}
+          loading="eager"
+        />
+
+        {/* Фото 2 — верх справа */}
+        <FloatingPhoto
+          src={HERO_COLLAGE[1].src}
+          alt={HERO_COLLAGE[1].label}
+          className="
+            absolute right-0 top-0
+            h-[46%] w-[48%]
+            rounded-3xl object-cover
+            border border-white/50 shadow-lg
+          "
+          range={7}
+          duration={5}
+          delay={0.2}
+          rotateRange={-1.5}
+          loading="eager"
+        />
+
+        {/* Фото 3 — низ слева */}
+        <FloatingPhoto
+          src={HERO_COLLAGE[2].src}
+          alt={HERO_COLLAGE[2].label}
+          className="
+            absolute left-0 bottom-0
+            h-[46%] w-[48%]
+            rounded-3xl object-cover
+            border border-white/50 shadow-lg
+          "
+          range={8}
+          duration={4.5}
+          delay={0.4}
+          rotateRange={-1.5}
+          loading="eager"
+        />
+
+        {/* Фото 4 — низ справа */}
+        <FloatingPhoto
+          src={HERO_COLLAGE[3].src}
+          alt={HERO_COLLAGE[3].label}
+          className="
+            absolute right-0 bottom-0
+            h-[46%] w-[48%]
+            rounded-3xl object-cover
+            border border-white/50 shadow-lg
+          "
+          range={9}
+          duration={4.2}
+          delay={0.6}
+          rotateRange={1.5}
+          loading="eager"
+        />
+              <HeroCelebration />
+
+              {/* Акцентный бейдж — слева внизу под главным фото */}
+              {/* <FloatingBadge
+                icon={<Stamp className="h-4 w-4" strokeWidth={2} />}
+                value="98%"
+                label="одобренных виз"
+                className="left-[4%] bottom-[8%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+                duration={3.6}
+                delay={0.3}
+              /> */}
+
+              {/* Акцентный бейдж — справа вверху над перекрытием
+              <FloatingBadge
+                icon={<GraduationCap className="h-4 w-4" strokeWidth={2} />}
+                value="389+"
+                label="программ обучения"
+                className="right-[2%] top-[1%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+                duration={4}
+                delay={0.8}
+              /> */}
+
+            </div>
+          </div>
+
+
+        <div className="mt-8 sm:mt-10">
+          <MediaReel items={MEDIA_REEL_ITEMS} />
+        </div>
 {/* Acceptance letters gallery */}
     <section
       id="results"

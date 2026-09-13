@@ -15,7 +15,20 @@ const INCLUDES = [
   "Поддержка после приезда",
 ] as const;
 
-const PHOTOS = MEDIA_REEL_ITEMS.filter((i) => i.type === "photo").slice(0, 2);
+const PHOTOS = [
+  {
+    src: "https://images.unsplash.com/photo-1603199766980-fdd4ac568a11?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    alt: "Рим, Италия",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1559554498-62d7b63d7da5?q=80&w=1285&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    alt: "Милан, Италия",
+  },
+  // {
+  //   src: "https://images.unsplash.com/photo-1591685909937-9a53ffd85f46?q=80&w=1365&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   alt: "Франция",
+  // },
+];
 
 // const PROGRAM_PRICE = 1_200_000;
 // const SUPPORT_PRICE = 850_000;
@@ -38,10 +51,10 @@ export function FullOurWork() {
               <div className="grid grid-cols-2 gap-1 lg:w-[42%] lg:shrink-0">
                 {PHOTOS.map((p) => (
                   <div
-                    key={p.id}
+                    key={p.src}
                     className="aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-[620px]"
                   >
-                    <CoverPhoto src={p.src} alt={p.label} />
+                    <CoverPhoto src={p.src} alt={p.alt} />
                   </div>
                 ))}
               </div>
@@ -55,7 +68,7 @@ export function FullOurWork() {
 
                 {/* Heading */}
                 <h2 className="mt-2.5 text-[25px] font-extrabold leading-[1.15] tracking-tight text-ze-text sm:text-[32px] dark:text-white">
-                  Поступление в Турцию / Италию
+                  Поступление в Италию / Страны Европы
                   <br />
                   без лишних забот
                 </h2>
