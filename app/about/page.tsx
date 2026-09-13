@@ -31,13 +31,37 @@ const TEAM = [
   // { name: "Санжар Есенов", role: "Менеджер по турам", initials: "СЕ" },
 ];
 
-const ACCEPTANCE_LETTERS = [
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png",
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png",
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png",
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png",
-  "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
+const RESULTS_PHOTOS = [
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png",
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png",
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png",
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png",
+  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
+    alt: "Письмо о зачислении студента ZagranEasy",
+  },
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png",
+    alt: "Зачисление в зарубежный университет",
+  },
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png",
+    alt: "Результат поступления через ZagranEasy",
+  },
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png",
+    alt: "Официальное приглашение университета",
+  },
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png",
+    alt: "Поступление студента через ZagranEasy",   
+  },
+  {
+    src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
+    alt: "Результат поступления через ZagranEasy",
+  }
 ];
 
 export default function AboutPage() {
@@ -171,30 +195,30 @@ export default function AboutPage() {
           rotateRange={1.5}
           loading="eager"
         />
-              <HeroCelebration />
+          <HeroCelebration />
 
-              {/* Акцентный бейдж — слева внизу под главным фото */}
-              {/* <FloatingBadge
-                icon={<Stamp className="h-4 w-4" strokeWidth={2} />}
-                value="98%"
-                label="одобренных виз"
-                className="left-[4%] bottom-[8%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
-                duration={3.6}
-                delay={0.3}
-              /> */}
+          {/* Акцентный бейдж — слева внизу под главным фото */}
+          <FloatingBadge
+            icon={<Stamp className="h-4 w-4" strokeWidth={2} />}
+            value="98%"
+            label="одобренных виз"
+            className="left-[4%] bottom-[8%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+            duration={3.6}
+            delay={0.3}
+          /> 
 
-              {/* Акцентный бейдж — справа вверху над перекрытием
-              <FloatingBadge
-                icon={<GraduationCap className="h-4 w-4" strokeWidth={2} />}
-                value="389+"
-                label="программ обучения"
-                className="right-[2%] top-[1%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
-                duration={4}
-                delay={0.8}
-              /> */}
+          {/* Акцентный бейдж — справа вверху над перекрытием */}
+          <FloatingBadge
+            icon={<GraduationCap className="h-4 w-4" strokeWidth={2} />}
+            value="389+"
+            label="программ обучения"
+            className="right-[2%] top-[1%] z-20 shadow-sm border border-slate-100 bg-white/80 backdrop-blur-md"
+            duration={4}
+            delay={0.8}
+          />
 
-            </div>
-          </div>
+        </div>
+      </div>
 
 
         <div className="mt-8 sm:mt-10">
@@ -205,59 +229,161 @@ export default function AboutPage() {
       id="results"
       className="relative overflow-hidden border-y border-ze-border bg-ze-surface py-16 sm:py-24"
     >
-      <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[600px] -translate-x-1/2 rounded-full bg-blue-500/[0.035] blur-3xl dark:bg-blue-400/[0.05]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-[1000px] -translate-x-1/2 rounded-full bg-blue-500/[0.035] blur-3xl dark:bg-blue-400/[0.05]" />
+      <div className="relative mx-auto max-w-7xl overflow-hidden px-4 py-16 sm:px-10 sm:py-24">
+      {/* Локальные стили — дополнительный файл CSS не нужен */}
+      <style>{`
+        @keyframes resultsInfiniteScroll {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(calc(-50% - 12px));
+          }
+        }
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-10">
-        <FadeIn>
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/70 bg-blue-50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600 dark:border-blue-400/20 dark:bg-blue-400/[0.08] dark:text-blue-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-              Наши результаты
-            </div>
+        .results-track {
+          animation: resultsInfiniteScroll 35s linear infinite;
+          will-change: transform;
+        }
 
-            <h2 className="mt-5 text-[28px] font-black tracking-[-0.04em] text-ze-ink sm:text-[42px] dark:text-white">
-              Официальные зачисления
-              <br className="hidden sm:block" />
-              <span className="text-ze-primary"> и сертификаты</span>
-            </h2>
+        .results-gallery:hover .results-track {
+          animation-play-state: paused;
+        }
 
-            <p className="mx-auto mt-4 max-w-2xl text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px] dark:text-white/55">
-              Подлинные письма о зачислении наших студентов
-              в зарубежные университеты. Каждый результат —
-              подтверждение проделанной работы.
-            </p>
+        @media (max-width: 640px) {
+          .results-track {
+            animation-duration: 23s;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .results-track {
+            animation-play-state: paused;
+          }
+        }
+      `}</style>
+
+      {/* Декоративный фон */}
+      <div className="pointer-events-none absolute left-1/2 top-10 -z-10 h-[420px] w-[90%] -translate-x-1/2 rounded-full-full bg bg-gradient-to-r from-blue-100/60 via-sky-50/80 to-indigo-100/60 blur-3xl dark:from-blue-900/20 dark:via-sky-900/10 dark:to-indigo-900/20" />
+
+      <FadeIn>
+        {/* Заголовок */}
+        <div className="mx-auto max-w-3xl text text text text text text balance text-pretty text-center">
+          <div className="inline-flex items items items-center justify-center gap-2 rounded-full border border-blue-200/80 bg-blue-50/90 px-4 py-2 text text-[text-[-pretty text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 shadow-sm backdrop-blur dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-pretty dark:text-pretty dark:text-pretty dark:text-blue-300">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-50" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-600" />
+            </span>
+
+            Результаты наших студентов
           </div>
-        </FadeIn>
 
-        <FadeIn delay={0.1}>
-          <div className="mx-auto mt-12 max-w-5xl sm:mt-16">
-            <PhotoGallery
-              images={ACCEPTANCE_LETTERS}
-              alt="Письмо о зачислении студента"
-              variant="documents"
-            />
+          <h2 className="mt-5 text-balance text--pretty text-3xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-5xl dark:text-white">
+            Поступления, которыми
+            <span className="block bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-600 bg-clip-text text-transparent">
+              мы гордимся
+            </span>
+          </h2>
+
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-7 text-slate-600 sm:text-lg dark:text-slate-300">
+            Реальные письма о зачислении студентов ZagranEasy в зарубежные
+            университеты. За каждым документом — цель, подготовка и большая
+            совместная работа.
+          </p>
+        </div>
+
+        {/* Бесконечная галерея */}
+        <div className="results-gallery relative mt-12 overflow-hidden sm:mt-16">
+          {/* Плавное исчезновение карточек по краям */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-12 bg-gradient-to-r from-white via-white/80 to-transparent sm:w-32 dark:from-[#0B132B] dark:via-[#0B132B]/80" />
+
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-12 bg-gradient-to-l from-white via-white/80 to-transparent sm:w-32 dark:from-[#0B132B] dark:via-[#0B132B]/80" />
+
+          <div className="results-track flex w-max gap-4 py-6 sm:gap-6">
+            {[...RESULTS_PHOTOS, ...RESULTS_PHOTOS].map((photo, index) => (
+              <div
+                key={`${photo.src}-${index}`}
+                className="group relative h-[310px] w-[220px] shrink-0 cursor-pointer overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-2 shadow-[0_15px_45px_rgba(15,23,42,0.10)] transition-all duration-500 hover:-translate-y-3 hover:rotate-0 hover:shadow-[0_25px_70px_rgba(37,99,235,0.22)] sm:h-[430px] sm:w-[305px] dark:border-white/10 dark:bg-white/5"
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-[18px] bg-slate-100 dark:bg-slate-900">
+                  <img
+                    src={photo.src}
+                    alt={
+                      photo.alt ??
+                      `Результат поступления студента ZagranEasy ${index + 1}`
+                    }
+                    loading={index < RESULTS_PHOTOS.length ? "eager" : "lazy"}
+                    draggable={false}
+                    className="h-full w-full select-none object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+
+                  {/* Мягкое затемнение */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-white/5 opacity-80 transition-opacity duration-300 group-hover:opacity-60" />
+
+                  {/* Номер результата */}
+                  <div className="absolute right-3 top-3 flex h-9 min-w-9 items-center justify-center rounded-full border border-white/30 bg-slate-950/40 px-2 text-xs font-bold text-white shadow-lg backdrop-blur-md">
+                    {String((index % RESULTS_PHOTOS.length) + 1).padStart(
+                      2,
+                      "0",
+                    )}
+                  </div>
+
+                  {/* Подпись карточки */}
+                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+                    <div className="translate-y-1 transition-transform duration-300 group-hover:translate-y-0">
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-100">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="h-4 w-4"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M20 6 9 17l-5-5" />
+                        </svg>
+
+                        Успешное поступление
+                      </div>
+
+                      <p className="mt-2 text-sm font-bold text-white sm:text-base">
+                        Официальное письмо о зачислении
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </FadeIn>
+        </div>
 
-        <FadeIn delay={0.15}>
-          <div className="mt-10 flex items-center justify-center gap-2 text-center text-[12px] text-ze-muted dark:text-white/40">
+        {/* Нижнее уведомление */}
+        <div className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-5 py-3 text-center text-xs font-medium text-emerald-800 shadow-sm backdrop-blur sm:text-sm dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm">
             <svg
-              className="h-4 w-4 text-emerald-500"
               viewBox="0 0 24 24"
               fill="none"
+              className="h-4 w-4"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
             >
-              <path d="M20 6L9 17l-5-5" />
+              <path d="M20 6 9 17l-5-5" />
             </svg>
-            Документы представлены с разрешения студентов
-          </div>
-        </FadeIn>
-      </div>
-    </section>
+          </span>
+
+          Документы представлены с разрешения студентов
+        </div>
+
+        {/* Подсказка */}
+        <p className="mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+          Наведите курсор на галерею, чтобы остановить движение
+        </p>
+      </FadeIn>
+    </div>          
+        </section>
 
       {/* Contact block */}
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-10 sm:py-19">
+      {/* <div className="mx-auto max-w-6xl px-4 py-14 sm:px-10 sm:py-19">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
           <FadeIn>
             <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Контакты</div>
@@ -285,7 +411,7 @@ export default function AboutPage() {
             </div>
           </FadeIn>
         </div>
-      </div>
+      </div> */}
 
       <SiteFooter />
     </div>

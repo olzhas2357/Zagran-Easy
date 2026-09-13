@@ -57,7 +57,7 @@ export function LanguageHero() {
             <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[28px] border border-slate-200 shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-white/10 dark:shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto:eco,f_auto/v1776028170/a4te_opwrjk.png"
+                src="https://fzvkmnlcrdfxjnqepxrs.supabase.co/storage/v1/object/sign/images/ChatGPT%20Image%20Sep%2013,%202026,%2011_16_34%20PM.png?token=eyJraWQiOiIwY2UyMDkwNi0zZjc3LTRhYTUtYTAyYi0yMGExY2Q5ZjI5ZjMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvQ2hhdEdQVCBJbWFnZSBTZXAgMTMsIDIwMjYsIDExXzE2XzM0IFBNLnBuZyIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3ODkzMjM0NTYsImV4cCI6MTgyMDg1OTQ1Nn0.9CSK05lf4zdSTcNGyuvRiUiA6aFuwnIo1GCedEjPwDk"
                 alt="Преподаватель ZagranEasy на онлайн-занятии"
                 className="h-full w-full object-cover"
               />
