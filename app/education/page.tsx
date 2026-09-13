@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function EducationPage() {
+export default async function EducationPage({ searchParams }: { searchParams: Promise<{ clientId?: string }> }) {
+  const { clientId } = await searchParams;
   const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
   const catalog = buildCatalog(universities, countries);
   const totalPrograms = catalog.reduce((sum, u) => sum + u.programsCount, 0);
@@ -37,7 +38,7 @@ export default async function EducationPage() {
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-10">
-        <Catalog universities={catalog} />
+        <Catalog universities={catalog} clientId={clientId} />
       </div>
     </div>
   );

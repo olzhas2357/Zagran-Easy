@@ -135,6 +135,64 @@ export interface LeadActivity {
   createdAt: string;
 }
 
+export type ClientSalesStatus = "new" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
+export type ClientAdmissionStage = "not_started" | "documents" | "submitted" | "review" | "accepted" | "visa" | "enrolled" | "closed";
+
+export interface Client {
+  id: string;
+  leadId: string | null;
+  assignedManagerId: string;
+  assignedManagerName: string | null;
+  fullName: string;
+  phone: string | null;
+  email: string | null;
+  city: string | null;
+  birthDate: string | null;
+  parentName: string | null;
+  parentPhone: string | null;
+  parentEmail: string | null;
+  preferredContact: "phone" | "whatsapp" | "email" | "telegram" | null;
+  source: string | null;
+  leadCategory: "A+" | "A" | "B" | "C" | null;
+  salesStatus: ClientSalesStatus;
+  product: string | null;
+  studyCountry: string | null;
+  specialty: string | null;
+  educationLevel: string | null;
+  intakeYear: number | null;
+  intakeName: string | null;
+  budget: number | null;
+  budgetCurrency: string;
+  languageLevel: string | null;
+  languageExams: Record<string, string | number | null>;
+  needsGrant: boolean;
+  needsDormitory: boolean;
+  preferences: string | null;
+  dealProbability: number | null;
+  refusalReason: string | null;
+  nextAction: string | null;
+  nextContactAt: string | null;
+  admissionStage: ClientAdmissionStage;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClientNote {
+  id: string;
+  clientId: string;
+  authorId: string;
+  authorName: string | null;
+  body: string;
+  createdAt: string;
+}
+
+export interface ClientUniversity {
+  id: string; universityId: string; name: string; slug: string; city: string;
+  priority: number; status: string; matchScore: number | null;
+  recommendationReason: string | null; risks: string | null; managerComment: string | null;
+  visibleToStudent: boolean;
+}
+
 export interface Profile {
   id: string;
   fullName: string | null;

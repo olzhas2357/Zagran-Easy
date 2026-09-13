@@ -6,7 +6,7 @@
 import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
-import type { Profile, Lead, LeadActivity, University } from "./types";
+import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity } from "./types";
 import { DEFAULT_CALCULATOR_SETTINGS, type CalculatorSettings } from "./calculator";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -41,6 +41,63 @@ function mapActivityRow(row: Record<string, unknown>): LeadActivity {
     leadId: row.lead_id as string,
     authorId: (row.author_id as string) ?? null,
     note: row.note as string,
+    createdAt: row.created_at as string,
+  };
+}
+
+function relatedProfileName(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+  return ((value as Record<string, unknown>).full_name as string) ?? null;
+}
+
+function mapClientRow(row: Record<string, unknown>): Client {
+  return {
+    id: row.id as string,
+    leadId: (row.lead_id as string) ?? null,
+    assignedManagerId: row.assigned_manager_id as string,
+    assignedManagerName: relatedProfileName(row.profiles),
+    fullName: row.full_name as string,
+    phone: (row.phone as string) ?? null,
+    email: (row.email as string) ?? null,
+    city: (row.city as string) ?? null,
+    birthDate: (row.birth_date as string) ?? null,
+    parentName: (row.parent_name as string) ?? null,
+    parentPhone: (row.parent_phone as string) ?? null,
+    parentEmail: (row.parent_email as string) ?? null,
+    preferredContact: (row.preferred_contact as Client["preferredContact"]) ?? null,
+    source: (row.source as string) ?? null,
+    leadCategory: (row.lead_category as Client["leadCategory"]) ?? null,
+    salesStatus: (row.sales_status as Client["salesStatus"]) || "new",
+    product: (row.product as string) ?? null,
+    studyCountry: (row.study_country as string) ?? null,
+    specialty: (row.specialty as string) ?? null,
+    educationLevel: (row.education_level as string) ?? null,
+    intakeYear: (row.intake_year as number) ?? null,
+    intakeName: (row.intake_name as string) ?? null,
+    budget: (row.budget as number) ?? null,
+    budgetCurrency: (row.budget_currency as string) || "KZT",
+    languageLevel: (row.language_level as string) ?? null,
+    languageExams: (row.language_exams as Client["languageExams"]) || {},
+    needsGrant: Boolean(row.needs_grant),
+    needsDormitory: Boolean(row.needs_dormitory),
+    preferences: (row.preferences as string) ?? null,
+    dealProbability: (row.deal_probability as number) ?? null,
+    refusalReason: (row.refusal_reason as string) ?? null,
+    nextAction: (row.next_action as string) ?? null,
+    nextContactAt: (row.next_contact_at as string) ?? null,
+    admissionStage: (row.admission_stage as Client["admissionStage"]) || "not_started",
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+function mapClientNoteRow(row: Record<string, unknown>): ClientNote {
+  return {
+    id: row.id as string,
+    clientId: row.client_id as string,
+    authorId: row.author_id as string,
+    authorName: relatedProfileName(row.profiles),
+    body: row.body as string,
     createdAt: row.created_at as string,
   };
 }
@@ -125,6 +182,39 @@ export async function getLeadActivities(leadId: string): Promise<LeadActivity[]>
   const res = await apiGet<Record<string, unknown>[]>(`/leads/${leadId}/activities`, token);
   if (res.error || !res.data) return [];
   return res.data.map(mapActivityRow);
+}
+
+export async function getClients(): Promise<Client[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/clients?limit=100", token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapClientRow);
+}
+
+export async function getClient(id: string): Promise<Client | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/clients/${id}`, token);
+  if (res.error || !res.data) return null;
+  return mapClientRow(res.data);
+}
+
+export async function getClientNotes(id: string): Promise<ClientNote[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/clients/${id}/notes`, token);
+  if (res.error || !res.data) return [];
+  return res.data.map(mapClientNoteRow);
+}
+
+export async function getClientUniversities(id: string): Promise<ClientUniversity[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/clients/${id}/universities`, token);
+  if (res.error || !res.data) return [];
+  return res.data.map((row) => { const u = (row.universities || {}) as Record<string, unknown>; return {
+    id: row.id as string, universityId: row.university_id as string, name: u.name as string, slug: u.slug as string, city: u.city as string,
+    priority: Number(row.priority), status: row.status as string, matchScore: (row.match_score as number) ?? null,
+    recommendationReason: (row.recommendation_reason as string) ?? null, risks: (row.risks as string) ?? null,
+    managerComment: (row.manager_comment as string) ?? null, visibleToStudent: Boolean(row.visible_to_student),
+  }; });
 }
 
 // Тарифы калькулятора — редактируются менеджером, хранятся в Supabase

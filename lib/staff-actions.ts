@@ -35,6 +35,107 @@ export async function addLeadActivity(leadId: string, note: string) {
   return { success: true };
 }
 
+export async function convertLeadToClient(leadId: string) {
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>(`/clients/from-lead/${leadId}`, {}, token);
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать клиента" };
+  revalidatePath("/staff/leads");
+  revalidatePath("/staff/clients");
+  return { success: true, clientId: res.data.id };
+}
+
+export async function addClientNote(clientId: string, body: string) {
+  if (!body.trim()) return { success: false, error: "Пустая заметка" };
+  const token = await getToken();
+  const res = await apiPost(`/clients/${clientId}/notes`, { body: body.trim() }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true };
+}
+
+export interface ClientInput {
+  fullName: string;
+  phone?: string;
+  email?: string;
+  city?: string;
+  leadCategory?: "A+" | "A" | "B" | "C" | "";
+  salesStatus?: "new" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
+  product?: string;
+  studyCountry?: string;
+  specialty?: string;
+  educationLevel?: string;
+  intakeYear?: number | null;
+  intakeName?: string;
+  budget?: number | null;
+  languageLevel?: string;
+  needsGrant?: boolean;
+  needsDormitory?: boolean;
+  preferences?: string;
+  dealProbability?: number | null;
+  nextAction?: string;
+  nextContactAt?: string;
+}
+
+function clientInputToBody(input: ClientInput) {
+  return {
+    full_name: input.fullName.trim(),
+    phone: input.phone?.trim() || null,
+    email: input.email?.trim() || null,
+    city: input.city?.trim() || null,
+    lead_category: input.leadCategory || null,
+    sales_status: input.salesStatus || "new",
+    product: input.product?.trim() || null,
+    study_country: input.studyCountry?.trim() || null,
+    specialty: input.specialty?.trim() || null,
+    education_level: input.educationLevel?.trim() || null,
+    intake_year: input.intakeYear || null,
+    intake_name: input.intakeName?.trim() || null,
+    budget: input.budget ?? null,
+    language_level: input.languageLevel?.trim() || null,
+    needs_grant: Boolean(input.needsGrant),
+    needs_dormitory: Boolean(input.needsDormitory),
+    preferences: input.preferences?.trim() || null,
+    deal_probability: input.dealProbability ?? null,
+    next_action: input.nextAction?.trim() || null,
+    next_contact_at: input.nextContactAt || null,
+  };
+}
+
+export async function createClient(input: ClientInput) {
+  if (!input.fullName.trim()) return { success: false, error: "Укажите ФИО" };
+  const token = await getToken();
+  const res = await apiPost<{ id: string }>("/clients", clientInputToBody(input), token);
+  if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать клиента" };
+  revalidatePath("/staff/clients");
+  return { success: true, clientId: res.data.id };
+}
+
+export async function updateClient(clientId: string, input: ClientInput) {
+  if (!input.fullName.trim()) return { success: false, error: "Укажите ФИО" };
+  const token = await getToken();
+  const res = await apiPatch(`/clients/${clientId}`, clientInputToBody(input), token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/clients");
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true, clientId };
+}
+
+export async function addUniversityToClient(clientId: string, universityId: string) {
+  const token = await getToken();
+  const res = await apiPost(`/clients/${clientId}/universities`, { university_id: universityId }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true };
+}
+
+export async function updateClientUniversity(clientId: string, selectionId: string, input: Record<string, unknown>) {
+  const token = await getToken();
+  const res = await apiPatch(`/clients/${clientId}/universities/${selectionId}`, input, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true };
+}
+
 export async function markUniversityVerified(universityId: string) {
   const token = await getToken();
   const res = await apiPatch(`/admin/universities/${universityId}/verify`, {}, token);

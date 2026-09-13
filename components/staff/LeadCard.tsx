@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { MessageSquare, ChevronDown, Send } from "lucide-react";
+import { MessageSquare, ChevronDown, Send, UserRoundPlus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { Lead, LeadActivity } from "@/lib/types";
-import { updateLeadStatus, addLeadActivity, getLeadActivitiesAction } from "@/lib/staff-actions";
+import { updateLeadStatus, addLeadActivity, getLeadActivitiesAction, convertLeadToClient } from "@/lib/staff-actions";
 
 const STATUS_LABEL: Record<Lead["status"], string> = {
   new: "Новая",
@@ -31,9 +32,11 @@ function getSourceLabel(lead: Lead): string {
 }
 
 export function LeadCard({ lead }: { lead: Lead }) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [activities, setActivities] = useState<LeadActivity[] | null>(null);
   const [note, setNote] = useState("");
+  const [conversionError, setConversionError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function changeStatus(status: Lead["status"]) {
@@ -61,6 +64,17 @@ export function LeadCard({ lead }: { lead: Lead }) {
         { id: `local-${Date.now()}`, leadId: lead.id, authorId: null, note: text, createdAt: new Date().toISOString() },
         ...(prev || []),
       ]);
+    });
+  }
+
+  function convertToClient() {
+    startTransition(async () => {
+      const result = await convertLeadToClient(lead.id);
+      if (result.success && result.clientId) {
+        router.push(`/staff/clients/${result.clientId}`);
+      } else {
+        setConversionError(result.error || "Не удалось создать клиента");
+      }
     });
   }
 
@@ -103,11 +117,22 @@ export function LeadCard({ lead }: { lead: Lead }) {
         </div>
       </div>
 
-      <button onClick={toggleExpanded} className="mt-3.5 flex items-center gap-1.5 text-[13px] font-semibold text-ze-primary">
+      <div className="mt-3.5 flex flex-wrap items-center gap-4">
+      <button onClick={toggleExpanded} className="flex items-center gap-1.5 text-[13px] font-semibold text-ze-primary">
         <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
         {expanded ? "Скрыть заметки" : "Заметки"}
         <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} strokeWidth={2} />
       </button>
+      <button
+        onClick={convertToClient}
+        disabled={isPending}
+        className="flex items-center gap-1.5 text-[13px] font-semibold text-emerald-700 disabled:opacity-50"
+      >
+        <UserRoundPlus className="h-3.5 w-3.5" strokeWidth={2} />
+        Создать клиента
+      </button>
+      </div>
+      {conversionError && <p className="mt-2 text-[12px] text-red-600">{conversionError}</p>}
 
       {expanded && (
         <div className="mt-3 border-t border-[#F1F4F9] pt-3.5">

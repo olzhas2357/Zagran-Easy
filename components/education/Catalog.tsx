@@ -6,6 +6,7 @@ import type { CatalogUniversity } from "@/lib/education-catalog";
 import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
+import { addUniversityToClient } from "@/lib/staff-actions";
 
 type Sort = "price" | "rating";
 
@@ -26,7 +27,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
   );
 }
 
-export function Catalog({ universities }: { universities: CatalogUniversity[] }) {
+export function Catalog({ universities, clientId }: { universities: CatalogUniversity[]; clientId?: string }) {
   const [query, setQuery] = useState("");
   const [price, setPrice] = useState(9000);
   const [countries, setCountries] = useState<string[]>([]);
@@ -39,6 +40,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
   const [partnerOnly, setPartnerOnly] = useState(false);
   const [deadlineSoonOnly, setDeadlineSoonOnly] = useState(false);
   const [sort, setSort] = useState<Sort>("price");
+  const [addedIds, setAddedIds] = useState<string[]>([]);
 
   const { ids: compareIds, toggle: toggleCompare } = useCompareList();
 
@@ -224,7 +226,7 @@ export function Catalog({ universities }: { universities: CatalogUniversity[] })
           {filtered.length > 0 ? (
             <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((u) => (
-                <UniversityCard key={u.id} u={u} inCompare={compareIds.includes(u.id)} onToggleCompare={() => toggleCompare(u.id)} />
+                <UniversityCard key={u.id} u={u} clientId={clientId} added={addedIds.includes(u.id)} onAdded={() => setAddedIds((ids) => [...ids, u.id])} inCompare={compareIds.includes(u.id)} onToggleCompare={() => toggleCompare(u.id)} />
               ))}
             </div>
           ) : (
@@ -266,10 +268,16 @@ function UniversityCard({
   u,
   inCompare,
   onToggleCompare,
+  clientId,
+  added,
+  onAdded,
 }: {
   u: CatalogUniversity;
   inCompare: boolean;
   onToggleCompare: () => void;
+  clientId?: string;
+  added: boolean;
+  onAdded: () => void;
 }) {
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_12px_30px_rgba(15,23,42,0.1)]">
@@ -326,6 +334,7 @@ function UniversityCard({
         >
           Смотреть программу
         </Link>
+        {clientId && <button disabled={added} onClick={async () => { const result = await addUniversityToClient(clientId, u.id); if (result.success) onAdded(); }} className="rounded-[11px] border border-ze-primary py-2.5 text-[14px] font-semibold text-ze-primary hover:bg-blue-50 disabled:border-emerald-300 disabled:bg-emerald-50 disabled:text-emerald-700">{added ? "✓ Добавлен" : "Добавить клиенту"}</button>}
       </div>
     </div>
   );

@@ -118,8 +118,8 @@ export default async function HomePage() {
 
               {/* Перекрывающее фото — справа снизу */}
               <FloatingPhoto
-                src={HERO_COLLAGE[3].src}
-                alt={HERO_COLLAGE[3].label}
+                src="https://fzvkmnlcrdfxjnqepxrs.supabase.co/storage/v1/object/sign/images/ChatGPT%20Image%20Sep%2014,%202026,%2001_15_53%20AM.png?token=eyJraWQiOiIwY2UyMDkwNi0zZjc3LTRhYTUtYTAyYi0yMGExY2Q5ZjI5ZjMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvQ2hhdEdQVCBJbWFnZSBTZXAgMTQsIDIwMjYsIDAxXzE1XzUzIEFNLnBuZyIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3ODkzMzA1OTMsImV4cCI6MTgyMDg2NjU5M30._sndREWMO2HdAhNN0_ouyacCVoCUPvQdOty_vAhHonQ"
+                alt="Floating photo"
                 className="absolute right-0 bottom-2 h-[60%] w-[52%] rounded-3xl object-cover shadow-xl border border-white/60 z-10"
                 range={8}
                 duration={4.2}
