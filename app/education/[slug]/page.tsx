@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MapPin, Play } from "lucide-react";
 import { fetchAllUniversities, fetchUniversityBySlug, fetchUniversityCatalogBySlug, fetchEducationCountries } from "@/lib/data";
 import { UniversitySidebar } from "@/components/education/UniversityDetail";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
@@ -83,6 +84,75 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
               <Stat label="Рейтинг в стране" value={university.rankingNational ? `#${university.rankingNational}` : "—"} note="национальный рейтинг" />
               <Stat label="Программ" value={String(university.programsCount)} note="бакалавриат и магистратура" />
             </div>
+
+            <Section title="Описание и репутация">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(240px,0.75fr)]">
+                <div>
+                  <div className="text-[12px] font-semibold uppercase tracking-wide text-ze-muted">Об университете</div>
+                  <p className="mt-2 whitespace-pre-line text-pretty text-[14px] leading-6 text-slate-700">
+                    {university.description || "Подробное описание университета скоро появится."}
+                  </p>
+
+                  {university.advantages.length > 0 && (
+                    <div className="mt-4">
+                      <div className="text-[12px] font-semibold uppercase tracking-wide text-ze-muted">Почему выбирают этот вуз</div>
+                      <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                        {university.advantages.map((advantage) => (
+                          <li key={advantage} className="flex items-start gap-2 rounded-xl bg-emerald-50/70 px-3 py-2.5 text-[13px] leading-5 text-slate-700">
+                            <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">✓</span>
+                            <span>{advantage}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                <div className="rounded-[14px] border border-ze-border bg-ze-surface p-3.5">
+                  <div className="text-[12px] font-semibold uppercase tracking-wide text-ze-muted">Репутация</div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <ReputationMetric label="В стране" value={university.rankingNational ? `#${university.rankingNational}` : "—"} />
+                    <ReputationMetric label="В мире" value={university.rankingWorld ? `#${university.rankingWorld}` : "—"} />
+                    <ReputationMetric label="Оценка" value={`★ ${university.ratingStars.toFixed(1)}`} />
+                    <ReputationMetric label="Отзывы" value={String(university.reviewsCount)} />
+                  </div>
+                  {university.isPartner && (
+                    <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-[12.5px] font-semibold text-emerald-700">
+                      Официальный партнёр ZagranEasy
+                    </div>
+                  )}
+                  {university.informationSource && (
+                    <div className="mt-3 text-[11.5px] leading-4 text-slate-400">Источник данных: {university.informationSource}</div>
+                  )}
+                  {(university.googleMapsUrl || university.youtubeUrl) && (
+                    <div className="mt-3 grid gap-2">
+                      {university.googleMapsUrl && (
+                        <a
+                          href={university.googleMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 rounded-xl border border-ze-border bg-white px-3 py-2.5 text-[13px] font-semibold text-ze-ink transition-colors hover:border-ze-primary hover:text-ze-primary"
+                        >
+                          <MapPin className="h-4 w-4" strokeWidth={1.9} />
+                          Открыть в Google Maps
+                        </a>
+                      )}
+                      {university.youtubeUrl && (
+                        <a
+                          href={university.youtubeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-[13px] font-semibold text-red-700 transition-colors hover:border-red-300 hover:bg-red-100"
+                        >
+                          <Play className="h-4 w-4" strokeWidth={1.9} />
+                          Смотреть на YouTube
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Section>
 
             {(catalog.programs.length > 0 || university.programList.length > 0) && (
               <Section title="Программы">
@@ -175,6 +245,15 @@ function Stat({ label, value, note }: { label: string; value: string; note: stri
       <div className="text-[11.5px] font-semibold uppercase tracking-wide text-ze-muted">{label}</div>
       <div className="mt-1.5 text-[18px] font-extrabold tracking-tight">{value}</div>
       <div className="mt-0.5 text-[11.5px] text-slate-400">{note}</div>
+    </div>
+  );
+}
+
+function ReputationMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-white px-3 py-2.5">
+      <div className="text-[11px] text-ze-muted">{label}</div>
+      <div className="mt-1 text-[17px] font-extrabold tracking-tight text-ze-ink">{value}</div>
     </div>
   );
 }
