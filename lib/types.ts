@@ -33,6 +33,15 @@ export interface AdmissionStory {
   text: string;
 }
 
+export type UniversityCatalogKind = "programs" | "intakes" | "requirements" | "costs" | "scholarships";
+
+export interface UniversityCatalogItem {
+  id: string;
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+export type UniversityCatalog = Record<UniversityCatalogKind, UniversityCatalogItem[]>;
+
 export interface University {
   id: string;
   countryId: string;
@@ -40,6 +49,10 @@ export interface University {
   name: string;
   nameLocal: string;
   city: string;
+  latitude: number | null;
+  longitude: number | null;
+  address: string;
+  googleMapsUrl: string;
   type: "public" | "private";
   programs: string[]; // уровни: "Бакалавр", "Магистр", "PhD"...
   languages: string[];
@@ -50,12 +63,19 @@ export interface University {
   grantDetails: string;
   hasDormitory: boolean;
   dormitoryCost: number;
+  applicationFee: number | null;
+  medicalInsuranceCost: number | null;
   requirements: string[];
   description: string;
   imageUrl: string;
+  logoUrl: string;
   galleryImages?: string[]; // доп. фото кампуса — под галерею на странице вуза
   dormitoryImages?: string[]; // фото общежития
   websiteUrl: string;
+  youtubeUrl: string;
+  virtualTourUrl: string;
+  contactEmail: string;
+  contactPhone: string;
   rankingNational: number | null;
   rankingWorld: number | null;
   ieltsRequired: boolean;
@@ -71,6 +91,9 @@ export interface University {
   lastVerifiedAt: string | null;
   programList: UniversityProgram[];
   stories: AdmissionStory[];
+  advantages: string[];
+  limitations: string[];
+  informationSource: string;
   isActive: boolean;
   sortOrder: number;
 }

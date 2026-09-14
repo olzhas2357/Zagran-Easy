@@ -54,7 +54,7 @@ export function UniversityRow({ university }: { university: University }) {
         </div>
         <div className="flex flex-wrap justify-end gap-1.5">
           <Link
-            href={`/staff/universities/${university.id}/edit`}
+            href={`/admin/universities/${university.id}/edit`}
             className="rounded-lg border border-ze-border bg-white px-2.5 py-1.5 text-[12.5px] font-semibold text-slate-700 transition-colors hover:border-ze-primary hover:text-ze-primary"
           >
             Редактировать
@@ -106,7 +106,7 @@ export function UniversityRow({ university }: { university: University }) {
 
         <div className="mt-3 flex gap-1.5">
           <Link
-            href={`/staff/universities/${university.id}/edit`}
+            href={`/admin/universities/${university.id}/edit`}
             className="flex-1 rounded-lg border border-ze-border bg-white py-2 text-center text-[13px] font-semibold text-slate-700 transition-colors hover:border-ze-primary hover:text-ze-primary"
           >
             Редактировать

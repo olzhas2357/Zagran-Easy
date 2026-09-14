@@ -7,10 +7,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { apiPatch, apiPost } from "./api";
+import { apiDelete, apiPatch, apiPost } from "./api";
 import { getToken } from "./session-data";
 import { getLeadActivities } from "./staff-data";
 import type { Lead, UniversityProgram, AdmissionStory } from "./types";
+import type { UniversityCatalogItem, UniversityCatalogKind } from "./types";
 
 // Ленивая подгрузка заметок по лиду — вызывается из клиентского LeadCard
 // при первом разворачивании, чтобы не тянуть все заметки на списке лидов сразу.
@@ -140,7 +141,7 @@ export async function markUniversityVerified(universityId: string) {
   const token = await getToken();
   const res = await apiPatch(`/admin/universities/${universityId}/verify`, {}, token);
   if (res.error) return { success: false, error: res.error };
-  revalidatePath("/staff/universities");
+  revalidatePath("/admin/universities");
   return { success: true };
 }
 
@@ -157,7 +158,7 @@ export async function toggleUniversityActive(universityId: string, isActive: boo
   const token = await getToken();
   const res = await apiPatch(`/admin/universities/${universityId}/active`, { is_active: isActive }, token);
   if (res.error) return { success: false, error: res.error };
-  revalidatePath("/staff/universities");
+  revalidatePath("/admin/universities");
   revalidatePath("/education");
   return { success: true };
 }
@@ -191,12 +192,51 @@ export async function uploadUniversityFile(formData: FormData): Promise<{ succes
   }
 }
 
+export interface UniversityImportPreview {
+  id: string;
+  file_name: string;
+  headers: string[];
+  preview_rows: Record<string, unknown>[];
+  total_rows: number;
+}
+
+export async function previewUniversityImport(formData: FormData): Promise<{ success: boolean; preview?: UniversityImportPreview; error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Выберите CSV или XLSX файл" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  const upload = new FormData(); upload.set("file", file);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const res = await fetch(`${API_URL}/admin/universities/imports/preview`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: upload });
+    const json = await res.json();
+    if (!res.ok || json.success === false) return { success: false, error: Array.isArray(json.message) ? json.message.join(", ") : json.message || "Ошибка чтения файла" };
+    return { success: true, preview: json.data as UniversityImportPreview };
+  } catch { return { success: false, error: "Нет подключения к серверу" }; }
+}
+
+export async function commitUniversityImport(importId: string, mapping: Record<string, string>) {
+  const token = await getToken();
+  const res = await apiPost<{ valid_rows: number; error_rows: number; errors: { row: number; message: string }[] }>(
+    `/admin/universities/imports/${importId}/commit`, { mapping }, token
+  );
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось выполнить импорт" };
+  revalidatePath("/admin/universities");
+  revalidatePath("/admin/universities/import");
+  revalidatePath("/education");
+  return { success: true as const, result: res.data };
+}
+
 export interface NewUniversityInput {
   countryId: string;
   slug: string;
   name: string;
   nameLocal: string;
   city: string;
+  latitude: number | null;
+  longitude: number | null;
+  address: string;
+  googleMapsUrl: string;
   type: "public" | "private";
   programs: string[];
   languages: string[];
@@ -207,12 +247,19 @@ export interface NewUniversityInput {
   grantDetails: string;
   hasDormitory: boolean;
   dormitoryCost: number;
+  applicationFee: number | null;
+  medicalInsuranceCost: number | null;
   requirements: string[];
   description: string;
   imageUrl: string;
+  logoUrl: string;
   galleryImages: string[];
   dormitoryImages: string[];
   websiteUrl: string;
+  youtubeUrl: string;
+  virtualTourUrl: string;
+  contactEmail: string;
+  contactPhone: string;
   rankingNational: number | null;
   rankingWorld: number | null;
   ieltsRequired: boolean;
@@ -226,6 +273,9 @@ export interface NewUniversityInput {
   presentationPages: number | null;
   programList: UniversityProgram[];
   stories: AdmissionStory[];
+  advantages: string[];
+  limitations: string[];
+  informationSource: string;
   isActive: boolean;
 }
 
@@ -237,6 +287,10 @@ function universityInputToBody(input: NewUniversityInput) {
     name: input.name.trim(),
     name_local: input.nameLocal.trim() || null,
     city: input.city.trim(),
+    latitude: input.latitude,
+    longitude: input.longitude,
+    address: input.address.trim() || null,
+    google_maps_url: input.googleMapsUrl.trim() || null,
     type: input.type,
     degree_levels: input.programs,
     languages: input.languages,
@@ -247,12 +301,19 @@ function universityInputToBody(input: NewUniversityInput) {
     grant_details: input.grantDetails.trim() || null,
     has_dormitory: input.hasDormitory,
     dormitory_cost: input.dormitoryCost,
+    application_fee: input.applicationFee,
+    medical_insurance_cost: input.medicalInsuranceCost,
     requirements: input.requirements,
     description: input.description.trim(),
     image_url: input.imageUrl || null,
+    logo_url: input.logoUrl || null,
     gallery_images: input.galleryImages,
     dormitory_images: input.dormitoryImages,
     website_url: input.websiteUrl.trim() || null,
+    youtube_url: input.youtubeUrl.trim() || null,
+    virtual_tour_url: input.virtualTourUrl.trim() || null,
+    contact_email: input.contactEmail.trim() || null,
+    contact_phone: input.contactPhone.trim() || null,
     ranking_national: input.rankingNational,
     ranking_world: input.rankingWorld,
     ielts_required: input.ieltsRequired,
@@ -267,6 +328,9 @@ function universityInputToBody(input: NewUniversityInput) {
     presentation_pages: input.presentationPages,
     program_list: input.programList,
     stories: input.stories,
+    advantages: input.advantages,
+    limitations: input.limitations,
+    information_source: input.informationSource.trim() || null,
     is_active: input.isActive,
   };
 }
@@ -281,9 +345,9 @@ export async function createUniversity(input: NewUniversityInput): Promise<{ suc
   const res = await apiPost("/admin/universities", universityInputToBody(input), token);
   if (res.error) return { success: false, error: res.error };
 
-  revalidatePath("/staff/universities");
+  revalidatePath("/admin/universities");
   revalidatePath("/education");
-  redirect("/staff/universities");
+  redirect("/admin/universities");
 }
 
 // Обновляет существующий вуз из формы /staff/universities/[id]/edit.
@@ -296,8 +360,56 @@ export async function updateUniversity(universityId: string, input: NewUniversit
   const res = await apiPatch(`/admin/universities/${universityId}`, universityInputToBody(input), token);
   if (res.error) return { success: false, error: res.error };
 
-  revalidatePath("/staff/universities");
+  revalidatePath("/admin/universities");
   revalidatePath("/education");
   revalidatePath("/education/[slug]", "page");
-  redirect("/staff/universities");
+  redirect("/admin/universities");
+}
+
+export async function saveUniversityCatalogItem(
+  universityId: string,
+  kind: UniversityCatalogKind,
+  data: Omit<UniversityCatalogItem, "id">,
+  itemId?: string
+) {
+  const token = await getToken();
+  const path = `/admin/universities/${universityId}/catalog/${kind}${itemId ? `/${itemId}` : ""}`;
+  const res = itemId
+    ? await apiPatch<UniversityCatalogItem>(path, { data }, token)
+    : await apiPost<UniversityCatalogItem>(path, { data }, token);
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось сохранить запись" };
+  revalidatePath(`/admin/universities/${universityId}/edit`);
+  return { success: true as const, item: res.data };
+}
+
+export async function deleteUniversityCatalogItem(universityId: string, kind: UniversityCatalogKind, itemId: string) {
+  const token = await getToken();
+  const res = await apiDelete(`/admin/universities/${universityId}/catalog/${kind}/${itemId}`, token);
+  if (res.error) return { success: false as const, error: res.error };
+  revalidatePath(`/admin/universities/${universityId}/edit`);
+  return { success: true as const };
+}
+
+export async function saveCostCalculation(input: Record<string, unknown>) {
+  const token = await getToken();
+  const res = await apiPost<Record<string, unknown>>("/cost-calculations", input, token);
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось сохранить расчёт" };
+  revalidatePath(`/staff/clients/${input.client_id}`);
+  return { success: true as const, calculation: res.data };
+}
+
+export async function createCostCalculationVersion(id: string, clientId: string) {
+  const token = await getToken();
+  const res = await apiPost<Record<string, unknown>>(`/cost-calculations/${id}/version`, {}, token);
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось создать версию" };
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true as const, calculation: res.data };
+}
+
+export async function publishCostCalculation(id: string, clientId: string) {
+  const token = await getToken();
+  const res = await apiPost<{ public_token: string }>(`/cost-calculations/${id}/publish`, {}, token);
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось опубликовать" };
+  revalidatePath(`/staff/clients/${clientId}`);
+  return { success: true as const, token: res.data.public_token };
 }

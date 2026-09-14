@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarClock, Mail, MapPin, Phone, UserRound, Pencil, Landmark } from "lucide-react";
-import { getClient, getClientNotes, getClientUniversities } from "@/lib/staff-data";
+import { getClient, getClientNotes, getClientUniversities, getClientCostCalculations } from "@/lib/staff-data";
 import { ClientNotes } from "@/components/staff/ClientNotes";
 import { ClientUniversities } from "@/components/staff/ClientUniversities";
+import { ClientCalculations } from "@/components/staff/ClientCalculations";
 
 const SALES_STATUS = {
   new: "Новый",
@@ -22,7 +23,7 @@ export default async function StaffClientPage({ params }: { params: Promise<{ id
   const { id } = await params;
   const client = await getClient(id);
   if (!client) notFound();
-  const [notes, universities] = await Promise.all([getClientNotes(id), getClientUniversities(id)]);
+  const [notes, universities, calculations] = await Promise.all([getClientNotes(id), getClientUniversities(id), getClientCostCalculations(id)]);
 
   return (
     <div className="p-5 sm:p-9">
@@ -43,6 +44,7 @@ export default async function StaffClientPage({ params }: { params: Promise<{ id
         <span className="px-4 py-3 text-[13.5px] font-medium text-ze-muted">Потребности</span>
       </div>
       <Link href={`/education?clientId=${client.id}`} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-ze-primary px-4 py-2.5 text-[13.5px] font-semibold text-white"><Landmark className="h-4 w-4" />Подобрать университет</Link>
+      <Link href={`/staff/clients/${client.id}/calculations/new`} className="ml-2 mt-4 inline-flex items-center gap-2 rounded-xl border border-ze-primary px-4 py-2.5 text-[13.5px] font-semibold text-ze-primary">Рассчитать стоимость</Link>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.4fr_1fr]">
         <div className="flex flex-col gap-5">
@@ -83,6 +85,7 @@ export default async function StaffClientPage({ params }: { params: Promise<{ id
           </section>
           <ClientNotes clientId={client.id} notes={notes} />
           <ClientUniversities clientId={client.id} items={universities} />
+          <ClientCalculations clientId={client.id} calculations={calculations} />
         </div>
       </div>
     </div>

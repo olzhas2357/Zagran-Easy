@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ClipboardList, Loader2, Landmark, AlertTriangle, ArrowRight, Calculator, CalendarDays, BookOpen } from "lucide-react";
-import { getCurrentProfile, getLeadsForAdmin, getUniversitiesForAdmin } from "@/lib/staff-data";
+import { getCurrentProfile, getLeadsForAdmin } from "@/lib/staff-data";
+import { fetchAllUniversities } from "@/lib/data";
 import { isVerificationStale } from "@/lib/education-catalog";
 
 export default async function StaffDashboardPage() {
-  const [profile, leads, universities] = await Promise.all([getCurrentProfile(), getLeadsForAdmin(), getUniversitiesForAdmin()]);
+  const [profile, leads, universities] = await Promise.all([getCurrentProfile(), getLeadsForAdmin(), fetchAllUniversities()]);
 
   const newLeads = leads.filter((l) => l.status === "new").length;
   const inProgress = leads.filter((l) => l.status === "in_progress").length;
@@ -25,7 +26,7 @@ export default async function StaffDashboardPage() {
       <h2 className="mt-9 mb-3 text-[17px] font-bold text-ze-ink">Быстрые действия</h2>
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         <ShortcutCard href="/staff/leads" Icon={ClipboardList} title="Заявки студентов" desc="Новые лиды из квиза и форм, статусы, заметки" color="blue" />
-        <ShortcutCard href="/staff/universities" Icon={Landmark} title="База университетов" desc="Цены, дедлайны, презентации, актуальность" color="emerald" />
+        <ShortcutCard href="/staff/directory" Icon={Landmark} title="Справочник университетов" desc="Цены, требования и дедлайны для консультаций" color="emerald" />
         <ShortcutCard href="/staff/calculator" Icon={Calculator} title="Калькулятор" desc="Расчёт стоимости услуг для клиента" color="violet" />
         <ShortcutCard href="/staff/schedule" Icon={CalendarDays} title="Расписание" desc="Слоты занятий, места и запись студентов" color="amber" />
       </div>

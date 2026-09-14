@@ -90,6 +90,10 @@ export function UniversityForm({ countries, university }: { countries: Education
   const [slugTouched, setSlugTouched] = useState(isEdit);
   const [countryId, setCountryId] = useState(university?.countryId ?? countries[0]?.id ?? "");
   const [city, setCity] = useState(university?.city ?? "");
+  const [latitude, setLatitude] = useState(university?.latitude != null ? String(university.latitude) : "");
+  const [longitude, setLongitude] = useState(university?.longitude != null ? String(university.longitude) : "");
+  const [address, setAddress] = useState(university?.address ?? "");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState(university?.googleMapsUrl ?? "");
   const [type, setType] = useState<"public" | "private">(university?.type ?? "public");
 
   const [programs, setPrograms] = useState<string[]>(university?.programs ?? []);
@@ -102,6 +106,10 @@ export function UniversityForm({ countries, university }: { countries: Education
   const [grantDetails, setGrantDetails] = useState(university?.grantDetails ?? "");
   const [hasDormitory, setHasDormitory] = useState(university?.hasDormitory ?? false);
   const [dormitoryCost, setDormitoryCost] = useState(university ? String(university.dormitoryCost) : "");
+  const [applicationFee, setApplicationFee] = useState(university?.applicationFee != null ? String(university.applicationFee) : "");
+  const [medicalInsuranceCost, setMedicalInsuranceCost] = useState(
+    university?.medicalInsuranceCost != null ? String(university.medicalInsuranceCost) : ""
+  );
 
   const [requirements, setRequirements] = useState<string[]>(university?.requirements ?? []);
   const [ieltsRequired, setIeltsRequired] = useState(university?.ieltsRequired ?? false);
@@ -113,6 +121,13 @@ export function UniversityForm({ countries, university }: { countries: Education
 
   const [description, setDescription] = useState(university?.description ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(university?.websiteUrl ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(university?.youtubeUrl ?? "");
+  const [virtualTourUrl, setVirtualTourUrl] = useState(university?.virtualTourUrl ?? "");
+  const [contactEmail, setContactEmail] = useState(university?.contactEmail ?? "");
+  const [contactPhone, setContactPhone] = useState(university?.contactPhone ?? "");
+  const [advantages, setAdvantages] = useState<string[]>(university?.advantages ?? []);
+  const [limitations, setLimitations] = useState<string[]>(university?.limitations ?? []);
+  const [informationSource, setInformationSource] = useState(university?.informationSource ?? "");
   const [isPartner, setIsPartner] = useState(university?.isPartner ?? false);
   const [ratingStars, setRatingStars] = useState(university ? String(university.ratingStars) : "4.5");
   const [reviewsCount, setReviewsCount] = useState(university ? String(university.reviewsCount) : "0");
@@ -121,6 +136,7 @@ export function UniversityForm({ countries, university }: { countries: Education
   const [stories, setStories] = useState<AdmissionStory[]>(university?.stories ?? []);
 
   const [imageUrl, setImageUrl] = useState<string | null>(university?.imageUrl || null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(university?.logoUrl || null);
   const [galleryImages, setGalleryImages] = useState<string[]>(university?.galleryImages ?? []);
   const [dormitoryImages, setDormitoryImages] = useState<string[]>(university?.dormitoryImages ?? []);
   const [presentationUrl, setPresentationUrl] = useState<string | null>(university?.presentationUrl ?? null);
@@ -145,6 +161,10 @@ export function UniversityForm({ countries, university }: { countries: Education
       name,
       nameLocal,
       city,
+      latitude: numOrNull(latitude),
+      longitude: numOrNull(longitude),
+      address,
+      googleMapsUrl,
       type,
       programs,
       languages,
@@ -155,12 +175,19 @@ export function UniversityForm({ countries, university }: { countries: Education
       grantDetails,
       hasDormitory,
       dormitoryCost: numOr0(dormitoryCost),
+      applicationFee: numOrNull(applicationFee),
+      medicalInsuranceCost: numOrNull(medicalInsuranceCost),
       requirements,
       description,
       imageUrl: imageUrl ?? "",
+      logoUrl: logoUrl ?? "",
       galleryImages,
       dormitoryImages,
       websiteUrl,
+      youtubeUrl,
+      virtualTourUrl,
+      contactEmail,
+      contactPhone,
       rankingNational: numOrNull(rankingNational),
       rankingWorld: numOrNull(rankingWorld),
       ieltsRequired,
@@ -174,6 +201,9 @@ export function UniversityForm({ countries, university }: { countries: Education
       presentationPages: numOrNull(presentationPages),
       programList,
       stories,
+      advantages,
+      limitations,
+      informationSource,
       isActive,
     };
     startTransition(async () => {
@@ -223,10 +253,53 @@ export function UniversityForm({ countries, university }: { countries: Education
         </Field>
       </Section>
 
+      <Section title="Адрес и онлайн-представительство">
+        <div className="sm:col-span-2">
+          <Field label="Полный адрес">
+            <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Улица, дом, город, индекс" className={inputClass} />
+          </Field>
+        </div>
+        <Field label="Широта">
+          <input value={latitude} onChange={(e) => setLatitude(e.target.value)} inputMode="decimal" placeholder="41.008238" className={inputClass} />
+        </Field>
+        <Field label="Долгота">
+          <input value={longitude} onChange={(e) => setLongitude(e.target.value)} inputMode="decimal" placeholder="28.978359" className={inputClass} />
+        </Field>
+        <Field label="Ссылка Google Maps">
+          <input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="https://maps.google.com/…" className={inputClass} />
+        </Field>
+        <Field label="YouTube">
+          <input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="https://youtube.com/…" className={inputClass} />
+        </Field>
+        <Field label="Виртуальный тур">
+          <input value={virtualTourUrl} onChange={(e) => setVirtualTourUrl(e.target.value)} placeholder="https://…" className={inputClass} />
+        </Field>
+      </Section>
+
       <Section title="Языки и программы">
         <TagsField label="Уровни программ" value={programs} onChange={setPrograms} placeholder="Бакалавриат, Магистратура" />
         <TagsField label="Языки обучения" value={languages} onChange={setLanguages} placeholder="Турецкий, Английский" />
         <TagsField label="Специальности" value={specialties} onChange={setSpecialties} placeholder="Медицина, IT, Бизнес" />
+      </Section>
+
+      <Section title="Дополнительные расходы и контакты">
+        <Field label="Application fee, $">
+          <input value={applicationFee} onChange={(e) => setApplicationFee(e.target.value)} inputMode="decimal" className={inputClass} />
+        </Field>
+        <Field label="Медицинская страховка, $">
+          <input value={medicalInsuranceCost} onChange={(e) => setMedicalInsuranceCost(e.target.value)} inputMode="decimal" className={inputClass} />
+        </Field>
+        <Field label="Контактный email">
+          <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="admissions@example.edu" className={inputClass} />
+        </Field>
+        <Field label="Контактный телефон">
+          <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="+90 …" className={inputClass} />
+        </Field>
+        <div className="sm:col-span-2">
+          <Field label="Источник информации" hint="Ссылка или название официального источника">
+            <input value={informationSource} onChange={(e) => setInformationSource(e.target.value)} className={inputClass} />
+          </Field>
+        </div>
       </Section>
 
       <Section title="Стоимость и условия">
@@ -298,6 +371,8 @@ export function UniversityForm({ countries, university }: { countries: Education
         <Field label="Кол-во отзывов">
           <input value={reviewsCount} onChange={(e) => setReviewsCount(e.target.value)} inputMode="numeric" className={inputClass} />
         </Field>
+        <TagsField label="Преимущества" value={advantages} onChange={setAdvantages} placeholder="Сильный факультет, Кампус в центре" />
+        <TagsField label="Ограничения" value={limitations} onChange={setLimitations} placeholder="Нет общежития, Ограниченный набор" />
       </Section>
 
       <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
@@ -398,6 +473,9 @@ export function UniversityForm({ countries, university }: { countries: Education
       <Section title="Фото и презентация">
         <div className="sm:col-span-2">
           <SingleFileUploader label="Обложка (главное фото)" value={imageUrl} onChange={setImageUrl} accept="image/*" />
+        </div>
+        <div className="sm:col-span-2">
+          <SingleFileUploader label="Логотип университета" value={logoUrl} onChange={setLogoUrl} accept="image/*" />
         </div>
         <ImageListUploader label="Фото кампуса" value={galleryImages} onChange={setGalleryImages} />
         <ImageListUploader label="Фото общежития" value={dormitoryImages} onChange={setDormitoryImages} />

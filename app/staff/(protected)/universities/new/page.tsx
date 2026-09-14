@@ -8,7 +8,7 @@ export default async function NewUniversityPage() {
 
   return (
     <div className="p-5 sm:p-9">
-      <Link href="/staff/universities" className="mb-3 flex w-fit items-center gap-1.5 text-[13.5px] font-semibold text-ze-muted hover:text-ze-primary">
+      <Link href="/admin/universities" className="mb-3 flex w-fit items-center gap-1.5 text-[13.5px] font-semibold text-ze-muted hover:text-ze-primary">
         <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
         Назад к списку
       </Link>

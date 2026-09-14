@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Landmark, CheckCircle2, AlertTriangle, FileWarning } from "lucide-react";
+import { Plus, Landmark, CheckCircle2, AlertTriangle, FileWarning, FileUp } from "lucide-react";
 import { getUniversitiesForAdmin } from "@/lib/staff-data";
 import { UniversitiesBoard } from "@/components/staff/UniversitiesBoard";
 import { isVerificationStale } from "@/lib/education-catalog";
@@ -18,13 +18,13 @@ export default async function StaffUniversitiesPage() {
           <h1 className="text-[24px] font-extrabold tracking-tight sm:text-[34px]">База университетов</h1>
           <p className="mt-2 text-[14.5px] text-ze-muted">Один источник правды: карточка, цены и презентация меняются здесь и сразу на сайте.</p>
         </div>
-        <Link
-          href="/staff/universities/new"
+        <div className="flex flex-wrap gap-2"><Link href="/admin/universities/import" className="flex items-center gap-2 rounded-xl border border-ze-border bg-white px-4 py-2.5 text-[14px] font-semibold text-ze-ink"><FileUp className="h-4 w-4" />Импорт CSV/XLSX</Link><Link
+          href="/admin/universities/new"
           className="flex items-center gap-2 rounded-xl bg-ze-accent px-4 py-2.5 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-accent-dark"
         >
           <Plus className="h-4.5 w-4.5" strokeWidth={2} />
           Добавить университет
-        </Link>
+        </Link></div>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3.5 sm:grid-cols-4">

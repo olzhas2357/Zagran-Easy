@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchAllUniversities, fetchUniversityBySlug, fetchEducationCountries } from "@/lib/data";
+import { fetchAllUniversities, fetchUniversityBySlug, fetchUniversityCatalogBySlug, fetchEducationCountries } from "@/lib/data";
 import { UniversitySidebar } from "@/components/education/UniversityDetail";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { PhotoGallery } from "@/components/ui/PhotoGallery";
@@ -24,7 +24,7 @@ export async function generateMetadata(props: PageProps<"/education/[slug]">): P
 
 export default async function UniversityPage(props: PageProps<"/education/[slug]">) {
   const { slug } = await props.params;
-  const [university, countries] = await Promise.all([fetchUniversityBySlug(slug), fetchEducationCountries()]);
+  const [university, countries, catalog] = await Promise.all([fetchUniversityBySlug(slug), fetchEducationCountries(), fetchUniversityCatalogBySlug(slug)]);
   if (!university) notFound();
 
   const country = countries.find((c) => c.id === university.countryId);
@@ -84,10 +84,15 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
               <Stat label="Программ" value={String(university.programsCount)} note="бакалавриат и магистратура" />
             </div>
 
-            {university.programList.length > 0 && (
+            {(catalog.programs.length > 0 || university.programList.length > 0) && (
               <Section title="Программы">
                 <div className="flex flex-col">
-                  {university.programList.map((p) => (
+                  {catalog.programs.length > 0 ? catalog.programs.map((p) => (
+                    <div key={p.id} className="flex items-center justify-between gap-3 border-b border-[#F1F4F9] py-3.5 last:border-0">
+                      <div className="min-w-0"><div className="text-[14.5px] font-semibold">{String(p.name)}</div><div className="mt-0.5 text-[12.5px] text-ze-muted">{[p.degree_level, p.duration_months ? `${p.duration_months} мес.` : null, p.language].filter(Boolean).join(" · ")}</div></div>
+                      <div className="flex-none text-[13px] font-semibold">{catalog.costs.filter((c) => c.program_id === p.id).map((c) => `${c.amount} ${c.currency || "USD"}`).join(" · ")}</div>
+                    </div>
+                  )) : university.programList.map((p) => (
                     <div key={p.name} className="flex items-center justify-between gap-3 border-b border-[#F1F4F9] py-3.5 last:border-0">
                       <div className="min-w-0">
                         <div className="text-[14.5px] font-semibold">{p.name}</div>
@@ -102,7 +107,7 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
 
             <Section title="Требования к поступлению">
               <div className="flex flex-wrap gap-2">
-                {university.requirements.map((r) => (
+                {(catalog.requirements.length ? catalog.requirements.map((r) => String(r.title)) : university.requirements).map((r) => (
                   <span key={r} className="rounded-lg bg-[#F4F6FA] px-3 py-1.5 text-[13px] font-medium text-slate-700">
                     {r}
                   </span>

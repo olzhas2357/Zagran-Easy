@@ -1,8 +1,8 @@
-import { getUniversitiesForAdmin } from "@/lib/staff-data";
-import { fetchEducationCountries } from "@/lib/data";
+import Link from "next/link";
+import { fetchAllUniversities, fetchEducationCountries } from "@/lib/data";
 
 export default async function StaffDirectoryPage() {
-  const [universities, countries] = await Promise.all([getUniversitiesForAdmin(), fetchEducationCountries()]);
+  const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
   const countryById = new Map(countries.map((c) => [c.id, c]));
 
   const grouped = new Map<string, typeof universities>();
@@ -27,13 +27,16 @@ export default async function StaffDirectoryPage() {
               </div>
               <div className="mt-3.5 flex flex-col divide-y divide-[#F1F4F9]">
                 {list.map((u) => (
-                  <div key={u.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-[14px]">
-                    <div>
-                      <span className="font-semibold">{u.name}</span>
+                  <div key={u.id} className="grid gap-2 py-3 text-[14px] sm:grid-cols-[1.3fr_1fr_1fr_auto] sm:items-center">
+                    <div className="min-w-0">
+                      <Link href={`/education/${u.slug}`} className="font-semibold text-ze-primary hover:underline">{u.name}</Link>
                       <span className="ml-2 text-ze-muted">{u.city}</span>
                       {u.isPartner && <span className="ml-2 rounded-md bg-emerald-50 px-2 py-0.5 text-[12px] font-bold text-emerald-700">Партнёр</span>}
+                      {u.address && <div className="mt-1 truncate text-[12px] text-ze-muted">{u.address}</div>}
                     </div>
-                    <div className="text-ze-muted">{u.requirements.join(", ")}</div>
+                    <div><div className="font-semibold">${u.tuitionFrom.toLocaleString()}–${u.tuitionTo.toLocaleString()}</div><div className="text-[12px] text-ze-muted">за год обучения</div></div>
+                    <div className="text-[12.5px] text-ze-muted"><div>{u.languages.join(", ") || "Язык не указан"}</div><div>{u.deadlineLabel || "Дедлайн не указан"}</div></div>
+                    <div className="flex gap-2">{u.websiteUrl && <a href={u.websiteUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-ze-border px-2.5 py-1.5 text-[12px] font-semibold">Сайт</a>}<Link href={`/education/${u.slug}`} className="rounded-lg bg-[#EBF1FE] px-2.5 py-1.5 text-[12px] font-semibold text-ze-primary">Подробнее</Link></div>
                   </div>
                 ))}
               </div>

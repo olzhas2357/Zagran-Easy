@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutGrid, Users, GraduationCap, ClipboardList, LogOut, Menu } from "lucide-react";
+import { LayoutGrid, Users, GraduationCap, ClipboardList, LogOut, Menu, Landmark } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/admin/teachers", label: "Учителя", Icon: GraduationCap },
   { href: "/admin/students", label: "Студенты", Icon: GraduationCap },
   { href: "/admin/leads", label: "Заявки", Icon: ClipboardList },
+  { href: "/admin/universities", label: "Университеты", Icon: Landmark },
 ];
 
 function SidebarContent({ fullName, onLogout, onNavigate }: { fullName: string | null; onLogout: () => void; onNavigate?: () => void }) {

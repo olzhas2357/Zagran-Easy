@@ -118,6 +118,10 @@ function mapAdminUniversityRow(row: Record<string, unknown>): University {
     name: row.name as string,
     nameLocal: (row.name_local as string) || "",
     city: row.city as string,
+    latitude: (row.latitude as number) ?? null,
+    longitude: (row.longitude as number) ?? null,
+    address: (row.address as string) || "",
+    googleMapsUrl: (row.google_maps_url as string) || "",
     type: (row.type as University["type"]) || "public",
     programs: (row.degree_levels as string[]) || [],
     languages: (row.languages as string[]) || [],
@@ -128,12 +132,19 @@ function mapAdminUniversityRow(row: Record<string, unknown>): University {
     grantDetails: (row.grant_details as string) || "",
     hasDormitory: Boolean(row.has_dormitory),
     dormitoryCost: (row.dormitory_cost as number) ?? 0,
+    applicationFee: (row.application_fee as number) ?? null,
+    medicalInsuranceCost: (row.medical_insurance_cost as number) ?? null,
     requirements: (row.requirements as string[]) || [],
     description: (row.description as string) || "",
     imageUrl: (row.image_url as string) || "",
+    logoUrl: (row.logo_url as string) || "",
     galleryImages: (row.gallery_images as string[]) || [],
     dormitoryImages: (row.dormitory_images as string[]) || [],
     websiteUrl: (row.website_url as string) || "",
+    youtubeUrl: (row.youtube_url as string) || "",
+    virtualTourUrl: (row.virtual_tour_url as string) || "",
+    contactEmail: (row.contact_email as string) || "",
+    contactPhone: (row.contact_phone as string) || "",
     rankingNational: (row.ranking_national as number) ?? null,
     rankingWorld: (row.ranking_world as number) ?? null,
     ieltsRequired: Boolean(row.ielts_required),
@@ -149,6 +160,9 @@ function mapAdminUniversityRow(row: Record<string, unknown>): University {
     lastVerifiedAt: (row.last_verified_at as string) ?? null,
     programList: (row.program_list as University["programList"]) || [],
     stories: (row.stories as University["stories"]) || [],
+    advantages: (row.advantages as string[]) || [],
+    limitations: (row.limitations as string[]) || [],
+    informationSource: (row.information_source as string) || "",
     isActive: row.is_active === undefined ? true : Boolean(row.is_active),
     sortOrder: (row.sort_order as number) ?? 0,
   };
@@ -168,6 +182,34 @@ export async function getUniversityForAdmin(id: string): Promise<University | nu
   const res = await apiGet<Record<string, unknown>>(`/admin/universities/${id}`, token);
   if (res.error || !res.data) return null;
   return mapAdminUniversityRow(res.data);
+}
+
+export async function getUniversityCatalog(id: string): Promise<import("./types").UniversityCatalog> {
+  const token = await getToken();
+  const res = await apiGet<import("./types").UniversityCatalog>(`/admin/universities/${id}/catalog`, token);
+  return res.data || { programs: [], intakes: [], requirements: [], costs: [], scholarships: [] };
+}
+
+export interface UniversityImportHistoryItem {
+  id: string; file_name: string; status: string; total_rows: number; valid_rows: number; error_rows: number; created_at: string;
+}
+
+export async function getUniversityImportHistory(): Promise<UniversityImportHistoryItem[]> {
+  const token = await getToken();
+  const res = await apiGet<UniversityImportHistoryItem[]>("/admin/universities/imports/history", token);
+  return res.data || [];
+}
+
+export async function getCostCalculationContext(clientId: string): Promise<Record<string, unknown> | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>(`/cost-calculations/context/${clientId}`, token);
+  return res.data || null;
+}
+
+export async function getClientCostCalculations(clientId: string): Promise<Record<string, unknown>[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/cost-calculations/client/${clientId}`, token);
+  return res.data || [];
 }
 
 export async function getLeadsForAdmin(): Promise<Lead[]> {
