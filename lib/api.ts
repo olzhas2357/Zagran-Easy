@@ -10,6 +10,13 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
+// Клиентские запросы админ-панели отправляем через same-origin Route Handler.
+// Остальные кабинеты вызывают api() внутри Server Actions и идут в NestJS
+// напрямую. Такой прокси убирает зависимость /admin от CORS в Railway.
+function getApiUrl() {
+  return typeof window === "undefined" ? API_URL : "/api/backend";
+}
+
 interface ApiOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
@@ -55,7 +62,7 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
 
   let res: Response;
   try {
-    res = await fetch(`${API_URL}${path}`, {
+    res = await fetch(`${getApiUrl()}${path}`, {
       method,
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
