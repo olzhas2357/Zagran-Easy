@@ -27,6 +27,20 @@ const COUNTRIES_BY_SERVICE: Partial<Record<ServiceType, { value: string; label: 
   ]
 };
 
+const PAYMENT_METHOD_LABELS = {
+  full: "Полная оплата",
+  installment: "Рассрочка",
+  staged: "Поэтапная оплата",
+} as const;
+
+const PAYMENT_STATUS_LABELS = {
+  unpaid: "Не оплачено",
+  awaiting: "Ожидает оплаты",
+  partial: "Частично оплачено",
+  paid: "Оплачено полностью",
+  overdue: "Оплата просрочена",
+} as const;
+
 export function CalculatorForm({ initialSettings }: { initialSettings?: CalculatorSettings }) {
   const [settings, setSettings] = useState<CalculatorSettings>(initialSettings ?? DEFAULT_CALCULATOR_SETTINGS);
   const [service, setService] = useState<ServiceType>("education");
@@ -62,6 +76,24 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
   );
   const remainingAmount = Math.max(result.total - paidAmount, 0);
   const installmentAmount = installmentCount > 0 ? Math.ceil(result.total / installmentCount) : result.total;
+  const shareMessage = useMemo(() => {
+    if (!isPackage) return result.waMessage;
+
+    return [
+      result.waMessage,
+      "",
+      "Оплата:",
+      `Способ: ${PAYMENT_METHOD_LABELS[paymentMethod]}`,
+      `Статус: ${PAYMENT_STATUS_LABELS[paymentStatus]}`,
+      `Оплачено: ${formatMoney(Math.min(paidAmount, result.total))}`,
+      `Остаток: ${formatMoney(remainingAmount)}`,
+      paymentMethod !== "full"
+        ? `График: ${installmentCount} платежей по ${formatMoney(installmentAmount)}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }, [installmentAmount, installmentCount, isPackage, paidAmount, paymentMethod, paymentStatus, remainingAmount, result]);
 
   function toggleExtra(extra: string) {
     setExtras((prev) => (prev.includes(extra) ? prev.filter((e) => e !== extra) : [...prev, extra]));
@@ -309,15 +341,15 @@ export function CalculatorForm({ initialSettings }: { initialSettings?: Calculat
             )}
           </div>
         )}
-        {/* <a
-          href={waUrl(result.waMessage)}
+        <a
+          href={waUrl(shareMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-ze-whatsapp py-3.5 text-center text-[14.5px] font-bold text-white shadow-[0_6px_16px_rgba(37,211,102,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-whatsapp-dark"
         >
           <Send className="h-4.5 w-4.5" strokeWidth={2} />
           Отправить клиенту в WhatsApp
-        </a> */}
+        </a>
       </div>
     </div>
   );

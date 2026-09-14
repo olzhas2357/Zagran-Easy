@@ -37,7 +37,7 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
   return (
     <div className="bg-ze-surface">
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-10 sm:py-8">
-        <Link href="/education" className="mb-4 inline-block text-[13.5px] font-semibold text-ze-muted hover:text-ze-primary">
+        <Link href="/education" className="mb-4 inline-block text-[20.5px] font-semibold text-ze-muted hover:text-ze-primary">
           ← Назад в каталог
         </Link>
 
@@ -154,6 +154,19 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
               </div>
             </Section>
 
+            <Section title="Презентация университета">
+              {university.presentationUrl ? (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[12.5px] text-ze-muted">PDF{university.presentationPages ? ` · ${university.presentationPages} страниц` : ""}</div>
+                  <a href={university.presentationUrl} target="_blank" rel="noopener noreferrer" className="rounded-[11px] bg-[#EBF1FE] px-4 py-2.5 text-[17.5px] font-semibold text-ze-primary hover:bg-[#DCE6FA]">
+                    Открыть
+                  </a>
+                </div>
+              ) : (
+                <div className="text-[13.5px] text-ze-muted">Презентация пока не загружена — уточните у менеджера в WhatsApp.</div>
+              )}
+            </Section>
+
             {(catalog.programs.length > 0 || university.programList.length > 0) && (
               <Section title="Программы">
                 <div className="flex flex-col">
@@ -190,19 +203,6 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
                 <PhotoGallery images={campusGallery} alt={`фото кампуса — ${university.name}`} />
               </Section>
             )}
-
-            <Section title="Презентация университета">
-              {university.presentationUrl ? (
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-[12.5px] text-ze-muted">PDF{university.presentationPages ? ` · ${university.presentationPages} страниц` : ""}</div>
-                  <a href={university.presentationUrl} target="_blank" rel="noopener noreferrer" className="rounded-[11px] bg-[#EBF1FE] px-4 py-2.5 text-[13.5px] font-semibold text-ze-primary hover:bg-[#DCE6FA]">
-                    Открыть
-                  </a>
-                </div>
-              ) : (
-                <div className="text-[13.5px] text-ze-muted">Презентация пока не загружена — уточните у менеджера в WhatsApp.</div>
-              )}
-            </Section>
 
             {university.hasDormitory && (
               <Section title="Общежитие">
