@@ -31,9 +31,12 @@ export default async function EducationPage({ searchParams }: { searchParams: Pr
           <h1 className="mt-4 max-w-[760px] text-[28px] font-extrabold leading-[1.04] tracking-tight text-balance sm:text-[46px]">
             Найдите свой университет за 3 минуты
           </h1>
-          <p className="mt-3.5 max-w-[600px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[17px]">
+          <p className="mt-3.5 max-w-[800px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[17px]">
             Все программы Турции, Китая с ценами, дедлайнами и требованиями к поступлению.
           </p>
+            <a href="/education/compare" className="text-ze-primary hover:underline">
+            Сравнивайте университеты, чтобы найти идеальный вариант для обучения за рубежом.
+            </a>
         </div>
       </div>
 

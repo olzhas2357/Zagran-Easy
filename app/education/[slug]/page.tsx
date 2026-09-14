@@ -37,7 +37,7 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
   return (
     <div className="bg-ze-surface">
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-10 sm:py-8">
-        <Link href="/education" className="mb-4 inline-block text-[20.5px] font-semibold text-ze-muted hover:text-ze-primary">
+        <Link href="/education" className="mb-4 inline-block text-[18.5px] font-semibold text-ze-muted hover:text-ze-primary">
           ← Назад в каталог
         </Link>
 
@@ -97,8 +97,8 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
                     <div className="mt-4">
                       <div className="text-[12px] font-semibold uppercase tracking-wide text-ze-muted">Почему выбирают этот вуз</div>
                       <ul className="mt-2 grid gap-2 sm:grid-cols-2">
-                        {university.advantages.map((advantage) => (
-                          <li key={advantage} className="flex items-start gap-2 rounded-xl bg-emerald-50/70 px-3 py-2.5 text-[13px] leading-5 text-slate-700">
+                        {university.advantages.map((advantage, index) => (
+                          <li key={`${advantage}-${index}`} className="flex items-start gap-2 rounded-xl bg-emerald-50/70 px-3 py-2.5 text-[13px] leading-5 text-slate-700">
                             <span className="mt-0.5 flex h-4 w-4 flex-none items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">✓</span>
                             <span>{advantage}</span>
                           </li>
@@ -175,8 +175,8 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
                       <div className="min-w-0"><div className="text-[14.5px] font-semibold">{String(p.name)}</div><div className="mt-0.5 text-[12.5px] text-ze-muted">{[p.degree_level, p.duration_months ? `${p.duration_months} мес.` : null, p.language].filter(Boolean).join(" · ")}</div></div>
                       <div className="flex-none text-[13px] font-semibold">{catalog.costs.filter((c) => c.program_id === p.id).map((c) => `${c.amount} ${c.currency || "USD"}`).join(" · ")}</div>
                     </div>
-                  )) : university.programList.map((p) => (
-                    <div key={p.name} className="flex items-center justify-between gap-3 border-b border-[#F1F4F9] py-3.5 last:border-0">
+                  )) : university.programList.map((p, index) => (
+                    <div key={`${p.name}-${p.meta}-${index}`} className="flex items-center justify-between gap-3 border-b border-[#F1F4F9] py-3.5 last:border-0">
                       <div className="min-w-0">
                         <div className="text-[14.5px] font-semibold">{p.name}</div>
                         <div className="mt-0.5 text-[12.5px] text-ze-muted">{p.meta}</div>
@@ -190,8 +190,8 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
 
             <Section title="Требования к поступлению">
               <div className="flex flex-wrap gap-2">
-                {(catalog.requirements.length ? catalog.requirements.map((r) => String(r.title)) : university.requirements).map((r) => (
-                  <span key={r} className="rounded-lg bg-[#F4F6FA] px-3 py-1.5 text-[13px] font-medium text-slate-700">
+                {(catalog.requirements.length ? catalog.requirements.map((r) => String(r.title)) : university.requirements).map((r, index) => (
+                  <span key={`${r}-${index}`} className="rounded-lg bg-[#F4F6FA] px-3 py-1.5 text-[13px] font-medium text-slate-700">
                     {r}
                   </span>
                 ))}
@@ -217,8 +217,8 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
             {university.stories.length > 0 && (
               <Section title="Истории поступивших">
                 <div className="flex flex-col gap-3.5">
-                  {university.stories.map((s) => (
-                    <div key={s.name} className="flex gap-3">
+                  {university.stories.map((s, index) => (
+                    <div key={`${s.name}-${index}`} className="flex gap-3">
                       <div className="h-[46px] w-[46px] flex-none rounded-xl bg-[repeating-linear-gradient(135deg,#EDF0F5_0_6px,#E4E9F1_6px_12px)]" />
                       <div className="min-w-0">
                         <div className="text-[14px] font-semibold">{s.name}</div>
