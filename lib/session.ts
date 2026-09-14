@@ -14,6 +14,17 @@ import { api } from "./api";
 const COOKIE_NAME = "ze_session";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 дней
 
+async function setSessionCookie(token: string) {
+  const store = await cookies();
+  store.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: COOKIE_MAX_AGE,
+  });
+}
+
 export interface SessionProfile {
   id: string;
   role: "admin" | "manager" | "teacher" | "student" | "parent";
@@ -37,16 +48,17 @@ export async function loginAction(email: string, password: string): Promise<{ er
   if (res.error || !res.data) return { error: res.error || "Не удалось войти" };
   if (!res.data.session || !res.data.profile) return { error: "Профиль не найден" };
 
-  const store = await cookies();
-  store.set(COOKIE_NAME, res.data.session.access_token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: COOKIE_MAX_AGE,
-  });
+  await setSessionCookie(res.data.session.access_token);
 
   return { role: res.data.profile.role };
+}
+
+// /admin хранит токен в localStorage для клиентских запросов, но страницы CMS
+// и Server Actions читают ту же сессию из httpOnly-cookie. Синхронизируем их
+// после логина и при восстановлении существующей admin-сессии.
+export async function persistSessionAction(token: string): Promise<void> {
+  if (!token) return;
+  await setSessionCookie(token);
 }
 
 export async function logoutAction(): Promise<void> {

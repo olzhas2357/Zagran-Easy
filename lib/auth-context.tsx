@@ -8,6 +8,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { api } from "./api";
+import { logoutAction, persistSessionAction } from "./session";
 
 export type Role = "admin" | "manager" | "teacher" | "student" | "parent";
 
@@ -29,7 +30,7 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAdmin: boolean;
   isTeacher: boolean;
 }
@@ -48,9 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     Promise.resolve()
       .then(() => (saved ? api<User>("/auth/me", { token: saved }) : null))
-      .then((res) => {
+      .then(async (res) => {
         if (cancelled) return;
         if (saved && res?.data && !res.error) {
+          await persistSessionAction(saved);
+          if (cancelled) return;
           setUser(res.data);
           setToken(saved);
         } else if (saved) {
@@ -76,16 +79,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!res.data.session || !res.data.profile) return { error: "Профиль не найден" };
 
     const newToken = res.data.session.access_token;
+    await persistSessionAction(newToken);
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
     setUser({ id: res.data.user.id, email: res.data.user.email, profile: res.data.profile });
     return {};
   }
 
-  function logout() {
+  async function logout() {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
+    await logoutAction();
   }
 
   const role = user?.profile?.role;

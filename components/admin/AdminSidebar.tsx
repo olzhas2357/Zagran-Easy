@@ -61,9 +61,10 @@ export function AdminSidebar({ fullName }: { fullName: string | null }) {
   const { logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  function handleLogout() {
-    logout();
+  async function handleLogout() {
+    await logout();
     router.push("/admin/login");
+    router.refresh();
   }
 
   return (
