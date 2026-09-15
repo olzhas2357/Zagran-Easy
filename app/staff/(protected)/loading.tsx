@@ -5,12 +5,12 @@ function Skeleton({ className }: { className: string }) {
 export default function StaffLoading() {
   return (
     <div className="flex h-dvh min-h-0 flex-col bg-[#F7F9FC] md:flex-row">
-      <aside className="hidden w-[228px] flex-none border-r border-ze-border bg-white p-4 md:block">
+      {/* <aside className="hidden w-[228px] flex-none border-r border-ze-border bg-white p-4 md:block">
         <Skeleton className="h-8 w-44" />
         <div className="mt-8 space-y-2">
           {Array.from({ length: 5 }, (_, index) => <Skeleton key={index} className="h-10 w-full" />)}
         </div>
-      </aside>
+      </aside> */}
       <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-9">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="mt-2 h-5 w-52" />

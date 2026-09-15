@@ -3,17 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, ClipboardList, Calculator, BookOpen, CalendarDays, Menu, UsersRound } from "lucide-react";
+import { LayoutGrid, ClipboardList, BookOpen, CalendarDays, Menu, UsersRound, ListTodo, Library } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const NAV = [
   { href: "/staff", label: "Главная", Icon: LayoutGrid },
+  { href: "/staff/tasks", label: "Задачи", Icon: ListTodo },
   { href: "/staff/clients", label: "Клиенты", Icon: UsersRound },
   { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
-  { href: "/staff/calculator", label: "Калькулятор", Icon: Calculator },
   { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
   { href: "/staff/directory", label: "Справочник", Icon: BookOpen },
+  { href: "/staff/knowledge", label: "База знаний", Icon: Library },
 ];
 
 function initials(name: string | null) {

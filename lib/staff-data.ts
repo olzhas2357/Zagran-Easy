@@ -6,7 +6,7 @@
 import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
-import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity } from "./types";
+import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity, ManagerTask, KnowledgeArticle } from "./types";
 import { DEFAULT_CALCULATOR_SETTINGS, type CalculatorSettings } from "./calculator";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -277,4 +277,44 @@ export async function getStaffProfiles(): Promise<Profile[]> {
     .map((row) => ({ ...row, id: row.id, full_name: row.full_name, role: row.role, phone: row.phone, created_at: row.created_at }))
     .map(mapProfileRow)
     .filter((p) => p.role === "admin" || p.role === "manager");
+}
+
+function mapManagerTaskRow(row: Record<string, unknown>): ManagerTask {
+  const manager = row.manager as Record<string, unknown> | null;
+  const client = row.client as Record<string, unknown> | null;
+  return {
+    id: row.id as string, managerId: row.manager_id as string, managerName: (manager?.full_name as string) ?? null,
+    clientId: (row.client_id as string) ?? null, clientName: (client?.full_name as string) ?? null,
+    admissionCaseId: (row.admission_case_id as string) ?? null, stageId: (row.stage_id as string) ?? null,
+    title: row.title as string, description: (row.description as string) ?? null,
+    taskType: row.task_type as ManagerTask["taskType"], priority: row.priority as ManagerTask["priority"],
+    status: row.status as ManagerTask["status"], dueAt: (row.due_at as string) ?? null,
+    completedAt: (row.completed_at as string) ?? null, resultComment: (row.result_comment as string) ?? null,
+    createdBy: row.created_by as string, createdAt: row.created_at as string, updatedAt: row.updated_at as string,
+  };
+}
+
+export async function getManagerTasks(): Promise<ManagerTask[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/manager-tasks?limit=100", token);
+  return res.data?.map(mapManagerTaskRow) || [];
+}
+
+function mapKnowledgeArticleRow(row: Record<string, unknown>): KnowledgeArticle {
+  const author = row.author as Record<string, unknown> | null;
+  return {
+    id: row.id as string, title: row.title as string, section: row.section as string,
+    content: row.content as string, language: row.language as string,
+    status: row.status as KnowledgeArticle["status"], source: (row.source as string) ?? null,
+    authorId: row.author_id as string, authorName: (author?.full_name as string) ?? null,
+    publishedBy: (row.published_by as string) ?? null, publishedAt: (row.published_at as string) ?? null,
+    lastUpdatedAt: row.updated_at as string, nextReviewAt: (row.next_review_at as string) ?? null,
+    version: Number(row.version), allowedRoles: (row.allowed_roles as string[]) || [], createdAt: row.created_at as string,
+  };
+}
+
+export async function getKnowledgeArticles(): Promise<KnowledgeArticle[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/knowledge-articles?limit=100", token);
+  return res.data?.map(mapKnowledgeArticleRow) || [];
 }

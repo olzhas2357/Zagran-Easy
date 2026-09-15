@@ -12,6 +12,7 @@ import { getToken } from "./session-data";
 import { getLeadActivities } from "./staff-data";
 import type { Lead, UniversityProgram, AdmissionStory } from "./types";
 import type { UniversityCatalogItem, UniversityCatalogKind } from "./types";
+import type { KnowledgeArticleStatus, ManagerTaskPriority, ManagerTaskStatus, ManagerTaskType } from "./types";
 
 // Ленивая подгрузка заметок по лиду — вызывается из клиентского LeadCard
 // при первом разворачивании, чтобы не тянуть все заметки на списке лидов сразу.
@@ -151,6 +152,63 @@ export async function updateCalculatorSetting(key: string, value: Record<string,
   const res = await apiPatch(`/calculator-settings/${key}`, { value }, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath("/staff/calculator");
+  return { success: true };
+}
+
+export interface ManagerTaskInput {
+  managerId: string; clientId?: string | null; admissionCaseId?: string | null; stageId?: string | null;
+  title: string; description?: string | null; taskType: ManagerTaskType; priority: ManagerTaskPriority; dueAt?: string | null;
+}
+
+export async function createManagerTask(input: ManagerTaskInput) {
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  if (!input.title.trim()) return { success: false, error: "Укажите название задачи" };
+  const res = await apiPost("/manager-tasks", {
+    manager_id: input.managerId, client_id: input.clientId || null, admission_case_id: input.admissionCaseId || null,
+    stage_id: input.stageId || null, title: input.title.trim(), description: input.description?.trim() || null,
+    task_type: input.taskType, priority: input.priority, due_at: input.dueAt || null,
+  }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/tasks");
+  return { success: true };
+}
+
+export async function updateManagerTask(taskId: string, input: { status?: ManagerTaskStatus; dueAt?: string; resultComment?: string }) {
+  const token = await getToken();
+  const body: Record<string, unknown> = {};
+  if (input.status) body.status = input.status;
+  if (input.dueAt) body.due_at = input.dueAt;
+  if (input.resultComment !== undefined) body.result_comment = input.resultComment.trim() || null;
+  const res = await apiPatch(`/manager-tasks/${taskId}`, body, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/tasks");
+  return { success: true };
+}
+
+export interface KnowledgeArticleInput {
+  title: string; section: string; content: string; language: string; source?: string | null;
+  nextReviewAt?: string | null; allowedRoles: string[]; status?: KnowledgeArticleStatus;
+}
+
+export async function createKnowledgeArticle(input: KnowledgeArticleInput) {
+  const token = await getToken();
+  if (!input.title.trim() || !input.content.trim()) return { success: false, error: "Заполните заголовок и содержание" };
+  const res = await apiPost("/knowledge-articles", {
+    title: input.title.trim(), section: input.section, content: input.content.trim(), language: input.language,
+    source: input.source?.trim() || null, next_review_at: input.nextReviewAt || null,
+    allowed_roles: input.allowedRoles, status: input.status || "draft",
+  }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/knowledge");
+  return { success: true };
+}
+
+export async function changeKnowledgeArticleStatus(articleId: string, status: KnowledgeArticleStatus) {
+  const token = await getToken();
+  const res = await apiPatch(`/knowledge-articles/${articleId}/status`, { status }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/knowledge");
   return { success: true };
 }
 

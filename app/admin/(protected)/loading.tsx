@@ -5,12 +5,12 @@ function Skeleton({ className }: { className: string }) {
 export default function AdminLoading() {
   return (
     <div className="flex h-dvh min-h-0 flex-col bg-slate-50 md:flex-row">
-      <aside className="hidden w-[248px] flex-none bg-slate-900 p-4 md:block">
+      {/* <aside className="hidden w-[248px] flex-none bg-slate-900 p-4 md:block">
         <Skeleton className="h-8 w-44" />
         <div className="mt-8 space-y-2">
           {Array.from({ length: 5 }, (_, index) => <Skeleton key={index} className="h-10 w-full" />)}
         </div>
-      </aside>
+      </aside> */}
       <main className="min-w-0 flex-1 p-6">
         <Skeleton className="h-7 w-40 bg-slate-200" />
         <Skeleton className="mt-2 h-5 w-52 bg-slate-200" />

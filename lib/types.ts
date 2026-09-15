@@ -225,6 +225,52 @@ export interface Profile {
   createdAt: string;
 }
 
+export type ManagerTaskType = "call" | "whatsapp" | "meeting" | "document_review" | "payment" | "proposal" | "application" | "reminder" | "other";
+export type ManagerTaskPriority = "low" | "normal" | "high" | "urgent";
+export type ManagerTaskStatus = "open" | "in_progress" | "completed" | "cancelled";
+
+export interface ManagerTask {
+  id: string;
+  managerId: string;
+  managerName: string | null;
+  clientId: string | null;
+  clientName: string | null;
+  admissionCaseId: string | null;
+  stageId: string | null;
+  title: string;
+  description: string | null;
+  taskType: ManagerTaskType;
+  priority: ManagerTaskPriority;
+  status: ManagerTaskStatus;
+  dueAt: string | null;
+  completedAt: string | null;
+  resultComment: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type KnowledgeArticleStatus = "draft" | "review" | "published" | "archived";
+
+export interface KnowledgeArticle {
+  id: string;
+  title: string;
+  section: string;
+  content: string;
+  language: string;
+  status: KnowledgeArticleStatus;
+  source: string | null;
+  authorId: string;
+  authorName: string | null;
+  publishedBy: string | null;
+  publishedAt: string | null;
+  lastUpdatedAt: string;
+  nextReviewAt: string | null;
+  version: number;
+  allowedRoles: string[];
+  createdAt: string;
+}
+
 // Учитель — расширение profiles строкой в teachers (id = profiles.id).
 // "Учительство" определяется наличием этой строки, а не profiles.role
 // (там check ограничен 'admin'|'manager').
