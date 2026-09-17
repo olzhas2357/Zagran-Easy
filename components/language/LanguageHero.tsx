@@ -55,7 +55,6 @@ export function LanguageHero() {
         <div className="relative w-full min-w-0 flex-1">
           <FadeIn delay={0.1}>
             <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[28px] border border-slate-200 shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-white/10 dark:shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://fzvkmnlcrdfxjnqepxrs.supabase.co/storage/v1/object/sign/images/fd23b150-a5a9-4737-8e00-ebbe4d86e54f.png?token=eyJraWQiOiIwY2UyMDkwNi0zZjc3LTRhYTUtYTAyYi0yMGExY2Q5ZjI5ZjMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvZmQyM2IxNTAtYTVhOS00NzM3LThlMDAtZWJiZTRkODZlNTRmLnBuZyIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3ODk2NTA3NTEsImV4cCI6MTgyMTE4Njc1MX0.2HUhTSuLR3WY81Q0DXpLnFAOaUmrPFzmdrzjw_S2u8E"
                 alt="Преподаватель ZagranEasy на онлайн-занятии"

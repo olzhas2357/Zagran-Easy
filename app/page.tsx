@@ -70,14 +70,6 @@ export default async function HomePage() {
               образовательного пути.
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5">
-              {/* <a
-                href={waUrl("Здравствуйте! Хочу получить консультацию.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_22px_rgba(26,86,219,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ze-accent-dark hover:shadow-[0_12px_28px_rgba(26,86,219,0.34)]"
-              >
-                Получить консультацию
-              </a> */}
               <Link
                 href="/quiz"
                 className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_22px_rgba(26,86,219,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ze-accent-dark hover:shadow-[0_12px_28px_rgba(26,86,219,0.34)]"

@@ -5,6 +5,8 @@ import { fetchAllUniversities } from "@/lib/data";
 import { isVerificationStale } from "@/lib/education-catalog";
 import { AIChatCard } from "@/components/staff/AIChat";
 import type { Lead } from "@/lib/types";
+import { FullOurWork } from "@/components/home/FullOurWork";
+import { StudentJourney } from "@/components/home/StudentJourney";
 
 export default async function StaffDashboardPage() {
   const [profile, leads, universities] = await Promise.all([getCurrentProfile(), getLeadsForAdmin(), fetchAllUniversities()]);
@@ -27,8 +29,11 @@ export default async function StaffDashboardPage() {
       <Stat label="Университетов" value={universities.length} icon={Landmark} color="emerald" href="/staff/directory" />
       <Stat label="Нужно проверить" value={stale} icon={CircleAlert} color="amber" href="/staff/universities" />
     </section>
-
+    
     <section className="mt-9"><SectionHeading eyebrow="Продукты" title="Услуги ZagranEasy" description="Карточки-подсказки для консультации: что предлагаем клиенту и что входит в сопровождение." />
+          
+      <StudentJourney />
+
       <div className="grid gap-4 xl:grid-cols-2">
         <ServiceCard icon={GraduationCap} title="Поступление за рубеж" subtitle="Полное сопровождение студента от первой консультации до начала обучения" color="blue" href="/staff/directory" badge="Китай · Турция · Европа" features={["Анализ профиля и стратегии поступления", "Подбор университета и программы", "Проверка и подача документов", "Гранты, скидки и дедлайны", "Виза, общежитие и подготовка к переезду", "Поддержка после зачисления и адаптация"]} />
         <ServiceCard icon={Languages} title="Языковые курсы" subtitle="Подготовка к поступлению, международным экзаменам и уверенному общению" color="violet" href="/language" badge="Онлайн · Индивидуально · В группе" features={["General English для разных уровней", "Подготовка к IELTS и HSK", "English for University", "Разговорные клубы и практика", "Преподаватель и персональный план", "Контроль прогресса и домашние задания"]} />
