@@ -204,6 +204,19 @@ export async function createKnowledgeArticle(input: KnowledgeArticleInput) {
   return { success: true };
 }
 
+export async function updateKnowledgeArticle(articleId: string, input: KnowledgeArticleInput) {
+  const token = await getToken();
+  if (!input.title.trim() || !input.content.trim()) return { success: false, error: "Заполните заголовок и содержание" };
+  const res = await apiPatch(`/knowledge-articles/${articleId}`, {
+    title: input.title.trim(), section: input.section, content: input.content.trim(), language: input.language,
+    source: input.source?.trim() || null, next_review_at: input.nextReviewAt || null,
+    allowed_roles: input.allowedRoles,
+  }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/knowledge");
+  return { success: true };
+}
+
 export async function changeKnowledgeArticleStatus(articleId: string, status: KnowledgeArticleStatus) {
   const token = await getToken();
   const res = await apiPatch(`/knowledge-articles/${articleId}/status`, { status }, token);

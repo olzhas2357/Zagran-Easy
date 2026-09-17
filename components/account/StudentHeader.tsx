@@ -8,11 +8,11 @@ import { Menu, X, LayoutDashboard, Video, ClipboardList } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { waUrl } from "@/lib/utils";
 
-// const NAV = [
-//   { href: "/account", label: "Кабинет", Icon: LayoutDashboard },
-//   { href: "/account/lessons", label: "Мои уроки", Icon: Video },
-//   { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
-// ];
+const NAV = [
+  // { href: "/account", label: "Кабинет", Ico n: LayoutDashboard },
+  { href: "/account/lessons", label: "Мои уроки", Icon: Video },
+  { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
+];
 
 export function StudentHeader({ email }: { email?: string }) {
   const pathname = usePathname();

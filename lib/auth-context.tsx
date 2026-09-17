@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(() => (saved ? api<User>("/auth/me", { token: saved }) : null))
       .then(async (res) => {
         if (cancelled) return;
-        if (saved && res?.data && !res.error) {
+        if (saved && res?.data?.profile.role === "admin" && !res.error) {
           await persistSessionAction(saved);
           if (cancelled) return;
           setUser(res.data);
@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (res.error || !res.data) return { error: res.error || "Не удалось войти" };
     if (!res.data.session || !res.data.profile) return { error: "Профиль не найден" };
+    if (res.data.profile.role !== "admin") return { error: "Этот аккаунт не имеет роли администратора" };
 
     const newToken = res.data.session.access_token;
     await persistSessionAction(newToken);

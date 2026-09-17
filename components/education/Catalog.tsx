@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { ArrowRight, BedDouble, Building2, Check, Globe2, Landmark, Search, SlidersHorizontal, X } from "lucide-react";
 import type { CatalogUniversity } from "@/lib/education-catalog";
 import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
@@ -9,342 +10,82 @@ import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { addUniversityToClient } from "@/lib/staff-actions";
 
 type Sort = "price" | "rating";
+type Direction = "turkey" | "china" | "europe";
+type RequirementFilter = "any" | "required" | "not_required";
+type AvailabilityFilter = "any" | "yes" | "no";
 
-function uniqueSorted(values: string[]): string[] {
-  return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, "ru"));
-}
+const directions = [
+  { id: "turkey", title: "Турция", subtitle: "Стамбул, Анкара и другие города", flag: "🇹🇷", icon: Landmark, tint: "from-red-50 to-white", active: "border-red-300 ring-red-100" },
+  { id: "china", title: "Китай", subtitle: "Сильные программы и гранты", flag: "🇨🇳", icon: Building2, tint: "from-amber-50 to-white", active: "border-amber-300 ring-amber-100" },
+  { id: "europe", title: "Европа", subtitle: "Университеты европейских стран", flag: "🇪🇺", icon: Globe2, tint: "from-blue-50 to-white", active: "border-blue-300 ring-blue-100" },
+] as const;
 
-function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1.5 text-[12.5px] font-semibold transition-colors ${
-        active ? "border-ze-primary bg-ze-primary text-white" : "border-ze-border bg-white text-slate-700 hover:border-slate-300"
-      }`}
-    >
-      {label}
-    </button>
-  );
+function belongsTo(direction: Direction, country: string) {
+  const normalized = country.toLowerCase();
+  if (direction === "turkey") return /турц|turkey|türkiye/.test(normalized);
+  if (direction === "china") return /китай|china/.test(normalized);
+  return !/турц|turkey|türkiye|китай|china/.test(normalized);
 }
 
 export function Catalog({ universities, clientId }: { universities: CatalogUniversity[]; clientId?: string }) {
   const [query, setQuery] = useState("");
-  const [price, setPrice] = useState(9000);
-  const [countries, setCountries] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [specialties, setSpecialties] = useState<string[]>([]);
-  const [languages, setLanguages] = useState<string[]>([]);
-  const [noIelts, setNoIelts] = useState(false);
-  const [grantOnly, setGrantOnly] = useState(false);
-  const [dormOnly, setDormOnly] = useState(false);
-  const [partnerOnly, setPartnerOnly] = useState(false);
-  const [deadlineSoonOnly, setDeadlineSoonOnly] = useState(false);
+  const [direction, setDirection] = useState<Direction | null>(null);
   const [sort, setSort] = useState<Sort>("price");
+  const [hsk, setHsk] = useState<RequirementFilter>("any");
+  const [ielts, setIelts] = useState<RequirementFilter>("any");
+  const [dormitory, setDormitory] = useState<AvailabilityFilter>("any");
   const [addedIds, setAddedIds] = useState<string[]>([]);
-
   const { ids: compareIds, toggle: toggleCompare } = useCompareList();
 
-  const countryOptions = useMemo(() => uniqueSorted(universities.map((u) => u.country)), [universities]);
-  const cityOptions = useMemo(() => uniqueSorted(universities.map((u) => u.city)), [universities]);
-  const specialtyOptions = useMemo(() => uniqueSorted(universities.flatMap((u) => u.specialties)), [universities]);
-  const languageOptions = useMemo(() => uniqueSorted(universities.flatMap((u) => u.languages)), [universities]);
-
-  function toggleFrom(list: string[], setList: (v: string[]) => void, value: string) {
-    setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
-  }
-
-  function clearAll() {
-    setQuery("");
-    setPrice(9000);
-    setCountries([]);
-    setCities([]);
-    setSpecialties([]);
-    setLanguages([]);
-    setNoIelts(false);
-    setGrantOnly(false);
-    setDormOnly(false);
-    setPartnerOnly(false);
-    setDeadlineSoonOnly(false);
-  }
-
+  const counts = useMemo(() => Object.fromEntries(directions.map((item) => [item.id, universities.filter((university) => belongsTo(item.id, university.country)).length])), [universities]);
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let list = universities.filter((u) => {
-      if (q && !(u.name + " " + u.city + " " + u.specialties.join(" ")).toLowerCase().includes(q)) return false;
-      if (countries.length && !countries.includes(u.country)) return false;
-      if (cities.length && !cities.includes(u.city)) return false;
-      if (specialties.length && !u.specialties.some((f) => specialties.includes(f))) return false;
-      if (languages.length && !u.languages.some((l) => languages.includes(l))) return false;
-      // if (u.tuitionFrom > price) return false;
-      if (noIelts && u.ieltsRequired) return false;
-      if (grantOnly && !u.hasGrant) return false;
-      if (dormOnly && !u.hasDormitory) return false;
-      if (partnerOnly && !u.isPartner) return false;
-      if (deadlineSoonOnly && !u.deadlineSoon) return false;
-      return true;
+    const needle = query.trim().toLowerCase();
+    const list = universities.filter((university) => {
+      if (direction && !belongsTo(direction, university.country)) return false;
+      const hskRequired = university.source.requirements.some((requirement) => /\bhsk\b/i.test(requirement));
+      if (hsk === "required" && !hskRequired) return false;
+      if (hsk === "not_required" && hskRequired) return false;
+      if (ielts === "required" && !university.ieltsRequired) return false;
+      if (ielts === "not_required" && university.ieltsRequired) return false;
+      if (dormitory === "yes" && !university.hasDormitory) return false;
+      if (dormitory === "no" && university.hasDormitory) return false;
+      return !needle || `${university.name} ${university.city} ${university.country} ${university.specialties.join(" ")}`.toLowerCase().includes(needle);
     });
-    if (sort === "rating") list = [...list].sort((a, b) => (a.rankingNational ?? 999) - (b.rankingNational ?? 999));
-    else list = [...list].sort((a, b) => a.tuitionFrom - b.tuitionFrom);
-    return list;
-  }, [universities, query, countries, cities, specialties, languages, price, noIelts, grantOnly, dormOnly, partnerOnly, deadlineSoonOnly, sort]);
+    return [...list].sort(sort === "rating"
+      ? (a, b) => (a.rankingNational ?? 999) - (b.rankingNational ?? 999)
+      : (a, b) => (a.tuitionFrom || Number.MAX_SAFE_INTEGER) - (b.tuitionFrom || Number.MAX_SAFE_INTEGER));
+  }, [universities, query, direction, hsk, ielts, dormitory, sort]);
 
-  const resultLabel = `${filtered.length} ${plural(filtered.length)}`;
+  return <div>
+    <section className="pt-8">
+      <div className="mb-4 flex items-end justify-between gap-4"><div><div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Направления</div><h2 className="mt-1 text-2xl font-extrabold tracking-tight">Куда хотите поступить?</h2></div>{direction && <button onClick={() => setDirection(null)} className="text-sm font-bold text-ze-primary">Показать все</button>}</div>
+      <div className="grid gap-3 md:grid-cols-3">{directions.map((item) => { const Icon = item.icon; const selected = direction === item.id; return <button key={item.id} onClick={() => setDirection(selected ? null : item.id)} className={`group relative overflow-hidden rounded-[20px] border bg-gradient-to-br p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(15,23,42,.09)] ${item.tint} ${selected ? `${item.active} ring-4` : "border-slate-200"}`}><div className="flex items-start justify-between"><span className="text-3xl" aria-hidden>{item.flag}</span><span className={`flex h-9 w-9 items-center justify-center rounded-full transition ${selected ? "bg-ze-primary text-white" : "bg-white text-slate-500 shadow-sm group-hover:text-ze-primary"}`}><ArrowRight className="h-4 w-4" /></span></div><div className="mt-6 flex items-end justify-between gap-3"><div><div className="text-xl font-extrabold">{item.title}</div><div className="mt-1 text-sm text-slate-500">{item.subtitle}</div></div><Icon className="h-7 w-7 flex-none text-slate-300" /></div><div className="mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">{counts[item.id]} {plural(counts[item.id])}</div></button>; })}</div>
+    </section>
 
-  return (
-    <div>
-      {/* Поиск */}
-      <div className="mt-6.5 flex flex-col gap-2.5 rounded-[18px] border border-ze-border bg-white p-2.5 shadow-[0_8px_26px_rgba(15,23,42,0.07)] sm:flex-row sm:items-center sm:p-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 px-1">
-          <span className="text-[16px] opacity-50">🔍</span>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Университет, город или специальность"
-            className="min-w-0 flex-1 bg-transparent py-3 text-[15px] font-medium text-ze-ink outline-none"
-          />
-        </div>
-        <div className="flex gap-2.5">
-          <button
-            onClick={clearAll}
-            className="flex-1 rounded-xl border border-ze-border bg-[#F4F6FA] px-4 py-3.5 text-[14px] font-semibold text-slate-600 hover:text-ze-ink sm:flex-none"
-          >
-            Сбросить
-          </button>
-          <Link
-            href="/education/quiz"
-            className="flex-1 rounded-xl bg-ze-accent px-5 py-3.5 text-center text-[14.5px] font-semibold text-white hover:bg-ze-accent-dark sm:flex-none"
-          >
-            Подобрать за меня
-          </Link>
-        </div>
-      </div>
-
-      <div className="mt-3.5 flex flex-wrap gap-2">
-        <Chip label="Без IELTS" active={noIelts} onClick={() => setNoIelts((v) => !v)} />
-        <Chip label="С грантом" active={grantOnly} onClick={() => setGrantOnly((v) => !v)} />
-        <Chip label="До $3 000" active={price <= 3000} onClick={() => setPrice((p) => (p <= 3000 ? 9000 : 3000))} />
-        <Chip label="Дедлайн скоро" active={deadlineSoonOnly} onClick={() => setDeadlineSoonOnly((v) => !v)} />
-        <Chip label="Общежитие" active={dormOnly} onClick={() => setDormOnly((v) => !v)} />
-      </div>
-
-      <div className="mt-7 flex flex-col items-start gap-6 sm:flex-row">
-        {/* Фильтры */}
-        <aside className="w-full flex-none sm:sticky sm:top-[90px] sm:w-[272px]">
-          <div className="overflow-hidden rounded-2xl border border-ze-border bg-white">
-            <div className="flex items-center justify-between border-b border-ze-border px-4 py-3.5">
-              <div className="text-[14.5px] font-bold">Фильтры</div>
-              <button onClick={clearAll} className="text-[12.5px] font-semibold text-ze-primary">
-                Очистить
-              </button>
-            </div>
-            <div className="flex flex-col gap-5 p-4">
-              <FilterGroup label="Страна">
-                {countryOptions.map((c) => (
-                  <Chip key={c} label={c} active={countries.includes(c)} onClick={() => toggleFrom(countries, setCountries, c)} />
-                ))}
-              </FilterGroup>
-              <FilterGroup label="Город">
-                {cityOptions.map((c) => (
-                  <Chip key={c} label={c} active={cities.includes(c)} onClick={() => toggleFrom(cities, setCities, c)} />
-                ))}
-              </FilterGroup>
-              {/* <FilterGroup label="Специальность">
-                {specialtyOptions.map((f) => (
-                  <Chip key={f} label={f} active={specialties.includes(f)} onClick={() => toggleFrom(specialties, setSpecialties, f)} />
-                ))}
-              </FilterGroup> */}
-              <div>
-                <div className="flex items-baseline justify-between">
-                  <div className="text-[12px] font-bold uppercase tracking-wide text-ze-muted">Цена за год</div>
-                  <div className="text-[13px] font-bold text-ze-primary">до {price >= 9000 ? "$9 000+" : `$${price.toLocaleString("ru-RU")}`}</div>
-                </div>
-                <input
-                  type="range"
-                  min={1000}
-                  max={100000}
-                  step={500}
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
-                  className="mt-3 w-full accent-[#1A56DB]"
-                />
-                <div className="mt-0.5 flex justify-between text-[11.5px] text-slate-400">
-                  <span>$1 000</span>
-                  <span>$10 000+</span>
-                </div>
-              </div>
-              <FilterGroup label="Язык обучения">
-                {languageOptions.map((l) => (
-                  <Chip key={l} label={l} active={languages.includes(l)} onClick={() => toggleFrom(languages, setLanguages, l)} />
-                ))}
-              </FilterGroup>
-              <div className="flex flex-col gap-0.5 border-t border-ze-border pt-3.5">
-                <ToggleRow label="Есть грант" checked={grantOnly} onChange={() => setGrantOnly((v) => !v)} />
-                <ToggleRow label="Есть общежитие" checked={dormOnly} onChange={() => setDormOnly((v) => !v)} />
-                <ToggleRow label="Официальный партнёр" checked={partnerOnly} onChange={() => setPartnerOnly((v) => !v)} />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3.5 rounded-2xl border border-[#DFE8FA] bg-[#F5F8FE] p-4">
-            <div className="text-[14px] font-bold">Не уверены в выборе?</div>
-            <div className="mt-1.5 text-[13px] leading-snug text-ze-muted">
-              Менеджер разберёт ваш аттестат и подберёт 3 варианта с реальным шансом.
-            </div>
-            <Link
-              href="/education/quiz"
-              className="mt-3 block w-full rounded-[11px] bg-ze-primary py-3 text-center text-[14px] font-semibold text-white hover:bg-ze-primary-dark"
-            >
-              Пройти подбор
-            </Link>
-          </div>
-        </aside>
-
-        {/* Результаты */}
-        <div className="min-w-0 w-full flex-1">
-          <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
-            <div className="text-[16px] font-bold tracking-tight sm:text-[20px]">{resultLabel}</div>
-            <div className="flex gap-1.5 rounded-[11px] border border-ze-border bg-[#F4F6FA] p-0.5">
-              {(
-                [
-                  ["price", "По цене"],
-                  ["rating", "По рейтингу"],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => setSort(key)}
-                  className={`rounded-[9px] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-                    sort === key ? "bg-white text-ze-ink shadow-[0_1px_2px_rgba(15,23,42,0.12)]" : "text-ze-muted"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {filtered.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((u) => (
-                <UniversityCard key={u.id} u={u} clientId={clientId} added={addedIds.includes(u.id)} onAdded={() => setAddedIds((ids) => [...ids, u.id])} inCompare={compareIds.includes(u.id)} onToggleCompare={() => toggleCompare(u.id)} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-[#D6DEEA] px-5 py-11 text-center">
-              <div className="text-[17px] font-bold">Под эти фильтры ничего нет</div>
-              <div className="mt-2 text-[14px] text-ze-muted">Снимите часть условий или оставьте заявку — подберём вручную.</div>
-              <button onClick={clearAll} className="mt-4 rounded-xl bg-ze-primary px-5 py-3 text-[14px] font-semibold text-white">
-                Сбросить фильтры
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="mt-7 flex flex-col gap-3 rounded-[18px] border border-ze-border bg-white p-2.5 shadow-[0_8px_26px_rgba(15,23,42,.07)] sm:flex-row sm:items-center sm:p-2">
+      <label className="flex min-w-0 flex-1 items-center gap-3 px-2"><Search className="h-5 w-5 flex-none text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Университет, город или специальность" className="min-w-0 flex-1 bg-transparent py-3 text-[15px] font-medium outline-none" /></label>
+      {query && <button onClick={() => setQuery("")} aria-label="Очистить поиск" className="hidden h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 sm:flex"><X className="h-4 w-4" /></button>}
+      <Link href="/education/quiz" className="rounded-xl bg-ze-primary px-5 py-3.5 text-center text-sm font-bold text-white hover:bg-ze-primary-dark">Подобрать за меня</Link>
     </div>
-  );
-}
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-[12px] font-bold uppercase tracking-wide text-ze-muted">{label}</div>
-      <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>
+    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <QuickSelect label="HSK" value={hsk} onChange={(value) => setHsk(value as RequirementFilter)} options={[["any", "Любой"], ["required", "Требуется"], ["not_required", "Не требуется"]]} />
+      <QuickSelect label="IELTS" value={ielts} onChange={(value) => setIelts(value as RequirementFilter)} options={[["any", "Любой"], ["required", "Требуется"], ["not_required", "Не требуется"]]} />
+      <QuickSelect label="Общежитие" value={dormitory} onChange={(value) => setDormitory(value as AvailabilityFilter)} options={[["any", "Любое"], ["yes", "Есть"], ["no", "Нет"]]} />
     </div>
-  );
+
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-3"><div><div className="text-xl font-extrabold">{filtered.length} {plural(filtered.length)}</div>{direction && <div className="mt-1 text-sm text-slate-500">Направление: {directions.find((item) => item.id === direction)?.title}</div>}</div><div className="flex items-center gap-2"><span className="hidden items-center gap-1.5 text-xs font-semibold text-slate-400 sm:flex"><SlidersHorizontal className="h-4 w-4" /> Сортировка</span><div className="flex gap-1.5 rounded-xl border border-ze-border bg-[#F4F6FA] p-1">{([ ["price", "Сначала дешевле"], ["rating", "По рейтингу"] ] as const).map(([key, label]) => <button key={key} onClick={() => setSort(key)} className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${sort === key ? "bg-white text-ze-ink shadow-sm" : "text-ze-muted"}`}>{label}</button>)}</div></div></div>
+
+    {filtered.length > 0 ? <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{filtered.map((university) => <UniversityCard key={university.id} u={university} clientId={clientId} added={addedIds.includes(university.id)} onAdded={() => setAddedIds((ids) => [...ids, university.id])} inCompare={compareIds.includes(university.id)} onToggleCompare={() => toggleCompare(university.id)} />)}</div> : <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center"><div className="text-lg font-bold">Университеты не найдены</div><p className="mt-2 text-sm text-slate-500">Попробуйте другой запрос или измените быстрые фильтры.</p><button onClick={() => { setQuery(""); setDirection(null); setHsk("any"); setIelts("any"); setDormitory("any"); }} className="mt-4 rounded-xl bg-ze-primary px-5 py-3 text-sm font-bold text-white">Показать все университеты</button></div>}
+  </div>;
 }
 
-function ToggleRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
-  return (
-    <button onClick={onChange} className="flex items-center justify-between gap-2.5 py-2.5 text-left text-[14px] font-medium text-ze-ink">
-      <span>{label}</span>
-      <span className={`flex h-[23px] w-10 flex-none items-center rounded-full p-0.5 transition-colors ${checked ? "bg-ze-primary" : "bg-[#DDE3EC]"}`}>
-        <span className={`h-[19px] w-[19px] rounded-full bg-white shadow transition-transform ${checked ? "translate-x-[17px]" : "translate-x-0"}`} />
-      </span>
-    </button>
-  );
+function QuickSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: readonly (readonly [string, string])[] }) {
+  return <label className={`flex items-center justify-between gap-3 rounded-xl border bg-white px-3.5 py-2.5 transition ${value !== "any" ? "border-blue-200 bg-blue-50/60" : "border-ze-border"}`}><span className="text-xs font-bold text-slate-600">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="min-w-0 bg-transparent text-right text-xs font-semibold text-ze-primary outline-none">{options.map(([key, title]) => <option key={key} value={key}>{title}</option>)}</select></label>;
 }
 
-function UniversityCard({
-  u,
-  inCompare,
-  onToggleCompare,
-  clientId,
-  added,
-  onAdded,
-}: {
-  u: CatalogUniversity;
-  inCompare: boolean;
-  onToggleCompare: () => void;
-  clientId?: string;
-  added: boolean;
-  onAdded: () => void;
-}) {
-  return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_12px_30px_rgba(15,23,42,0.1)]">
-      <div className="relative aspect-16/10">
-        <CoverPhoto src={u.imageUrl} alt={u.city} label={`фото кампуса — ${u.city}`} />
-        <div className="absolute left-2.5 top-2.5 flex gap-1.5">
-          <span className="rounded-lg bg-white/94 px-2 py-1 text-[11.5px] font-semibold text-ze-ink">
-            {u.flag} {u.country}
-          </span>
-          {u.hasGrant && (
-            <span className="rounded-lg bg-emerald-50 px-2 py-1 text-[11.5px] font-bold text-emerald-700">Грант</span>
-          )}
-        </div>
-        <button
-          onClick={onToggleCompare}
-          className={`absolute bottom-2.5 right-2.5 rounded-[9px] px-2.5 py-1.5 text-[11.5px] font-semibold ${
-            inCompare ? "bg-ze-primary text-white" : "bg-white/94 text-slate-700"
-          }`}
-        >
-          {inCompare ? "✓ В сравнении" : "Сравнить"}
-        </button>
-      </div>
-      <div className="flex flex-1 flex-col gap-2.5 p-3.5">
-        <div>
-          <div className="text-[16px] font-bold leading-tight tracking-tight">{u.name}</div>
-          <div className="mt-1 text-[12.5px] text-ze-muted">
-            {u.city} · {u.programsCount} программ {u.rankingNational ? `· #${u.rankingNational} в стране` : ""}
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {[u.languages[0], u.hasDormitory ? "Общежитие" : "Без общежития", u.ieltsRequired ? "IELTS нужен" : "Без IELTS"]
-            .filter(Boolean)
-            .map((tag) => (
-              <span key={tag} className="rounded-md bg-[#F4F6FA] px-2 py-1 text-[11.5px] font-medium text-slate-600">
-                {tag}
-              </span>
-            ))}
-        </div>
-        <div className="mt-auto flex items-end justify-between gap-2.5 border-t border-[#F1F4F9] pt-2.5">
-          <div>
-            <div className="text-[17px] font-extrabold tracking-tight">{formatTuition(u.tuitionFrom)}</div>
-            <div className="mt-0.5 text-[11.5px] text-ze-muted">{formatMonthlyInstallment(u.tuitionFrom)}</div>
-          </div>
-          <div className="text-right">
-            <div className={`text-[12.5px] font-bold ${u.deadlineSoon ? "text-red-600" : "text-slate-600"}`}>{u.deadlineLabel}</div>
-            <div className="mt-1 text-[11.5px] text-ze-muted">
-              ★ {u.ratingStars.toFixed(1)} · {u.reviewsCount} отзывов
-            </div>
-          </div>
-        </div>
-        <Link
-          href={`/education/${u.slug}`}
-          className="rounded-[11px] bg-[#EBF1FE] py-2.5 text-center text-[14px] font-semibold text-ze-primary hover:bg-ze-primary hover:text-white"
-        >
-          Смотреть программу
-        </Link>
-        {clientId && <button disabled={added} onClick={async () => { const result = await addUniversityToClient(clientId, u.id); if (result.success) onAdded(); }} className="rounded-[11px] border border-ze-primary py-2.5 text-[14px] font-semibold text-ze-primary hover:bg-blue-50 disabled:border-emerald-300 disabled:bg-emerald-50 disabled:text-emerald-700">{added ? "✓ Добавлен" : "Добавить клиенту"}</button>}
-      </div>
-    </div>
-  );
+function UniversityCard({ u, inCompare, onToggleCompare, clientId, added, onAdded }: { u: CatalogUniversity; inCompare: boolean; onToggleCompare: () => void; clientId?: string; added: boolean; onAdded: () => void }) {
+  return <article className="flex flex-col overflow-hidden rounded-[20px] border border-ze-border bg-white shadow-[0_2px_8px_rgba(15,23,42,.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(15,23,42,.1)]"><div className="relative aspect-[16/10]"><CoverPhoto src={u.imageUrl} alt={u.city} label={`фото кампуса — ${u.city}`} /><div className="absolute left-3 top-3 flex gap-1.5"><span className="rounded-lg bg-white/95 px-2.5 py-1.5 text-xs font-semibold shadow-sm">{u.flag} {u.country}</span>{u.hasGrant && <span className="rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-bold text-emerald-700">Грант</span>}</div><button onClick={onToggleCompare} className={`absolute bottom-3 right-3 rounded-lg px-3 py-2 text-xs font-semibold shadow-sm ${inCompare ? "bg-ze-primary text-white" : "bg-white/95 text-slate-700"}`}>{inCompare ? "✓ В сравнении" : "Сравнить"}</button></div><div className="flex flex-1 flex-col p-4"><h3 className="text-lg font-extrabold leading-tight">{u.name}</h3><div className="mt-1.5 text-sm text-ze-muted">{u.city} · {u.programsCount} программ {u.rankingNational ? `· #${u.rankingNational} в стране` : ""}</div><div className={`mt-4 flex items-center justify-between rounded-xl px-3 py-2.5 ${u.hasDormitory ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-500"}`}><span className="flex items-center gap-2 text-xs font-bold"><BedDouble className="h-4 w-4" /> Общежитие</span><span className="flex items-center gap-1 text-xs font-semibold">{u.hasDormitory && <Check className="h-3.5 w-3.5" />}{u.hasDormitory ? "Есть" : "Нет"}</span></div><div className="mt-3 flex flex-wrap gap-1.5">{[u.languages[0], u.ieltsRequired ? "IELTS нужен" : "Без IELTS"].filter(Boolean).map((tag) => <span key={tag} className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">{tag}</span>)}</div><div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-100 pt-4"><div><div className="text-lg font-extrabold">{formatTuition(u.tuitionFrom)}</div><div className="text-xs text-ze-muted">{formatMonthlyInstallment(u.tuitionFrom)}</div></div><div className="text-right text-xs"><div className={u.deadlineSoon ? "font-bold text-red-600" : "font-bold text-slate-600"}>{u.deadlineLabel}</div><div className="mt-1 text-ze-muted">★ {u.ratingStars.toFixed(1)} · {u.reviewsCount} отзывов</div></div></div><Link href={`/education/${u.slug}`} className="mt-4 rounded-xl bg-[#EBF1FE] py-3 text-center text-sm font-bold text-ze-primary transition hover:bg-ze-primary hover:text-white">Подробнее</Link>{clientId && <button disabled={added} onClick={async () => { const result = await addUniversityToClient(clientId, u.id); if (result.success) onAdded(); }} className="mt-2 rounded-xl border border-ze-primary py-2.5 text-sm font-semibold text-ze-primary disabled:border-emerald-300 disabled:bg-emerald-50 disabled:text-emerald-700">{added ? "✓ Добавлен" : "Добавить клиенту"}</button>}</div></article>;
 }
 
-function plural(n: number): string {
-  const t = n % 100;
-  const o = n % 10;
-  if (t > 10 && t < 20) return "университетов";
-  if (o === 1) return "университет";
-  if (o > 1 && o < 5) return "университета";
-  return "университетов";
-}
+function plural(value: number) { const teen = value % 100; const last = value % 10; if (teen > 10 && teen < 20) return "университетов"; if (last === 1) return "университет"; if (last > 1 && last < 5) return "университета"; return "университетов"; }

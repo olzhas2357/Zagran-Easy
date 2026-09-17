@@ -5,6 +5,7 @@ import { getClient, getClientNotes, getClientUniversities, getClientCostCalculat
 import { ClientNotes } from "@/components/staff/ClientNotes";
 import { ClientUniversities } from "@/components/staff/ClientUniversities";
 import { ClientCalculations } from "@/components/staff/ClientCalculations";
+import { AIChatCard } from "@/components/staff/AIChat";
 
 const SALES_STATUS = {
   new: "Новый",
@@ -45,6 +46,8 @@ export default async function StaffClientPage({ params }: { params: Promise<{ id
       </div>
       <Link href={`/education?clientId=${client.id}`} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-ze-primary px-4 py-2.5 text-[13.5px] font-semibold text-white"><Landmark className="h-4 w-4" />Подобрать университет</Link>
       <Link href={`/staff/clients/${client.id}/calculations/new`} className="ml-2 mt-4 inline-flex items-center gap-2 rounded-xl border border-ze-primary px-4 py-2.5 text-[13.5px] font-semibold text-ze-primary">Рассчитать стоимость</Link>
+
+      <div className="mt-5"><AIChatCard clientId={client.id} clientName={client.fullName} /></div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.4fr_1fr]">
         <div className="flex flex-col gap-5">

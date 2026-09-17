@@ -13,7 +13,7 @@ const NAV = [
   { href: "/staff/clients", label: "Клиенты", Icon: UsersRound },
   { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
   { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
-  { href: "/staff/directory", label: "Справочник", Icon: BookOpen },
+  { href: "/staff/directory", label: "Университеты", Icon: BookOpen },
   { href: "/staff/knowledge", label: "База знаний", Icon: Library },
 ];
 

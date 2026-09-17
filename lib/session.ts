@@ -58,6 +58,8 @@ export async function loginAction(email: string, password: string): Promise<{ er
 // после логина и при восстановлении существующей admin-сессии.
 export async function persistSessionAction(token: string): Promise<void> {
   if (!token) return;
+  const session = await api<SessionUser>("/auth/me", { token });
+  if (session.error || session.data?.profile.role !== "admin") return;
   await setSessionCookie(token);
 }
 
