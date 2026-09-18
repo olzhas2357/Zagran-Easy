@@ -48,16 +48,27 @@ export function StaffResources({ resources, articles, profile }: { resources: St
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<StaffResourceCategory | "all">("all");
   const [status, setStatus] = useState<StaffResourceStatus | "all">("all");
+  const [resourceGroup, setResourceGroup] = useState<"all" | "document" | "presentation" | "links" | "template">("all");
   const [editing, setEditing] = useState<StaffResource | "new" | null>(null);
   const [notice, setNotice] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
   const shown = useMemo(() => resources.filter((resource) => {
     const haystack = `${resource.title} ${resource.description} ${resource.service || ""}`.toLowerCase();
-    return (category === "all" || resource.category === category)
+    const matchesGroup = resourceGroup === "all"
+      || resource.resourceType === resourceGroup
+      || (resourceGroup === "links" && (resource.resourceType === "link" || resource.resourceType === "video"));
+    return matchesGroup && (category === "all" || resource.category === category)
       && (status === "all" || resource.status === status)
       && haystack.includes(query.trim().toLowerCase());
-  }), [resources, query, category, status]);
+  }), [resources, query, category, status, resourceGroup]);
   const featured = shown.filter((resource) => resource.isFeatured && resource.status === "published");
+  const counts = useMemo(() => ({
+    all: resources.length,
+    document: resources.filter((item) => item.resourceType === "document").length,
+    presentation: resources.filter((item) => item.resourceType === "presentation").length,
+    links: resources.filter((item) => item.resourceType === "link" || item.resourceType === "video").length,
+    template: resources.filter((item) => item.resourceType === "template").length,
+  }), [resources]);
 
   function openResource(resource: StaffResource) {
     setNotice(null);
@@ -95,6 +106,14 @@ export function StaffResources({ resources, articles, profile }: { resources: St
 
     {notice && <div className={`mt-4 flex items-center gap-2 rounded-xl px-4 py-3 text-sm ${notice.type === "ok" ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-700"}`}>{notice.type === "ok" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}{notice.text}</div>}
 
+    <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
+      <ResourceGroupButton active={resourceGroup === "all"} icon={FolderOpen} label="Все материалы" count={counts.all} onClick={() => setResourceGroup("all")} />
+      <ResourceGroupButton active={resourceGroup === "document"} icon={FileText} label="Документы" count={counts.document} onClick={() => setResourceGroup("document")} />
+      <ResourceGroupButton active={resourceGroup === "presentation"} icon={Presentation} label="Презентации" count={counts.presentation} onClick={() => setResourceGroup("presentation")} />
+      <ResourceGroupButton active={resourceGroup === "links"} icon={Link2} label="Ссылки и видео" count={counts.links} onClick={() => setResourceGroup("links")} />
+      <ResourceGroupButton active={resourceGroup === "template"} icon={File} label="Шаблоны" count={counts.template} onClick={() => setResourceGroup("template")} />
+    </div>
+
     {featured.length > 0 && <section className="mt-6"><div className="mb-3 flex items-center gap-2 text-sm font-extrabold"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />Важное для консультаций</div><div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{featured.map((resource) => <ResourceCard key={`featured-${resource.id}`} resource={resource} profile={profile} pending={pending} onOpen={openResource} onEdit={setEditing} onStatus={setResourceStatus} featured />)}</div></section>}
 
     <div className="mt-6 grid gap-3 rounded-2xl border border-ze-border bg-white p-4 lg:grid-cols-[1fr_210px_180px_auto]">
@@ -104,9 +123,17 @@ export function StaffResources({ resources, articles, profile }: { resources: St
       {profile.role === "admin" && <button onClick={() => setEditing("new")} className="flex items-center justify-center gap-2 rounded-xl bg-ze-primary px-4 py-2 text-sm font-bold text-white"><Plus className="h-4 w-4" />Добавить материал</button>}
     </div>
 
-    <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{shown.map((resource) => <ResourceCard key={resource.id} resource={resource} profile={profile} pending={pending} onOpen={openResource} onEdit={setEditing} onStatus={setResourceStatus} />)}{shown.length === 0 && <div className="rounded-2xl border border-dashed border-ze-border bg-white p-12 text-center text-sm text-ze-muted md:col-span-2 xl:col-span-3">Материалы не найдены.</div>}</div>
+    <div className="mt-5 flex items-center justify-between gap-3"><h2 className="text-lg font-extrabold">{resourceGroup === "document" ? "Документы" : resourceGroup === "presentation" ? "Презентации" : resourceGroup === "links" ? "Ссылки и видео" : resourceGroup === "template" ? "Шаблоны" : "Все документы и презентации"}</h2><span className="text-xs font-semibold text-ze-muted">Найдено: {shown.length}</span></div>
+    <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{shown.map((resource) => <ResourceCard key={resource.id} resource={resource} profile={profile} pending={pending} onOpen={openResource} onEdit={setEditing} onStatus={setResourceStatus} />)}{shown.length === 0 && <div className="rounded-2xl border border-dashed border-ze-border bg-white p-12 text-center text-sm text-ze-muted md:col-span-2 xl:col-span-3">В этом разделе пока нет материалов. {profile.role === "admin" ? "Нажмите «Добавить материал», чтобы загрузить первый файл." : "Опубликованные материалы появятся здесь автоматически."}</div>}</div>
     {editing && <ResourceModal resource={editing === "new" ? undefined : editing} articles={articles.filter((article) => article.status === "published")} onClose={() => setEditing(null)} />}
   </div>;
+}
+
+function ResourceGroupButton({ active, icon: Icon, label, count, onClick }: { active: boolean; icon: typeof FolderOpen; label: string; count: number; onClick: () => void }) {
+  return <button type="button" onClick={onClick} className={`flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${active ? "border-blue-200 bg-blue-50 text-ze-primary shadow-sm" : "border-ze-border bg-white text-slate-700 hover:border-blue-200"}`}>
+    <span className={`flex h-9 w-9 flex-none items-center justify-center rounded-xl ${active ? "bg-white" : "bg-slate-100"}`}><Icon className="h-4.5 w-4.5" /></span>
+    <span className="min-w-0"><span className="block truncate text-xs font-bold sm:text-sm">{label}</span><span className="mt-0.5 block text-[11px] text-ze-muted">{count} материалов</span></span>
+  </button>;
 }
 
 function ResourceCard({ resource, profile, pending, onOpen, onEdit, onStatus, featured = false }: { resource: StaffResource; profile: Profile; pending: boolean; onOpen: (resource: StaffResource) => void; onEdit: (resource: StaffResource) => void; onStatus: (resource: StaffResource, status: StaffResourceStatus) => void; featured?: boolean }) {
