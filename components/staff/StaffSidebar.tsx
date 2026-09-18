@@ -9,13 +9,14 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const NAV = [
   { href: "/staff", label: "Главная", Icon: LayoutGrid },
+  { href: "/staff/directory", label: "Университеты", Icon: BookOpen },
+  { href: "/staff/materials", label: "Материалы", Icon: FolderOpen },
   { href: "/staff/tasks", label: "Задачи", Icon: ListTodo },
   { href: "/staff/clients", label: "Клиенты", Icon: UsersRound },
   { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
   { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
-  { href: "/staff/directory", label: "Университеты", Icon: BookOpen },
   { href: "/staff/knowledge", label: "База знаний", Icon: Library },
-  { href: "/staff/materials", label: "Материалы", Icon: FolderOpen },
+
 ];
 
 function initials(name: string | null) {
