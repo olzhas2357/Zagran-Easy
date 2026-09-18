@@ -20,7 +20,7 @@ export default async function StaffDashboardPage() {
       <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-blue-500/15 blur-2xl" />
       <div className="relative flex flex-col justify-between gap-7 lg:flex-row lg:items-end"><div><div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-blue-100"><Sparkles className="h-4 w-4" /> Рабочее пространство менеджера</div><h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Здравствуйте, {profile?.fullName?.split(" ")[0] || "коллега"}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">Заявки, продукты ZagranEasy и база университетов — всё необходимое для консультации клиента.</p></div><div className="flex flex-wrap gap-2"><Link href="/staff/leads" className="rounded-xl bg-white px-4 py-3 text-sm font-bold text-ze-primary">Открыть заявки</Link><Link href="/staff/materials" className="flex items-center gap-2 rounded-xl border border-white/40 bg-white/20 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/30"><FolderOpen className="h-4 w-4" />Материалы</Link><Link href="/staff/clients/new" className="rounded-xl border border-white/30 bg-white/15 px-4 py-3 text-sm font-bold text-white">Добавить клиента</Link></div></div>
     </section>
-
+    <StudentJourney />
     <div className="mt-5"><AIChatCard /></div>
 
     <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -29,8 +29,7 @@ export default async function StaffDashboardPage() {
       <Stat label="Университетов" value={universities.length} icon={Landmark} color="emerald" href="/staff/directory" />
       <Stat label="Нужно проверить" value={stale} icon={CircleAlert} color="amber" href="/staff/universities" />
     </section>
-    <section className="mt-9"><SectionHeading eyebrow="Инструменты" title="Быстрые действия" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"><QuickLink href="/staff/tasks" icon={ListTodo} title="Задачи" text="Планы и следующие действия" /><QuickLink href="/staff/clients" icon={UsersRound} title="Клиенты" text="Карточки и история работы" /><QuickLink href="/staff/schedule" icon={CalendarDays} title="Расписание" text="Занятия и встречи" /><QuickLink href="/staff/knowledge" icon={BookOpen} title="База знаний" text="Инструкции менеджера" /><QuickLink href="/staff/materials" icon={FolderOpen} title="Материалы" text="Файлы, ссылки и презентации" /></div></section>
-    <StudentJourney />
+
     <section className="mt-9"><SectionHeading eyebrow="Продукты" title="Услуги ZagranEasy" description="Карточки-подсказки для консультации: что предлагаем клиенту и что входит в сопровождение." />
 
       <div className="grid gap-4 xl:grid-cols-2">
