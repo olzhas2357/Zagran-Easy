@@ -4,12 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutDashboard, Video, ClipboardList } from "lucide-react";
+import { Menu, X, Video, ClipboardList, CalendarDays } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { waUrl } from "@/lib/utils";
 
 const NAV = [
-  // { href: "/account", label: "Кабинет", Ico n: LayoutDashboard },
+  { href: "/account/schedule", label: "Запись на занятия", Icon: CalendarDays },
   { href: "/account/lessons", label: "Мои уроки", Icon: Video },
   { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
 ];
@@ -30,7 +30,7 @@ export function StudentHeader({ email }: { email?: string }) {
           <span className="hidden text-[16px] font-bold tracking-tight text-ze-ink sm:inline">ZagranEasy</span>
         </Link>
 
-        {/* <nav className="ml-4 hidden items-center gap-1 md:flex">
+        <nav className="ml-4 hidden items-center gap-1 md:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -43,7 +43,7 @@ export function StudentHeader({ email }: { email?: string }) {
               {item.label}
             </Link>
           ))}
-        </nav> */}
+        </nav>
 
         <div className="ml-auto hidden items-center gap-2.5 md:flex">
           <a
@@ -68,7 +68,7 @@ export function StudentHeader({ email }: { email?: string }) {
 
       {open && (
         <div className="border-t border-ze-border bg-white px-4 py-3 md:hidden">
-          {/* <nav className="flex flex-col gap-1">
+          <nav className="flex flex-col gap-1">
             {NAV.map((item) => (
               <Link
                 key={item.href}
@@ -82,7 +82,7 @@ export function StudentHeader({ email }: { email?: string }) {
                 {item.label}
               </Link>
             ))}
-          </nav> */}
+          </nav>
           {email && <div className="mt-3 truncate px-3 text-[12.5px] text-ze-muted">{email}</div>}
           <div className="mt-3 flex gap-2">
             <a

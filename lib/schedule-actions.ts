@@ -3,27 +3,44 @@
 import { revalidatePath } from "next/cache";
 import { apiDelete, apiPatch, apiPost } from "./api";
 import { getToken } from "./session-data";
+import type { ScheduleFormat, ScheduleLanguage } from "./schedule-data";
 
 async function result<T>(request: Promise<{ data: T; error?: string }>) {
   const response = await request;
-  if (response.error) return { success: false, error: response.error };
+  if (response.error) return { success: false as const, error: response.error };
   revalidatePath("/staff/schedule");
-  return { success: true, data: response.data };
+  revalidatePath("/account/schedule");
+  return { success: true as const, data: response.data };
 }
 
-export async function updateScheduleCourse(courseId: string, input: { name?: string; days?: string; offline_cap?: number; online_cap?: number }) {
-  const token = await getToken();
-  return result(apiPatch(`/schedule/courses/${courseId}`, input, token));
+export interface ScheduleSlotInput {
+  language: ScheduleLanguage;
+  lessonDate: string;
+  timeStart: string;
+  timeEnd: string;
+  format: ScheduleFormat;
+  capacity: number;
 }
 
-export async function updateScheduleSlot(slotId: string, input: { time_start?: string; time_end?: string }) {
-  const token = await getToken();
-  return result(apiPatch(`/schedule/slots/${slotId}`, input, token));
+function slotBody(input: ScheduleSlotInput) {
+  return {
+    language: input.language,
+    lesson_date: input.lessonDate,
+    time_start: input.timeStart,
+    time_end: input.timeEnd,
+    format: input.format,
+    capacity: input.capacity,
+  };
 }
 
-export async function addScheduleSlot(courseId: string, timeStart = "00:00", timeEnd = "00:00") {
+export async function addScheduleSlot(input: ScheduleSlotInput) {
   const token = await getToken();
-  return result(apiPost("/schedule/slots", { course_id: courseId, time_start: timeStart, time_end: timeEnd }, token));
+  return result(apiPost("/schedule/slots", slotBody(input), token));
+}
+
+export async function updateScheduleSlot(slotId: string, input: ScheduleSlotInput) {
+  const token = await getToken();
+  return result(apiPatch(`/schedule/slots/${slotId}`, slotBody(input), token));
 }
 
 export async function deleteScheduleSlot(slotId: string) {
@@ -31,10 +48,26 @@ export async function deleteScheduleSlot(slotId: string) {
   return result(apiDelete(`/schedule/slots/${slotId}`, token));
 }
 
-export async function enrollScheduleStudent(slotId: string, format: "offline" | "online", studentName: string, studentPhone: string) {
-  if (!studentName.trim()) return { success: false, error: "Введите имя студента" };
+export async function copyScheduleDay(sourceDate: string, targetDate: string) {
   const token = await getToken();
-  return result(apiPost("/schedule/enrollments", { slot_id: slotId, format, student_name: studentName.trim(), student_phone: studentPhone.trim() || undefined }, token));
+  return result<{ copied: number; skipped: number; conflicts: { language: ScheduleLanguage; time_start: string; time_end: string; format: ScheduleFormat; reason: string }[] }>(
+    apiPost("/schedule/days/copy", { source_date: sourceDate, target_date: targetDate }, token),
+  );
+}
+
+export async function enrollScheduleStudent(slotId: string, studentName: string, studentPhone: string) {
+  if (!studentName.trim()) return { success: false as const, error: "Введите имя студента" };
+  const token = await getToken();
+  return result(apiPost("/schedule/enrollments", {
+    slot_id: slotId,
+    student_name: studentName.trim(),
+    student_phone: studentPhone.trim() || undefined,
+  }, token));
+}
+
+export async function enrollMyScheduleSlot(slotId: string) {
+  const token = await getToken();
+  return result(apiPost("/schedule/enrollments/self", { slot_id: slotId }, token));
 }
 
 export async function removeScheduleEnrollment(enrollmentId: string) {

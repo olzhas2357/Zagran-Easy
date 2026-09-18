@@ -4,6 +4,7 @@ import { getUniversitiesForAdmin } from "@/lib/staff-data";
 import { UniversitiesBoard } from "@/components/staff/UniversitiesBoard";
 import { isVerificationStale } from "@/lib/education-catalog";
 import { fetchEducationCountries } from "@/lib/data";
+import { StudentJourney } from "@/components/home/StudentJourney";
 
 export default async function StaffUniversitiesPage() {
   const [universities, countries] = await Promise.all([getUniversitiesForAdmin(), fetchEducationCountries()]);
@@ -60,6 +61,7 @@ function Stat({ label, value, Icon, color }: { label: string; value: number; Ico
   const colors = STAT_COLORS[color];
   return (
     <div className="rounded-[20px] border border-ze-border bg-white p-4.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+   
       <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${colors.bg}`}>
         <Icon className={`h-5 w-5 ${colors.text}`} strokeWidth={1.75} />
       </div>

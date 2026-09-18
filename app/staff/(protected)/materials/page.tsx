@@ -1,3 +1,4 @@
+import { StudentJourney } from "@/components/home/StudentJourney";
 import { StaffResources } from "@/components/staff/StaffResources";
 import { getCurrentProfile, getKnowledgeArticles, getStaffResources } from "@/lib/staff-data";
 

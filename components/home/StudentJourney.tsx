@@ -13,7 +13,7 @@ const STEPS = [
 
 export function StudentJourney() {
   return (
-    <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
+    <section className="py-9 sm:py-19 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
           <div className="max-w-[640px]">
