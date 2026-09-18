@@ -7,12 +7,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { apiDelete, apiPatch, apiPost } from "./api";
+import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
 import { getToken } from "./session-data";
 import { getLeadActivities } from "./staff-data";
 import type { Lead, UniversityProgram, AdmissionStory } from "./types";
 import type { UniversityCatalogItem, UniversityCatalogKind } from "./types";
-import type { KnowledgeArticleStatus, ManagerTaskPriority, ManagerTaskStatus, ManagerTaskType } from "./types";
+import type { KnowledgeArticleStatus, ManagerTaskPriority, ManagerTaskStatus, ManagerTaskType, StaffResourceCategory, StaffResourceStatus, StaffResourceType } from "./types";
 
 // Ленивая подгрузка заметок по лиду — вызывается из клиентского LeadCard
 // при первом разворачивании, чтобы не тянуть все заметки на списке лидов сразу.
@@ -223,6 +223,86 @@ export async function changeKnowledgeArticleStatus(articleId: string, status: Kn
   if (res.error) return { success: false, error: res.error };
   revalidatePath("/staff/knowledge");
   return { success: true };
+}
+
+export interface StaffResourceInput {
+  title: string;
+  description: string;
+  category: StaffResourceCategory;
+  service?: string | null;
+  resourceType: StaffResourceType;
+  knowledgeArticleId?: string | null;
+  nextReviewAt?: string | null;
+  isFeatured?: boolean;
+  allowedRoles: string[];
+}
+
+function staffResourceBody(input: StaffResourceInput) {
+  return {
+    title: input.title.trim(),
+    description: input.description.trim(),
+    category: input.category,
+    service: input.service?.trim() || null,
+    resource_type: input.resourceType,
+    knowledge_article_id: input.knowledgeArticleId || null,
+    next_review_at: input.nextReviewAt || null,
+    is_featured: Boolean(input.isFeatured),
+    allowed_roles: input.allowedRoles,
+  };
+}
+
+export async function createStaffResourceLink(input: StaffResourceInput & { externalUrl: string }) {
+  if (!input.title.trim() || !input.externalUrl.trim()) return { success: false, error: "Укажите название и ссылку" };
+  const token = await getToken();
+  const res = await apiPost("/staff-resources/link", { ...staffResourceBody(input), external_url: input.externalUrl.trim() }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/materials");
+  return { success: true };
+}
+
+export async function uploadStaffResource(formData: FormData) {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Выберите файл" };
+  if (file.size > 15 * 1024 * 1024) return { success: false, error: "Максимальный размер файла — 15 МБ" };
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const res = await fetch(`${API_URL}/staff-resources/upload`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: formData });
+    const json = await res.json();
+    if (!res.ok || json.success === false) {
+      const message = Array.isArray(json.message) ? json.message.join(", ") : json.message;
+      return { success: false, error: message || "Не удалось загрузить файл" };
+    }
+    revalidatePath("/staff/materials");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
+}
+
+export async function updateStaffResource(resourceId: string, input: StaffResourceInput) {
+  if (!input.title.trim()) return { success: false, error: "Укажите название" };
+  const token = await getToken();
+  const res = await apiPatch(`/staff-resources/${resourceId}`, staffResourceBody(input), token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/materials");
+  return { success: true };
+}
+
+export async function changeStaffResourceStatus(resourceId: string, status: StaffResourceStatus) {
+  const token = await getToken();
+  const res = await apiPatch(`/staff-resources/${resourceId}/status`, { status }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/staff/materials");
+  return { success: true };
+}
+
+export async function getStaffResourceAccess(resourceId: string) {
+  const token = await getToken();
+  const res = await apiGet<{ url: string; expires_in: number | null; name: string }>(`/staff-resources/${resourceId}/access`, token);
+  if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось открыть материал" };
+  return { success: true as const, ...res.data };
 }
 
 export async function toggleUniversityActive(universityId: string, isActive: boolean) {

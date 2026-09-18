@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, ClipboardList, BookOpen, CalendarDays, Menu, UsersRound, ListTodo, Library } from "lucide-react";
+import { LayoutGrid, ClipboardList, BookOpen, CalendarDays, Menu, UsersRound, ListTodo, Library, FolderOpen } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
@@ -15,6 +15,7 @@ const NAV = [
   { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
   { href: "/staff/directory", label: "Университеты", Icon: BookOpen },
   { href: "/staff/knowledge", label: "База знаний", Icon: Library },
+  { href: "/staff/materials", label: "Материалы", Icon: FolderOpen },
 ];
 
 function initials(name: string | null) {

@@ -6,7 +6,7 @@
 import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
-import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity, ManagerTask, KnowledgeArticle } from "./types";
+import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity, ManagerTask, KnowledgeArticle, StaffResource } from "./types";
 import { DEFAULT_CALCULATOR_SETTINGS, type CalculatorSettings } from "./calculator";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -321,4 +321,38 @@ export async function getKnowledgeArticles(): Promise<KnowledgeArticle[]> {
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>[]>("/knowledge-articles?limit=100", token);
   return res.data?.map(mapKnowledgeArticleRow) || [];
+}
+
+function mapStaffResourceRow(row: Record<string, unknown>): StaffResource {
+  const uploader = row.uploader as Record<string, unknown> | null;
+  const article = row.knowledge_article as Record<string, unknown> | null;
+  return {
+    id: row.id as string,
+    title: row.title as string,
+    description: (row.description as string) || "",
+    category: row.category as StaffResource["category"],
+    service: (row.service as string) ?? null,
+    resourceType: row.resource_type as StaffResource["resourceType"],
+    status: row.status as StaffResource["status"],
+    originalName: (row.original_name as string) ?? null,
+    mimeType: (row.mime_type as string) ?? null,
+    sizeBytes: row.size_bytes == null ? null : Number(row.size_bytes),
+    knowledgeArticleId: (row.knowledge_article_id as string) ?? null,
+    knowledgeArticleTitle: (article?.title as string) ?? null,
+    uploadedBy: row.uploaded_by as string,
+    uploaderName: (uploader?.full_name as string) ?? null,
+    publishedAt: (row.published_at as string) ?? null,
+    nextReviewAt: (row.next_review_at as string) ?? null,
+    version: Number(row.version || 1),
+    isFeatured: Boolean(row.is_featured),
+    allowedRoles: (row.allowed_roles as string[]) || [],
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+export async function getStaffResources(): Promise<StaffResource[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>("/staff-resources?limit=100", token);
+  return res.data?.map(mapStaffResourceRow) || [];
 }

@@ -275,6 +275,34 @@ export interface KnowledgeArticle {
   createdAt: string;
 }
 
+export type StaffResourceStatus = "draft" | "review" | "published" | "archived";
+export type StaffResourceCategory = "company" | "services" | "presentations" | "documents" | "sales" | "marketing" | "training" | "templates" | "links";
+export type StaffResourceType = "document" | "presentation" | "link" | "video" | "template";
+
+export interface StaffResource {
+  id: string;
+  title: string;
+  description: string;
+  category: StaffResourceCategory;
+  service: string | null;
+  resourceType: StaffResourceType;
+  status: StaffResourceStatus;
+  originalName: string | null;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  knowledgeArticleId: string | null;
+  knowledgeArticleTitle: string | null;
+  uploadedBy: string;
+  uploaderName: string | null;
+  publishedAt: string | null;
+  nextReviewAt: string | null;
+  version: number;
+  isFeatured: boolean;
+  allowedRoles: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Учитель — расширение profiles строкой в teachers (id = profiles.id).
 // "Учительство" определяется наличием этой строки, а не profiles.role
 // (там check ограничен 'admin'|'manager').
