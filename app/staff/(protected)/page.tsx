@@ -29,12 +29,9 @@ export default async function StaffDashboardPage() {
       <Stat label="Университетов" value={universities.length} icon={Landmark} color="emerald" href="/staff/directory" />
       <Stat label="Нужно проверить" value={stale} icon={CircleAlert} color="amber" href="/staff/universities" />
     </section>
-    
-            <section className="mt-9"><SectionHeading eyebrow="Инструменты" title="Быстрые действия" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"><QuickLink href="/staff/tasks" icon={ListTodo} title="Задачи" text="Планы и следующие действия" /><QuickLink href="/staff/clients" icon={UsersRound} title="Клиенты" text="Карточки и история работы" /><QuickLink href="/staff/schedule" icon={CalendarDays} title="Расписание" text="Занятия и встречи" /><QuickLink href="/staff/knowledge" icon={BookOpen} title="База знаний" text="Инструкции менеджера" /><QuickLink href="/staff/materials" icon={FolderOpen} title="Материалы" text="Файлы, ссылки и презентации" /></div></section>
-
+    <section className="mt-9"><SectionHeading eyebrow="Инструменты" title="Быстрые действия" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"><QuickLink href="/staff/tasks" icon={ListTodo} title="Задачи" text="Планы и следующие действия" /><QuickLink href="/staff/clients" icon={UsersRound} title="Клиенты" text="Карточки и история работы" /><QuickLink href="/staff/schedule" icon={CalendarDays} title="Расписание" text="Занятия и встречи" /><QuickLink href="/staff/knowledge" icon={BookOpen} title="База знаний" text="Инструкции менеджера" /><QuickLink href="/staff/materials" icon={FolderOpen} title="Материалы" text="Файлы, ссылки и презентации" /></div></section>
+    <StudentJourney />
     <section className="mt-9"><SectionHeading eyebrow="Продукты" title="Услуги ZagranEasy" description="Карточки-подсказки для консультации: что предлагаем клиенту и что входит в сопровождение." />
-          
-      <StudentJourney />
 
       <div className="grid gap-4 xl:grid-cols-2">
         <ServiceCard icon={GraduationCap} title="Поступление за рубеж" subtitle="Полное сопровождение студента от первой консультации до начала обучения" color="blue" href="/staff/directory" badge="Китай · Турция · Европа" features={["Анализ профиля и стратегии поступления", "Подбор университета и программы", "Проверка и подача документов", "Гранты, скидки и дедлайны", "Виза, общежитие и подготовка к переезду", "Поддержка после зачисления и адаптация"]} />
