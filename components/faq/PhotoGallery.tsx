@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 type PhotoGalleryProps = {
   images: string[];
@@ -113,28 +114,13 @@ export function PhotoGallery({
 
       {/* Fullscreen */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm"
-          onClick={() => setIsOpen(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-            aria-label="Закрыть"
-          >
-            <X className="h-5 w-5" />
-          </button>
-
-          <Image
-            src={images[active]}
-            alt={`${alt} ${active + 1}`}
-            width={1600}
-            height={1200}
-            className="max-h-[90vh] w-auto max-w-full object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <ImageLightbox
+          images={images}
+          index={active}
+          onIndex={setActive}
+          onClose={() => setIsOpen(false)}
+          alt={alt}
+        />
       )}
     </>
   );

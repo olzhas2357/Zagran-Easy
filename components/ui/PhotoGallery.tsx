@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 type PhotoGalleryProps = {
   images: string[];
@@ -15,10 +15,6 @@ export function PhotoGallery({ images, alt, variant = "default" }: PhotoGalleryP
   const [open, setOpen] = useState(false);
 
   if (images.length === 0) return null;
-
-  function go(delta: number) {
-    setActive((i) => (i + delta + images.length) % images.length);
-  }
 
   return (
     <div>
@@ -73,52 +69,13 @@ export function PhotoGallery({ images, alt, variant = "default" }: PhotoGalleryP
       )}
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/92 p-4 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-            aria-label="Закрыть просмотр"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          {images.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                go(-1);
-              }}
-              className="absolute left-2 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-6"
-              aria-label="Предыдущий документ"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-          )}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={images[active]}
-            alt={alt}
-            className="max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-          {images.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                go(1);
-              }}
-              className="absolute right-2 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-6"
-              aria-label="Следующий документ"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          )}
-        </div>
+        <ImageLightbox
+          images={images}
+          index={active}
+          onIndex={setActive}
+          onClose={() => setOpen(false)}
+          alt={alt}
+        />
       )}
     </div>
   );
