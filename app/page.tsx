@@ -312,9 +312,9 @@ export default async function HomePage() {
                     <div className="mt-1.5 text-[13px] leading-snug text-ze-muted dark:text-white/60">
                       {universityCountByCountry.get(c.id) || 0} университетов · {c.cities.slice(0, 2).join(", ")}
                     </div>
-                    <div className="mt-3 inline-flex items-center rounded-lg bg-ze-primary/8 px-2.5 py-1 text-[13.5px] font-semibold text-ze-primary dark:bg-white/10 dark:text-[#8FD9F5]">
+                    {/* <div className="mt-3 inline-flex items-center rounded-lg bg-ze-primary/8 px-2.5 py-1 text-[13.5px] font-semibold text-ze-primary dark:bg-white/10 dark:text-[#8FD9F5]">
                       {formatPrice(cheapestByCountry.get(c.id) || 0)} / год
-                    </div>
+                    </div> */}
                   </div>
                 </Link>
               </FadeIn>
