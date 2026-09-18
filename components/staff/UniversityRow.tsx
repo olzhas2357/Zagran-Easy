@@ -36,7 +36,7 @@ export function UniversityRow({ university }: { university: University }) {
             {university.city} · {university.programsCount} программ{!university.isActive && " · скрыт"}
           </div>
         </div>
-        <div className="font-semibold">{formatTuitionAmount(university.tuitionFrom)}</div>
+        <div className="font-semibold">{formatTuitionAmount(university.tuitionFrom, university.tuitionCurrency)}</div>
         <div>{university.deadlineLabel || "—"}</div>
         <div>
           <span
@@ -85,7 +85,7 @@ export function UniversityRow({ university }: { university: University }) {
               {university.city} · {university.programsCount} программ{!university.isActive && " · скрыт"}
             </div>
           </div>
-          <div className="flex-none text-[15px] font-bold text-ze-ink">{formatTuitionAmount(university.tuitionFrom)}</div>
+          <div className="flex-none text-[15px] font-bold text-ze-ink">{formatTuitionAmount(university.tuitionFrom, university.tuitionCurrency)}</div>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1.5">

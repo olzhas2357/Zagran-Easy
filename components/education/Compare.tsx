@@ -46,8 +46,8 @@ export function Compare({ universities }: { universities: CatalogUniversity[] })
               </button>
             </div>
             {[
-              formatTuition(u.tuitionFrom),
-              formatMonthlyInstallment(u.tuitionFrom),
+              formatTuition(u.tuitionFrom, u.tuitionCurrency),
+              formatMonthlyInstallment(u.tuitionFrom, u.tuitionCurrency),
               u.deadlineLabel,
               u.ieltsRequired ? "Нужен 6.0" : "Не нужен",
               u.hasGrant ? "Есть" : "Нет",

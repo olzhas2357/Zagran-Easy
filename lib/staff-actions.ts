@@ -314,12 +314,16 @@ export interface NewUniversityInput {
   specialties: string[];
   tuitionFrom: number;
   tuitionTo: number;
+  tuitionCurrency: string;
   hasGrant: boolean;
   grantDetails: string;
   hasDormitory: boolean;
   dormitoryCost: number;
+  dormitoryCurrency: string;
   applicationFee: number | null;
+  applicationFeeCurrency: string;
   medicalInsuranceCost: number | null;
+  medicalInsuranceCurrency: string;
   requirements: string[];
   description: string;
   imageUrl: string;
@@ -368,12 +372,16 @@ function universityInputToBody(input: NewUniversityInput) {
     specialties: input.specialties,
     tuition_from: input.tuitionFrom,
     tuition_to: input.tuitionTo,
+    tuition_currency: input.tuitionCurrency,
     has_grant: input.hasGrant,
     grant_details: input.grantDetails.trim() || null,
     has_dormitory: input.hasDormitory,
     dormitory_cost: input.dormitoryCost,
+    dormitory_currency: input.dormitoryCurrency,
     application_fee: input.applicationFee,
+    application_fee_currency: input.applicationFeeCurrency,
     medical_insurance_cost: input.medicalInsuranceCost,
+    medical_insurance_currency: input.medicalInsuranceCurrency,
     requirements: input.requirements,
     description: input.description.trim(),
     image_url: input.imageUrl || null,

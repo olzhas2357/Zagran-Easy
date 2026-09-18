@@ -5,6 +5,7 @@
 // ============================================================
 
 import type { EducationCountry, University } from "./types";
+import { formatCurrency } from "./currency";
 
 export interface CatalogUniversity {
   id: string;
@@ -18,6 +19,7 @@ export interface CatalogUniversity {
   languages: string[];
   specialties: string[];
   tuitionFrom: number;
+  tuitionCurrency: string;
   ieltsRequired: boolean;
   hasGrant: boolean;
   hasDormitory: boolean;
@@ -71,6 +73,7 @@ export function buildCatalog(universities: University[], countries: EducationCou
         languages: u.languages,
         specialties: u.specialties,
         tuitionFrom: u.tuitionFrom,
+        tuitionCurrency: u.tuitionCurrency,
         ieltsRequired: u.ieltsRequired,
         hasGrant: u.hasGrant,
         hasDormitory: u.hasDormitory,
@@ -90,20 +93,17 @@ export function buildCatalog(universities: University[], countries: EducationCou
 
 // ---- Форматтеры, общие для каталога/сравнения/подбора ----
 
-export function formatTuitionAmount(amount: number): string {
+export function formatTuitionAmount(amount: number, currency = "USD"): string {
   if (amount <= 0) return "бесплатно";
-  return `$${amount.toLocaleString("ru-RU")}`;
+  return formatCurrency(amount, currency);
 }
 
-export function formatTuition(amount: number): string {
+export function formatTuition(amount: number, currency = "USD"): string {
   if (amount <= 0) return "бесплатно";
-  return `${formatTuitionAmount(amount)} / год`;
+  return `${formatTuitionAmount(amount, currency)} / год`;
 }
 
-// Ставка условная (тенге за доллар) — только для ориентировочной рассрочки в UI.
-const KZT_RATE = 490;
-
-export function formatMonthlyInstallment(tuitionFromUsd: number): string {
-  const monthly = Math.round((tuitionFromUsd * KZT_RATE) / 12 / 1000);
-  return `от ${monthly} 000 ₸ / мес`;
+export function formatMonthlyInstallment(tuitionFrom: number, currency = "USD"): string {
+  if (tuitionFrom <= 0) return "Уточняется";
+  return `≈ ${formatCurrency(tuitionFrom / 12, currency)} / мес`;
 }

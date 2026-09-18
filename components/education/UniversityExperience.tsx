@@ -12,6 +12,7 @@ import type { EducationCountry, University, UniversityCatalog, UniversityCatalog
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { createLead } from "@/lib/actions";
 import { waUrl } from "@/lib/utils";
+import { formatCurrency } from "@/lib/currency";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 type Props = { university: University; catalog: UniversityCatalog; country: EducationCountry | null; related: University[] };
@@ -25,7 +26,7 @@ function text(value: unknown) { return typeof value === "string" && value.trim()
 function positive(value: unknown) { const number = Number(value); return Number.isFinite(number) && number > 0 ? number : null; }
 function money(value: unknown, currency = "USD") {
   const amount = positive(value); if (!amount) return "";
-  return new Intl.NumberFormat("ru-RU", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
+  return formatCurrency(amount, currency);
 }
 function dateLabel(value: unknown) {
   const raw = text(value); if (!raw) return "";
@@ -165,10 +166,10 @@ function Admission({ university, catalog }: { university: University; catalog: U
 function Tuition({ university, catalog }: { university: University; catalog: UniversityCatalog }) {
   const costs = catalog.costs.filter((item) => positive(item.amount)); const tuitionCosts = costs.filter((item) => /tuition|обуч/i.test(`${item.category} ${item.title}`)); const extra = costs.filter((item) => !tuitionCosts.includes(item));
   const tuitionFallback = positive(university.tuitionFrom); const extras = [...extra];
-  if (positive(university.dormitoryCost) && !extras.some((item) => /dorm|общеж/i.test(text(item.title)))) extras.push({ id: "dorm", title: "Общежитие", amount: university.dormitoryCost, currency: "USD" });
-  if (positive(university.applicationFee)) extras.push({ id: "application", title: "Application fee", amount: university.applicationFee, currency: "USD" });
-  if (positive(university.medicalInsuranceCost)) extras.push({ id: "insurance", title: "Медицинская страховка", amount: university.medicalInsuranceCost, currency: "USD" });
-  return <Section id="cost"><div className="overflow-hidden rounded-[24px] border border-blue-100 bg-gradient-to-br from-[#eaf2ff] via-[#f4f8ff] to-white text-ze-ink shadow-[0_16px_40px_rgba(50,85,173,.08)]"><div className="p-6 sm:p-9"><SectionTitle eyebrow="Финансы" title="Стоимость обучения" description="Актуальные платежи из каталога университета." /><div className="grid gap-3 sm:grid-cols-2">{tuitionCosts.length ? tuitionCosts.map((item) => <CostRow key={item.id} item={item} />) : <div className="rounded-2xl border border-blue-100 bg-white/80 p-5"><div className="text-sm text-slate-500">Обучение</div><div className="mt-2 text-2xl font-extrabold text-ze-primary">{tuitionFallback ? `от ${money(tuitionFallback)}` : "Стоимость уточняется"}<span className="text-sm font-medium text-slate-500"> / год</span></div></div>}</div>{extras.length > 0 && <><div className="my-7 h-px bg-blue-100" /><h3 className="mb-4 font-bold">Дополнительные расходы</h3><div className="grid gap-3 sm:grid-cols-2">{extras.map((item) => <CostRow key={item.id} item={item} compact />)}</div></>}</div></div></Section>;
+  if (positive(university.dormitoryCost) && !extras.some((item) => /dorm|общеж/i.test(text(item.title)))) extras.push({ id: "dorm", title: "Общежитие", amount: university.dormitoryCost, currency: university.dormitoryCurrency });
+  if (positive(university.applicationFee)) extras.push({ id: "application", title: "Application fee", amount: university.applicationFee, currency: university.applicationFeeCurrency });
+  if (positive(university.medicalInsuranceCost)) extras.push({ id: "insurance", title: "Медицинская страховка", amount: university.medicalInsuranceCost, currency: university.medicalInsuranceCurrency });
+  return <Section id="cost"><div className="overflow-hidden rounded-[24px] border border-blue-100 bg-gradient-to-br from-[#eaf2ff] via-[#f4f8ff] to-white text-ze-ink shadow-[0_16px_40px_rgba(50,85,173,.08)]"><div className="p-6 sm:p-9"><SectionTitle eyebrow="Финансы" title="Стоимость обучения" description="Актуальные платежи из каталога университета." /><div className="grid gap-3 sm:grid-cols-2">{tuitionCosts.length ? tuitionCosts.map((item) => <CostRow key={item.id} item={item} />) : <div className="rounded-2xl border border-blue-100 bg-white/80 p-5"><div className="text-sm text-slate-500">Обучение</div><div className="mt-2 text-2xl font-extrabold text-ze-primary">{tuitionFallback ? `от ${money(tuitionFallback, university.tuitionCurrency)}` : "Стоимость уточняется"}<span className="text-sm font-medium text-slate-500"> / год</span></div></div>}</div>{extras.length > 0 && <><div className="my-7 h-px bg-blue-100" /><h3 className="mb-4 font-bold">Дополнительные расходы</h3><div className="grid gap-3 sm:grid-cols-2">{extras.map((item) => <CostRow key={item.id} item={item} compact />)}</div></>}</div></div></Section>;
 }
 function CostRow({ item, compact = false }: { item: UniversityCatalogItem; compact?: boolean }) { return <div className="rounded-2xl border border-blue-100 bg-white/80 p-5"><div className="text-sm text-slate-500">{text(item.title) || text(item.category)}</div><div className={`mt-2 font-extrabold text-ze-primary ${compact ? "text-lg" : "text-2xl"}`}>{money(item.amount, text(item.currency) || "USD")}{text(item.period) && <span className="text-sm font-medium text-slate-500"> / {text(item.period)}</span>}</div></div>; }
 
@@ -176,7 +177,7 @@ function Scholarships({ items }: { items: UniversityCatalogItem[] }) { return <S
 
 function Campus({ university }: { university: University }) {
   const campus = Array.from(new Set([university.imageUrl, ...(university.galleryImages ?? [])].filter(Boolean))); const dorms = (university.dormitoryImages ?? []).filter(Boolean); const images = [...campus, ...dorms]; const [open, setOpen] = useState<number | null>(null);
-  return <Section id="campus"><SectionTitle eyebrow="Среда" title="Кампус и проживание" description={university.hasDormitory ? "Учебные пространства и варианты проживания студентов." : undefined} />{images.length > 0 ? <><div className="grid h-[420px] grid-cols-2 gap-2 overflow-hidden rounded-[24px] sm:grid-cols-3"><button onClick={() => setOpen(0)} className="relative col-span-2 row-span-2 overflow-hidden sm:col-span-2"><SafeImage src={images[0]} alt={`Кампус ${university.name}`} /><span className="absolute bottom-4 left-4 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">Кампус</span></button>{images.slice(1, 3).map((src, index) => <button key={src} onClick={() => setOpen(index + 1)} className="relative hidden overflow-hidden sm:block"><SafeImage src={src} alt={`${university.name}, фото ${index + 2}`} /><span className="absolute bottom-3 left-3 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">{index + 1 < campus.length ? "Кампус" : "Общежитие"}</span>{index === 1 && images.length > 3 && <span className="absolute inset-0 flex items-center justify-center bg-slate-950/35 text-lg font-bold text-white">+{images.length - 3} фото</span>}</button>)}</div>{open !== null && <ImageLightbox images={images} index={open} onIndex={setOpen} onClose={() => setOpen(null)} alt={`Кампус ${university.name}`} />}</> : <div className="rounded-2xl bg-slate-100 p-10 text-center text-slate-500">Фотографии скоро появятся.</div>}<div className="mt-5 flex flex-wrap gap-3">{university.hasDormitory && <InfoPill icon={BedDouble} text="Общежитие доступно" />}{positive(university.dormitoryCost) && <InfoPill icon={CircleDollarSign} text={`от ${money(university.dormitoryCost)} / мес.`} />}</div></Section>;
+  return <Section id="campus"><SectionTitle eyebrow="Среда" title="Кампус и проживание" description={university.hasDormitory ? "Учебные пространства и варианты проживания студентов." : undefined} />{images.length > 0 ? <><div className="grid h-[420px] grid-cols-2 gap-2 overflow-hidden rounded-[24px] sm:grid-cols-3"><button onClick={() => setOpen(0)} className="relative col-span-2 row-span-2 overflow-hidden sm:col-span-2"><SafeImage src={images[0]} alt={`Кампус ${university.name}`} /><span className="absolute bottom-4 left-4 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">Кампус</span></button>{images.slice(1, 3).map((src, index) => <button key={src} onClick={() => setOpen(index + 1)} className="relative hidden overflow-hidden sm:block"><SafeImage src={src} alt={`${university.name}, фото ${index + 2}`} /><span className="absolute bottom-3 left-3 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">{index + 1 < campus.length ? "Кампус" : "Общежитие"}</span>{index === 1 && images.length > 3 && <span className="absolute inset-0 flex items-center justify-center bg-slate-950/35 text-lg font-bold text-white">+{images.length - 3} фото</span>}</button>)}</div>{open !== null && <ImageLightbox images={images} index={open} onIndex={setOpen} onClose={() => setOpen(null)} alt={`Кампус ${university.name}`} />}</> : <div className="rounded-2xl bg-slate-100 p-10 text-center text-slate-500">Фотографии скоро появятся.</div>}<div className="mt-5 flex flex-wrap gap-3">{university.hasDormitory && <InfoPill icon={BedDouble} text="Общежитие доступно" />}{positive(university.dormitoryCost) && <InfoPill icon={CircleDollarSign} text={`от ${money(university.dormitoryCost, university.dormitoryCurrency)} / мес.`} />}</div></Section>;
 }
 
 function UniversityMedia({ university }: { university: University }) { const videos = [university.youtubeUrl, university.virtualTourUrl].filter(Boolean); return <section className="mt-8"><div className="mb-4 flex items-end justify-between"><div><div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Материалы</div><h2 className="mt-1 text-xl font-extrabold">Видео и документы</h2></div></div><div className={`grid gap-4 ${videos.length && university.presentationUrl ? "lg:grid-cols-[1.4fr_.6fr]" : ""}`}>{videos.length > 0 && <VideoCard url={videos[0]} title={`Обзор ${university.name}`} imageUrl={university.imageUrl} />}{university.presentationUrl && <div className="flex min-h-[260px] flex-col justify-between overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5"><div className="relative mx-auto w-[118px] rounded-lg border border-blue-100 bg-white p-3 shadow-[0_5px_14px_rgba(50,85,173,.08)]"><div className="flex items-center justify-between"><FileText className="h-5 w-5 text-ze-primary" /><span className="rounded bg-red-50 px-1.5 py-0.5 text-[8px] font-extrabold text-red-600">PDF</span></div><div className="mt-4 h-2 w-3/4 rounded bg-blue-100" /><div className="mt-2 h-1.5 rounded bg-slate-100" /><div className="mt-1.5 h-1.5 w-5/6 rounded bg-slate-100" /><div className="mt-4 h-10 rounded bg-gradient-to-br from-blue-50 to-blue-100" /></div><div className="mt-5 text-center"><span className="block text-xs font-bold uppercase tracking-wider text-ze-primary">Связанный документ · PDF</span><span className="mt-2 block text-lg font-extrabold text-ze-ink">Презентация университета</span>{university.presentationPages && <span className="mt-1 block text-sm text-ze-muted">{university.presentationPages} страниц</span>}<a href={university.presentationUrl} target="_blank" rel="noreferrer" className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-ze-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-ze-primary-dark">Посмотреть документ <ExternalLink className="h-4 w-4" /></a></div></div>}</div>{videos.length > 1 && <div className="mt-3"><VideoCard url={videos[1]} title="Виртуальный тур" imageUrl={university.imageUrl} /></div>}</section>; }
@@ -184,12 +185,113 @@ function VideoCard({ url, title, imageUrl }: { url: string; title: string; image
 
 function Location({ university, country }: { university: University; country: EducationCountry | null }) { return <section className="scroll-mt-24"><SectionTitle eyebrow="Локация" title="Город и расположение" /><div className="flex flex-col justify-between gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center"><div><div className="flex items-center gap-2 text-xl font-extrabold"><MapPin className="h-5 w-5 text-ze-primary" />{university.city}{country?.name ? `, ${country.name}` : ""}</div>{university.address && <p className="mt-2 text-sm text-slate-500">{university.address}</p>}</div>{university.googleMapsUrl && <a href={university.googleMapsUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-ze-primary">Открыть на карте <ExternalLink className="h-4 w-4" /></a>}</div></section>; }
 
-function ApplicationCard({ university }: { university: University }) { return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,.08)]"><div className="text-sm font-bold">{university.name}</div><div className="mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Обучение</div><div className="mt-1 text-2xl font-extrabold">{positive(university.tuitionFrom) ? `от ${money(university.tuitionFrom)}` : "Уточняется"}<span className="text-sm font-medium text-slate-400"> / год</span></div><div className="mt-5 space-y-2.5 text-sm text-slate-600">{university.deadlineLabel && <div className="flex gap-2"><CalendarDays className="h-4 w-4 text-ze-primary" />{university.deadlineLabel}</div>}{university.hasGrant && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Доступны гранты</div>}{university.hasDormitory && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Есть общежитие</div>}</div><ApplyButton university={university} className="mt-6 w-full" /><a href={waUrl(`Здравствуйте! Хочу узнать про поступление в ${university.name}.`)} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm font-bold text-emerald-700">Спросить менеджера</a></div>; }
+function ApplicationCard({ university }: { university: University }) { return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,.08)]"><div className="text-sm font-bold">{university.name}</div><div className="mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Обучение</div><div className="mt-1 text-2xl font-extrabold">{positive(university.tuitionFrom) ? `от ${money(university.tuitionFrom, university.tuitionCurrency)}` : "Уточняется"}<span className="text-sm font-medium text-slate-400"> / год</span></div><div className="mt-5 space-y-2.5 text-sm text-slate-600">{university.deadlineLabel && <div className="flex gap-2"><CalendarDays className="h-4 w-4 text-ze-primary" />{university.deadlineLabel}</div>}{university.hasGrant && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Доступны гранты</div>}{university.hasDormitory && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Есть общежитие</div>}</div><ApplyButton university={university} className="mt-6 w-full" /><a href={waUrl(`Здравствуйте! Хочу узнать про поступление в ${university.name}.`)} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm font-bold text-emerald-700">Спросить менеджера</a></div>; }
 
 function ApplyButton({ university, className = "" }: { university: University; className?: string }) { const [open, setOpen] = useState(false); return <><button onClick={() => setOpen(true)} className={`items-center justify-center rounded-xl bg-ze-primary px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(26,86,219,.2)] transition hover:bg-ze-primary-dark ${className}`}>Хочу поступить</button>{open && <ApplicationModal university={university} onClose={() => setOpen(false)} />}</>; }
-function ApplicationModal({ university, onClose }: { university: University; onClose: () => void }) { const [name, setName] = useState(""); const [phone, setPhone] = useState(""); const [error, setError] = useState(""); const [done, setDone] = useState(false); const [pending, startTransition] = useTransition(); function submit(event: React.FormEvent) { event.preventDefault(); startTransition(async () => { const result = await createLead({ source: "form", service: "education", name, phone, message: `Заявка на поступление: ${university.name}` }); if (!result.success) setError(result.error || "Не удалось отправить заявку"); else setDone(true); }); } return <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onMouseDown={onClose}><div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" onMouseDown={(event) => event.stopPropagation()}><button onClick={onClose} className="ml-auto block"><X className="h-5 w-5" /></button>{done ? <div className="py-8 text-center"><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"><Check className="h-7 w-7" /></div><h2 className="mt-4 text-xl font-extrabold">Заявка принята</h2><p className="mt-2 text-sm text-slate-500">Менеджер ZagranEasy свяжется с вами.</p></div> : <form onSubmit={submit}><h2 className="text-2xl font-extrabold">Поступить в {university.name}</h2><p className="mt-2 text-sm leading-5 text-slate-500">Оставьте контакты — расскажем об условиях и оценим шансы.</p><div className="mt-6 space-y-3"><input required value={name} onChange={(event) => setName(event.target.value)} placeholder="Ваше имя" className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-ze-primary" /><input required type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+7 700 000 00 00" className="w-full rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-ze-primary" /><button disabled={pending} className="w-full rounded-xl bg-ze-primary py-3.5 font-bold text-white disabled:opacity-60">{pending ? "Отправляем…" : "Отправить заявку"}</button>{error && <p className="text-sm text-red-600">{error}</p>}</div></form>}</div></div>; }
+function ApplicationModal({ university, onClose }: { university: University; onClose: () => void }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  const [pending, startTransition] = useTransition();
 
-function Related({ universities, country }: { universities: University[]; country: EducationCountry | null }) { return <section className="border-t border-slate-200 bg-white py-14"><div className="mx-auto max-w-[1240px] px-4 sm:px-8 lg:px-10"><SectionTitle eyebrow="Другие варианты" title="Похожие университеты" /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{universities.map((item) => <Link href={`/education/${item.slug}`} key={item.id} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white"><div className="relative aspect-[16/9] overflow-hidden bg-slate-100"><SafeImage src={item.imageUrl} alt={item.name} /><span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold">{country?.flag} {item.city}</span></div><div className="p-5"><h3 className="text-lg font-extrabold group-hover:text-ze-primary">{item.name}</h3><div className="mt-3 flex items-center justify-between text-sm text-slate-500"><span>{positive(item.tuitionFrom) ? `от ${money(item.tuitionFrom)} / год` : "Стоимость уточняется"}</span><ArrowRight className="h-4 w-4" /></div></div></Link>)}</div></div></section>; }
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    startTransition(async () => {
+      const result = await createLead({
+        source: "form",
+        service: "education",
+        name,
+        phone,
+        message: `Заявка на поступление: ${university.name}`,
+      });
+      if (!result.success) setError(result.error || "Не удалось отправить заявку");
+      else setDone(true);
+    });
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Поступить в ${university.name}`}
+      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-slate-950/50 pt-4 backdrop-blur-sm sm:items-center sm:p-4"
+      onMouseDown={onClose}
+    >
+      <div
+        className="max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl bg-white px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl sm:p-6"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="ml-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+          aria-label="Закрыть"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        {done ? (
+          <div className="py-8 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <Check className="h-7 w-7" />
+            </div>
+            <h2 className="mt-4 text-xl font-extrabold">Заявка принята</h2>
+            <p className="mt-2 text-sm text-slate-500">Менеджер ZagranEasy свяжется с вами.</p>
+          </div>
+        ) : (
+          <form onSubmit={submit}>
+            <h2 className="text-2xl font-extrabold leading-tight">Поступить в {university.name}</h2>
+            <p className="mt-2 text-sm leading-5 text-slate-500">
+              Оставьте контакты — расскажем об условиях и оценим шансы.
+            </p>
+            <div className="mt-5 space-y-3 sm:mt-6">
+              <input
+                required
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Ваше имя"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-ze-primary"
+              />
+              <input
+                required
+                type="tel"
+                inputMode="tel"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                placeholder="+7 700 000 00 00"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-ze-primary"
+              />
+              <button
+                type="submit"
+                disabled={pending}
+                className="w-full rounded-xl bg-ze-primary py-3.5 font-bold text-white disabled:opacity-60"
+              >
+                {pending ? "Отправляем…" : "Отправить заявку"}
+              </button>
+              {error && <p className="text-sm text-red-600">{error}</p>}
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Related({ universities, country }: { universities: University[]; country: EducationCountry | null }) { return <section className="border-t border-slate-200 bg-white py-14"><div className="mx-auto max-w-[1240px] px-4 sm:px-8 lg:px-10"><SectionTitle eyebrow="Другие варианты" title="Похожие университеты" /><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{universities.map((item) => <Link href={`/education/${item.slug}`} key={item.id} className="group overflow-hidden rounded-2xl border border-slate-200 bg-white"><div className="relative aspect-[16/9] overflow-hidden bg-slate-100"><SafeImage src={item.imageUrl} alt={item.name} /><span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold">{country?.flag} {item.city}</span></div><div className="p-5"><h3 className="text-lg font-extrabold group-hover:text-ze-primary">{item.name}</h3><div className="mt-3 flex items-center justify-between text-sm text-slate-500"><span>{positive(item.tuitionFrom) ? `от ${money(item.tuitionFrom, item.tuitionCurrency)} / год` : "Стоимость уточняется"}</span><ArrowRight className="h-4 w-4" /></div></div></Link>)}</div></div></section>; }
 
 function SafeImage({ src, alt, priority = false, contain = false }: { src?: string | null; alt: string; priority?: boolean; contain?: boolean }) { const [failed, setFailed] = useState(false); if (!src || failed) return <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#e8eefc,#dbe7ff)] text-ze-primary"><Building2 className="h-12 w-12 opacity-30" /></div>; return <Image src={src} alt={alt} fill sizes="(max-width: 768px) 100vw, 1200px" priority={priority} className={contain ? "object-contain p-3" : "object-cover"} onError={() => setFailed(true)} unoptimized />; }
 function Badge({ children }: { children: React.ReactNode }) { return <span className="flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm backdrop-blur">{children}</span>; }

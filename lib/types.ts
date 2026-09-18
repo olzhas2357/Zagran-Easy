@@ -59,12 +59,16 @@ export interface University {
   specialties: string[]; // специальности: "IT", "Инженерия", "Медицина"... (фильтр каталога)
   tuitionFrom: number;
   tuitionTo: number;
+  tuitionCurrency: string;
   hasGrant: boolean;
   grantDetails: string;
   hasDormitory: boolean;
   dormitoryCost: number;
+  dormitoryCurrency: string;
   applicationFee: number | null;
+  applicationFeeCurrency: string;
   medicalInsuranceCost: number | null;
+  medicalInsuranceCurrency: string;
   requirements: string[];
   description: string;
   imageUrl: string;

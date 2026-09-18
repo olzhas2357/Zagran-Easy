@@ -53,12 +53,12 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
       <div className="rounded-[18px] border border-ze-border bg-white p-4.5 shadow-[0_6px_24px_rgba(15,23,42,0.07)]">
         <div className="text-[12px] font-semibold text-ze-muted">Стоимость обучения</div>
         <div className="mt-1 text-[28px] font-extrabold tracking-tight">
-          {formatTuitionAmount(university.tuitionFrom)}
+          {formatTuitionAmount(university.tuitionFrom, university.tuitionCurrency)}
           {university.tuitionFrom > 0 && <span className="text-[14px] font-semibold text-ze-muted"> / год</span>}
         </div>
         {/* {university.tuitionFrom > 0 && (
           <div className="mt-3 flex items-center gap-2 rounded-[11px] bg-[#F5F8FE] px-3 py-2.5 text-[13px] text-slate-700">
-            <span className="font-extrabold text-ze-primary">0·0·12</span> рассрочка {formatMonthlyInstallment(university.tuitionFrom)}
+            <span className="font-extrabold text-ze-primary">0·0·12</span> рассрочка {formatMonthlyInstallment(university.tuitionFrom, university.tuitionCurrency)}
           </div>
         )} */}
         <div className="mt-3.5 flex flex-col gap-2">
@@ -122,7 +122,7 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
         <div className="mt-4 flex flex-col gap-2.5 border-t border-[#F1F4F9] pt-3.5">
           <Fact k="Язык обучения" v={university.languages.join(", ")} />
           <Fact k="IELTS" v={university.ieltsRequired ? "Требуется 6.0" : "Не требуется"} />
-          <Fact k="Общежитие" v={university.hasDormitory ? `Есть, от $${university.dormitoryCost}/мес` : "Нет, помогаем с арендой"} />
+          <Fact k="Общежитие" v={university.hasDormitory ? `Есть, от ${formatTuitionAmount(university.dormitoryCost, university.dormitoryCurrency)}/мес` : "Нет, помогаем с арендой"} />
           <Fact k="Грант" v={university.hasGrant ? university.grantDetails || "Есть" : "Не предусмотрен"} />
         </div>
       </div>

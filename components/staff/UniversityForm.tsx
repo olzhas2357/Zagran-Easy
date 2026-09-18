@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { X } from "lucide-react";
 import type { EducationCountry, University, UniversityProgram, AdmissionStory } from "@/lib/types";
 import { createUniversity, updateUniversity } from "@/lib/staff-actions";
+import { CURRENCY_OPTIONS } from "@/lib/currency";
 import { ImageListUploader, SingleFileUploader } from "@/components/staff/MediaUploader";
 
 const CYRILLIC_TO_LATIN: Record<string, string> = {
@@ -45,6 +46,48 @@ function Field({ label, children, hint }: { label: string; children: React.React
       {children}
       {hint && <div className="mt-1 text-[12px] text-slate-400">{hint}</div>}
     </label>
+  );
+}
+
+function MoneyField({
+  label,
+  value,
+  onChange,
+  currency,
+  onCurrencyChange,
+  period,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  currency: string;
+  onCurrencyChange: (currency: string) => void;
+  period?: string;
+}) {
+  return (
+    <Field label={label} hint={period ? `Период: ${period}` : undefined}>
+      <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-2">
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          inputMode="decimal"
+          placeholder="Сумма"
+          className={inputClass}
+        />
+        <select
+          value={currency}
+          onChange={(event) => onCurrencyChange(event.target.value)}
+          className={inputClass}
+          aria-label={`Валюта: ${label}`}
+        >
+          {CURRENCY_OPTIONS.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.code}
+            </option>
+          ))}
+        </select>
+      </div>
+    </Field>
   );
 }
 
@@ -102,14 +145,18 @@ export function UniversityForm({ countries, university }: { countries: Education
 
   const [tuitionFrom, setTuitionFrom] = useState(university ? String(university.tuitionFrom) : "");
   const [tuitionTo, setTuitionTo] = useState(university ? String(university.tuitionTo) : "");
+  const [tuitionCurrency, setTuitionCurrency] = useState(university?.tuitionCurrency ?? "USD");
   const [hasGrant, setHasGrant] = useState(university?.hasGrant ?? false);
   const [grantDetails, setGrantDetails] = useState(university?.grantDetails ?? "");
   const [hasDormitory, setHasDormitory] = useState(university?.hasDormitory ?? false);
   const [dormitoryCost, setDormitoryCost] = useState(university ? String(university.dormitoryCost) : "");
+  const [dormitoryCurrency, setDormitoryCurrency] = useState(university?.dormitoryCurrency ?? "USD");
   const [applicationFee, setApplicationFee] = useState(university?.applicationFee != null ? String(university.applicationFee) : "");
+  const [applicationFeeCurrency, setApplicationFeeCurrency] = useState(university?.applicationFeeCurrency ?? "USD");
   const [medicalInsuranceCost, setMedicalInsuranceCost] = useState(
     university?.medicalInsuranceCost != null ? String(university.medicalInsuranceCost) : ""
   );
+  const [medicalInsuranceCurrency, setMedicalInsuranceCurrency] = useState(university?.medicalInsuranceCurrency ?? "USD");
 
   const [requirements, setRequirements] = useState<string[]>(university?.requirements ?? []);
   const [ieltsRequired, setIeltsRequired] = useState(university?.ieltsRequired ?? false);
@@ -171,12 +218,16 @@ export function UniversityForm({ countries, university }: { countries: Education
       specialties,
       tuitionFrom: numOr0(tuitionFrom),
       tuitionTo: numOr0(tuitionTo),
+      tuitionCurrency,
       hasGrant,
       grantDetails,
       hasDormitory,
       dormitoryCost: numOr0(dormitoryCost),
+      dormitoryCurrency,
       applicationFee: numOrNull(applicationFee),
+      applicationFeeCurrency,
       medicalInsuranceCost: numOrNull(medicalInsuranceCost),
+      medicalInsuranceCurrency,
       requirements,
       description,
       imageUrl: imageUrl ?? "",
@@ -283,12 +334,8 @@ export function UniversityForm({ countries, university }: { countries: Education
       </Section>
 
       <Section title="Дополнительные расходы и контакты">
-        <Field label="Application fee, $">
-          <input value={applicationFee} onChange={(e) => setApplicationFee(e.target.value)} inputMode="decimal" className={inputClass} />
-        </Field>
-        <Field label="Медицинская страховка, $">
-          <input value={medicalInsuranceCost} onChange={(e) => setMedicalInsuranceCost(e.target.value)} inputMode="decimal" className={inputClass} />
-        </Field>
+        <MoneyField label="Application fee" value={applicationFee} onChange={setApplicationFee} currency={applicationFeeCurrency} onCurrencyChange={setApplicationFeeCurrency} period="единоразово" />
+        <MoneyField label="Медицинская страховка" value={medicalInsuranceCost} onChange={setMedicalInsuranceCost} currency={medicalInsuranceCurrency} onCurrencyChange={setMedicalInsuranceCurrency} period="по условиям университета" />
         <Field label="Контактный email">
           <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="admissions@example.edu" className={inputClass} />
         </Field>
@@ -303,12 +350,8 @@ export function UniversityForm({ countries, university }: { countries: Education
       </Section>
 
       <Section title="Стоимость и условия">
-        <Field label="Цена от, $/год">
-          <input value={tuitionFrom} onChange={(e) => setTuitionFrom(e.target.value)} inputMode="decimal" className={inputClass} />
-        </Field>
-        <Field label="Цена до, $/год">
-          <input value={tuitionTo} onChange={(e) => setTuitionTo(e.target.value)} inputMode="decimal" className={inputClass} />
-        </Field>
+        <MoneyField label="Цена от" value={tuitionFrom} onChange={setTuitionFrom} currency={tuitionCurrency} onCurrencyChange={setTuitionCurrency} period="год" />
+        <MoneyField label="Цена до" value={tuitionTo} onChange={setTuitionTo} currency={tuitionCurrency} onCurrencyChange={setTuitionCurrency} period="год" />
         <label className="flex items-center gap-2 text-[13.5px] font-semibold">
           <input type="checkbox" checked={hasGrant} onChange={(e) => setHasGrant(e.target.checked)} className="h-4 w-4" />
           Есть грант
@@ -323,9 +366,7 @@ export function UniversityForm({ countries, university }: { countries: Education
           Есть общежитие
         </label>
         {hasDormitory && (
-          <Field label="Стоимость общежития, $/мес">
-            <input value={dormitoryCost} onChange={(e) => setDormitoryCost(e.target.value)} inputMode="decimal" className={inputClass} />
-          </Field>
+          <MoneyField label="Стоимость общежития" value={dormitoryCost} onChange={setDormitoryCost} currency={dormitoryCurrency} onCurrencyChange={setDormitoryCurrency} period="месяц" />
         )}
       </Section>
 
