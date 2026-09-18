@@ -30,6 +30,8 @@ export default async function StaffDashboardPage() {
       <Stat label="Нужно проверить" value={stale} icon={CircleAlert} color="amber" href="/staff/universities" />
     </section>
     
+            <section className="mt-9"><SectionHeading eyebrow="Инструменты" title="Быстрые действия" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"><QuickLink href="/staff/tasks" icon={ListTodo} title="Задачи" text="Планы и следующие действия" /><QuickLink href="/staff/clients" icon={UsersRound} title="Клиенты" text="Карточки и история работы" /><QuickLink href="/staff/schedule" icon={CalendarDays} title="Расписание" text="Занятия и встречи" /><QuickLink href="/staff/knowledge" icon={BookOpen} title="База знаний" text="Инструкции менеджера" /><QuickLink href="/staff/materials" icon={FolderOpen} title="Материалы" text="Файлы, ссылки и презентации" /></div></section>
+
     <section className="mt-9"><SectionHeading eyebrow="Продукты" title="Услуги ZagranEasy" description="Карточки-подсказки для консультации: что предлагаем клиенту и что входит в сопровождение." />
           
       <StudentJourney />
@@ -48,7 +50,6 @@ export default async function StaffDashboardPage() {
 
     <section className="mt-9 rounded-[24px] border border-ze-border bg-white p-5 shadow-[0_10px_35px_rgba(15,23,42,.05)] sm:p-6"><div className="flex items-center justify-between gap-3"><div><div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Продажи</div><h2 className="mt-1 text-xl font-extrabold">Последние заявки</h2></div><Link href="/staff/leads" className="flex items-center gap-1.5 text-sm font-bold text-ze-primary">Все заявки <ArrowRight className="h-4 w-4" /></Link></div><div className="mt-5 grid gap-x-8 md:grid-cols-2">{recentLeads.length ? recentLeads.map((lead) => <LeadRow key={lead.id} lead={lead} />) : <div className="py-10 text-center text-sm text-ze-muted">Новых заявок пока нет.</div>}</div></section>
 
-    <section className="mt-9"><SectionHeading eyebrow="Инструменты" title="Быстрые действия" /><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"><QuickLink href="/staff/tasks" icon={ListTodo} title="Задачи" text="Планы и следующие действия" /><QuickLink href="/staff/clients" icon={UsersRound} title="Клиенты" text="Карточки и история работы" /><QuickLink href="/staff/schedule" icon={CalendarDays} title="Расписание" text="Занятия и встречи" /><QuickLink href="/staff/knowledge" icon={BookOpen} title="База знаний" text="Инструкции менеджера" /><QuickLink href="/staff/materials" icon={FolderOpen} title="Материалы" text="Файлы, ссылки и презентации" /></div></section>
   </div>;
 }
 
