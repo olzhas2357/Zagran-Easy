@@ -39,7 +39,7 @@ export default async function LanguagePage() {
       <Problems />
       <MotivationMarquee />
       <HowItWorks />
-      {/* <Teachers teachers={teachers} /> */}
+      <Teachers teachers={teachers} />
       <Courses courses={courses}/> 
       <Results />
       <Reviews />

@@ -396,6 +396,8 @@ export interface TeacherProfileInput {
   bio: string;
   specializations: string[];
   imageUrl?: string;
+  experience: string;
+  certificateUrl?: string;
 }
 
 export async function updateTeacherProfile(input: TeacherProfileInput): Promise<{ success: boolean; error?: string }> {
@@ -409,6 +411,8 @@ export async function updateTeacherProfile(input: TeacherProfileInput): Promise<
       bio: input.bio.trim() || undefined,
       specializations: input.specializations,
       image_url: input.imageUrl?.trim() || undefined,
+      experience: input.experience.trim() || undefined,
+      certificate_url: input.certificateUrl?.trim() || undefined,
     },
     token
   );

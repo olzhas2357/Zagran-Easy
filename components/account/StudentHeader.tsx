@@ -4,12 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Video, ClipboardList, CalendarDays } from "lucide-react";
+import { Menu, X, Video, ClipboardList } from "lucide-react";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { waUrl } from "@/lib/utils";
 
 const NAV = [
-  { href: "/account/schedule", label: "Запись на занятия", Icon: CalendarDays },
   { href: "/account/lessons", label: "Мои уроки", Icon: Video },
   { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
 ];

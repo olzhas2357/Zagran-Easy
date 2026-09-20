@@ -45,7 +45,7 @@ export const MEDIA_REEL_ITEMS = [
   { id: "reel-01", type: "photo", label: "Офис ZagranEasy", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1776028171/about_of_us_yhf2hw.png` },
   { id: "reel-02", type: "photo", label: "Команда ZagranEasy", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1776028170/a4te_opwrjk.png` },
   { id: "reel-03", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761880/lololo_iqlygt.jpg` },
-  { id: "reel-04", type: "photo", label: "Студенты ZagranEasy", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1776028171/intro2_qmkezg.png` },
+  { id: "reel-04", type: "photo", label: "Студенты ZagranEasy", src: `${CLOUDINARY}  intro2_qmkezg.png` },
   { id: "reel-05", type: "photo", label: "Момент со студентами", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763274/WhatsApp_Image_2026-04-09_at_14.43.49_mggyrg.jpg` },
   { id: "reel-06", type: "photo", label: "Документы о зачислении", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1775763270/09_e6xfue.jpg` },
   { id: "reel-07", type: "video", label: "Видео-отзыв клиента", src: `${CLOUDINARY}/video/upload/q_auto:eco,f_auto/v1775761868/474645_ny3v6g.jpg` },
@@ -63,7 +63,7 @@ export const MEDIA_REEL_ITEMS = [
 ] as const;
 
 // Только фото (без видео-постеров) — для плотных фото-лент и коллажей,
-// где нужна именно фотография, а не превью видео.
+// где нужна именно фотография,  а не превью видео.
 export const REEL_PHOTOS_ONLY = MEDIA_REEL_ITEMS.filter((i) => i.type === "photo");
 
 // Коллаж плавающих фото в hero — 5 карточек с разной фазой анимации
@@ -71,7 +71,7 @@ export const HERO_COLLAGE = [
   REEL_PHOTOS_ONLY[3],
   REEL_PHOTOS_ONLY[4],
   REEL_PHOTOS_ONLY[6],
-  REEL_PHOTOS_ONLY[8],
+  REEL_PHOTOS_ONLY[8], 
   REEL_PHOTOS_ONLY[1],
 ] as const;
 

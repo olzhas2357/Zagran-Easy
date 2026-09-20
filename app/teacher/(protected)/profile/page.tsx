@@ -37,6 +37,8 @@ export default async function TeacherProfilePage() {
           initialBio={teacher.bio ?? ""}
           initialSpecializations={teacher.specializations}
           initialImageUrl={teacher.imageUrl ?? ""}
+          initialExperience={teacher.experience ?? ""}
+          initialCertificateUrl={teacher.certificateUrl ?? ""}
         />
       </div>
     </div>

@@ -170,6 +170,8 @@ export interface LanguageTeacher {
   tags: string;
   photo: string;
   bio: string;
+  experience: string;
+  certificateUrl: string;
 }
 
 export interface LanguageReview {

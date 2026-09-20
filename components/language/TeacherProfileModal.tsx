@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, BadgeCheck, User } from "lucide-react";
+import { X, BadgeCheck, User, BriefcaseBusiness, Award } from "lucide-react";
 import type { LanguageTeacher } from "@/lib/language-data";
 
 export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTeacher | null; onClose: () => void }) {
@@ -67,6 +67,9 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
           )}
 
           {teacher.bio && <p className="mt-4 text-[14.5px] leading-relaxed text-slate-600 dark:text-white/65">{teacher.bio}</p>}
+
+          {teacher.experience && <div className="mt-4 flex gap-2.5 rounded-xl bg-slate-50 p-3 text-[13.5px] leading-relaxed text-slate-600 dark:bg-white/5 dark:text-white/70"><BriefcaseBusiness className="mt-0.5 h-4 w-4 flex-none text-[#2880DE]" /><div><b className="text-ze-ink dark:text-white">Опыт работы</b><div className="mt-0.5">{teacher.experience}</div></div></div>}
+          {teacher.certificateUrl && <a href={teacher.certificateUrl} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-2 rounded-xl border border-emerald-200 px-3 py-2.5 text-[13.5px] font-semibold text-emerald-700 dark:border-emerald-400/20 dark:text-emerald-300"><Award className="h-4 w-4" />Посмотреть сертификат ↗</a>}
 
           <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:flex-row">
             <a

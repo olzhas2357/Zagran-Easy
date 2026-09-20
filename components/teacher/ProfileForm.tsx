@@ -12,10 +12,14 @@ export function ProfileForm({
   initialBio,
   initialSpecializations,
   initialImageUrl,
+  initialExperience,
+  initialCertificateUrl,
 }: {
   initialBio: string;
   initialSpecializations: string[];
   initialImageUrl?: string;
+  initialExperience: string;
+  initialCertificateUrl?: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +28,8 @@ export function ProfileForm({
   const [bio, setBio] = useState(initialBio);
   const [specText, setSpecText] = useState(initialSpecializations.join(", "));
   const [imageUrl, setImageUrl] = useState(initialImageUrl || "");
+  const [experience, setExperience] = useState(initialExperience);
+  const [certificateUrl, setCertificateUrl] = useState(initialCertificateUrl || "");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,7 +65,7 @@ export function ProfileForm({
       .filter(Boolean);
 
     startTransition(async () => {
-      const res = await updateTeacherProfile({ bio, specializations, imageUrl });
+      const res = await updateTeacherProfile({ bio, specializations, imageUrl, experience, certificateUrl });
       if (!res.success) {
         setError(res.error || "Не удалось сохранить");
         return;
@@ -104,6 +110,16 @@ export function ProfileForm({
       <label className="block">
         <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">Специализации (через запятую)</div>
         <input value={specText} onChange={(e) => setSpecText(e.target.value)} placeholder="ielts, hsk" className={inputClass} />
+      </label>
+
+      <label className="block">
+        <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">Опыт работы</div>
+        <textarea value={experience} onChange={(e) => setExperience(e.target.value)} rows={3} placeholder="Например: 6 лет преподавания, подготовка к IELTS и SAT" className={textareaClass} />
+      </label>
+
+      <label className="block">
+        <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">Ссылка на сертификат</div>
+        <input type="url" value={certificateUrl} onChange={(e) => setCertificateUrl(e.target.value)} placeholder="https://..." className={inputClass} />
       </label>
 
       {error && <div className="rounded-xl bg-red-50 px-3.5 py-3 text-[13.5px] font-medium text-red-600">{error}</div>}

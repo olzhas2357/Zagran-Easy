@@ -315,6 +315,9 @@ export interface TeacherProfile {
   maxStudents: number | null;
   hourlyRate: number | null;
   imageUrl: string | null;
+  experience: string | null;
+  certificateUrl: string | null;
+  isPublished: boolean;
 }
 
 export interface ApplicationStep {

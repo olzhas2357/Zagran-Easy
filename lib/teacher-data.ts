@@ -25,6 +25,9 @@ function mapTeacherRow(row: Record<string, unknown>): TeacherProfile {
     maxStudents: (row.max_students as number) ?? null,
     hourlyRate: (row.hourly_rate as number) ?? null,
     imageUrl: (row.image_url as string) ?? null,
+    experience: (row.experience as string) ?? null,
+    certificateUrl: (row.certificate_url as string) ?? null,
+    isPublished: Boolean(row.is_published),
   };
 }
 
@@ -291,7 +294,7 @@ export async function getTaskBank(): Promise<TaskOption[]> {
 
 export async function getTeacherCourse(courseId: string): Promise<(RealLanguageCourse & { sections: CourseModule[] }) | null> {
   const token = await getToken();
-  const res = await apiGet<Record<string, unknown>>(`/courses/${courseId}`, token);
+  const res = await apiGet<Record<string, unknown>>(`/courses/manage/${courseId}`, token);
   if (res.error || !res.data) return null;
   const sectionsRes = await apiGet<Record<string, unknown>[]>(`/courses/${courseId}/sections`, token);
   return {
@@ -398,9 +401,14 @@ function mapLessonRow(row: Record<string, unknown>): LessonListItem {
 
 export async function getLessons(teacherId: string): Promise<LessonListItem[]> {
   const token = await getToken();
-  const res = await apiGet<Record<string, unknown>[]>(`/scheduled-lessons?teacher_id=${teacherId}`, token);
+  // /my объединяет старые scheduled_lessons и групповые lesson_sessions,
+  // а backend ограничивает результат текущим teacher_id из токена.
+  const res = await apiGet<Record<string, unknown>[]>("/scheduled-lessons/my", token);
   if (res.error || !res.data) return [];
-  return res.data.map(mapLessonRow).sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
+  return res.data
+    .filter((row) => !row.teacher_id || row.teacher_id === teacherId)
+    .map(mapLessonRow)
+    .sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
 }
 
 export async function getLessonsSplit(teacherId: string): Promise<{ upcoming: LessonListItem[]; past: LessonListItem[] }> {

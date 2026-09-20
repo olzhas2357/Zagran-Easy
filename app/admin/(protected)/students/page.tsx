@@ -8,11 +8,17 @@ import { DataTable, type Column } from "@/components/admin/DataTable";
 
 interface StudentRow {
   id: string;
+  teacher_id: string | null;
   current_exam: string | null;
   current_level: string | null;
   target_level: string | null;
   target_country: string | null;
   profiles?: { full_name: string | null; role: string };
+}
+
+interface TeacherRow {
+  id: string;
+  profiles?: { full_name: string | null };
 }
 
 function initials(name: string | null | undefined) {
@@ -27,6 +33,7 @@ export default function AdminStudentsPage() {
   const router = useRouter();
   const { token } = useAuth();
   const [students, setStudents] = useState<StudentRow[]>([]);
+  const [teacherNames, setTeacherNames] = useState<Record<string, string>>({});
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loadedPage, setLoadedPage] = useState<number | null>(null);
@@ -35,10 +42,16 @@ export default function AdminStudentsPage() {
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
-    apiGet<StudentRow[]>(`/students?page=${page}&limit=${LIMIT}`, token).then((res) => {
+    Promise.all([
+      apiGet<StudentRow[]>(`/students?page=${page}&limit=${LIMIT}`, token),
+      apiGet<TeacherRow[]>("/teachers?limit=100", token),
+    ]).then(([res, teachersRes]) => {
       if (cancelled) return;
       setStudents(res.data || []);
       setTotal(res.total ?? 0);
+      setTeacherNames(Object.fromEntries(
+        (teachersRes.data || []).map((teacher) => [teacher.id, teacher.profiles?.full_name || "Без имени"]),
+      ));
       setLoadedPage(page);
     });
     return () => {
@@ -60,6 +73,15 @@ export default function AdminStudentsPage() {
             <div className="truncate text-[12.5px] text-slate-400">{row.current_exam ? row.current_exam.toUpperCase() : "Экзамен не выбран"}</div>
           </div>
         </div>
+      ),
+    },
+    {
+      key: "teacher",
+      title: "Закреплённый преподаватель",
+      render: (row) => row.teacher_id ? (
+        <span className="font-medium text-slate-700">{teacherNames[row.teacher_id] || "Преподаватель"}</span>
+      ) : (
+        <span className="font-semibold text-amber-600">Не назначен</span>
       ),
     },
     {

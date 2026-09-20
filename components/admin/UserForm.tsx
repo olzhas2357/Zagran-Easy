@@ -145,6 +145,7 @@ export function UserForm({ mode = "create", userId }: UserFormProps) {
     if (!fullName.trim()) return setError("Укажите имя");
     if (!isEdit && !email.trim()) return setError("Укажите email");
     if (!isEdit && password.length < 6) return setError("Пароль минимум 6 символов");
+    if (role === "student" && !teacherId) return setError("Закрепите студента за преподавателем");
 
     startTransition(async () => {
       if (isEdit && userId) {
@@ -294,15 +295,18 @@ export function UserForm({ mode = "create", userId }: UserFormProps) {
 
       {role === "student" && (
         <>
-          <Field label="Учитель">
+          <Field label="Закреплённый преподаватель">
             <select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className={inputClass}>
-              <option value="">— не выбран —</option>
+              <option value="">— выберите преподавателя —</option>
               {teachers.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.profiles?.full_name || t.id}
                 </option>
               ))}
             </select>
+            <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-500">
+              Только администратор назначает или меняет преподавателя. Студент не может выбрать его самостоятельно.
+            </p>
           </Field>
           <Field label="Экзамен">
             <select value={examType} onChange={(e) => setExamType(e.target.value)} className={inputClass}>

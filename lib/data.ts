@@ -148,6 +148,8 @@ function mapPublicTeacherRow(row: Record<string, unknown>): LanguageTeacher {
     tags: specializations.join(" · "),
     photo: (row.image_url as string) || "",
     bio: (row.bio as string) || "",
+    experience: (row.experience as string) || "",
+    certificateUrl: (row.certificate_url as string) || "",
   };
 }
 
