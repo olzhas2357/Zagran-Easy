@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, BadgeCheck, User, BriefcaseBusiness, Award } from "lucide-react";
+import { X, BadgeCheck, User, BriefcaseBusiness, Award, Link } from "lucide-react";
 import type { LanguageTeacher } from "@/lib/language-data";
 
 export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTeacher | null; onClose: () => void }) {
@@ -73,11 +73,10 @@ export function TeacherProfileModal({ teacher, onClose }: { teacher: LanguageTea
 
           <div className="mt-auto flex flex-col gap-2.5 pt-6 sm:flex-row">
             <a
-              href="#finder"
-              onClick={onClose}
-              className="flex-1 rounded-2xl bg-gradient-to-r from-[#2880DE] to-[#22D3EE] px-6 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(34,211,238,0.3)] transition-all duration-200 hover:-translate-y-0.5"
-            >
-              Записаться на пробный урок
+                href="/quiz"
+                className="rounded-2xl bg-ze-accent px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_22px_rgba(26,86,219,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-ze-accent-dark hover:shadow-[0_12px_28px_rgba(26,86,219,0.34)]"
+              >
+                Записаться на пробный урок
             </a>
           </div>
         </div>

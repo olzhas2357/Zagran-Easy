@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { waUrl } from "@/lib/utils";
+
+const COURSE_WHATSAPP_URL = waUrl("Здравствуйте! Хочу подобрать языковой курс и записаться на пробный урок.");
 
 const NAV = [
   { label: "Курсы", href: "#courses" },
@@ -45,7 +48,9 @@ export function LanguageHeader() {
             Войти
           </Link>
           <a
-            href="#finder"
+            href={COURSE_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-xl bg-[#2880DE] px-5 py-2.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#2066B2]"
           >
             Подобрать курс →
@@ -90,7 +95,9 @@ export function LanguageHeader() {
               Войти
             </Link>
             <a
-              href="#finder"
+              href={COURSE_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-xl bg-[#2880DE] px-5 py-3.5 text-center text-[15px] font-semibold text-white"
             >

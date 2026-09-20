@@ -17,7 +17,7 @@ export function FinalCTA() {
             </p>
             <div className="relative mt-7 flex flex-wrap justify-center gap-3">
               <a
-                href={waUrl("Здравствуйте! Хочу подобрать языковой курс.")}
+                href={waUrl("Здравствуйте! Хочу подобрать языковой курс и записаться на пробный урок.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-2xl bg-white px-7 py-4 text-[15.5px] font-semibold text-[#2880DE] shadow-[0_0_0_0_rgba(34,211,238,0)] transition-all hover:bg-[#EEF2FB] hover:shadow-[0_0_0_6px_rgba(34,211,238,0.22)]"

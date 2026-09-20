@@ -66,7 +66,9 @@ export function LearningPaths() {
           {/* HSK — spotlighted because it's the primary path */}
           <FadeIn>
             <a
-              href="#finder"
+              href={waUrl(`Здравствуйте! Хочу подобрать курс подготовки к ${hsk.exam} и записаться на пробный урок.`)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[28px] p-7 text-white shadow-[0_20px_50px_rgba(4,12,40,0.45)] transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(139,127,245,0.4)] sm:p-9"
               style={{ background: PATH_STYLE.hsk.gradient }}
             >
