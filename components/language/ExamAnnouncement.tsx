@@ -27,7 +27,21 @@ export function ExamAnnouncement() {
     <section className="bg-[#F5F8FF] py-10 sm:py-14 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <div className="overflow-hidden rounded-[24px] border border-[#CBEAF8] bg-white shadow-[0_12px_40px_rgba(74,157,196,0.12)] dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
+          <div
+                className="
+                    overflow-hidden rounded-[24px]
+                    border border-[#CBEAF8]
+                    bg-[#EAF7FD]
+                    px-5 py-6
+                    text-[#174B63]
+                    shadow-[0_12px_40px_rgba(74,157,196,0.12)]
+                    sm:px-8 sm:py-7
+                    dark:border-white/10
+                    dark:bg-[#18384A]
+                    dark:text-white
+                    dark:shadow-none
+                "
+                >
             <div className="bg-[#EAF7FD] px-5 py-6 text-[#174B63] sm:px-8 sm:py-7 dark:bg-[#18384A] dark:text-white">
               <div className="flex flex-wrap items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4A9DC4] dark:text-[#A8E2F5]">
                 <CalendarDays className="h-4 w-4" />

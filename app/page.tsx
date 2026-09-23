@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   GraduationCap,
   User,
@@ -378,26 +379,42 @@ export default async function HomePage() {
       {/* Рассрочка */}
       <section className="px-4 sm:px-10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl py-5">
-          <div className="relative flex flex-col items-stretch gap-5.5 overflow-hidden rounded-[22px] bg-gradient-to-br from-[#1a56db] to-[#0f3d9e] p-6.5 text-white sm:flex-row sm:items-center sm:gap-8 sm:p-11">
+          <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#1a56db] to-[#0f3d9e] p-6.5 text-white sm:p-8 lg:p-11">
             <div className="pointer-events-none absolute -right-15 -top-15 h-[220px] w-[220px] rounded-full bg-white/8 blur-[2px]" />
             <div className="pointer-events-none absolute -bottom-20 left-10 h-[200px] w-[200px] rounded-full bg-[#66ccff]/12 blur-[70px]" />
-            <div className="relative min-w-0 flex-1">
-              <div className="flex items-center gap-2 text-[40px] font-extrabold leading-none tracking-tight sm:text-[58px]">
-                0<span className="opacity-50">·</span>0<span className="opacity-50">·</span>12
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="text-[13px] font-bold uppercase tracking-[0.14em] text-white/75">Рассрочка на обучение</div>
+                <h2 className="mt-1 text-[24px] font-extrabold tracking-tight sm:text-[30px]">Kaspi рассрочка</h2>
               </div>
-              <div className="mt-3 max-w-[520px] text-[14.5px] leading-relaxed text-white/86 sm:text-[16px]">
-                Рассрочка на обучение: без первоначального взноса, без переплаты, 12 месяцев. Оформление в
-                офисе за 15 минут.
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-[0_8px_20px_rgba(0,0,0,0.14)] sm:h-20 sm:w-20">
+                <Image src="/Logo_of_Kaspi_bank.png" alt="Kaspi.kz" width={80} height={80} className="h-full w-full object-contain" />
               </div>
             </div>
-            <a
-              href={waUrl("Здравствуйте! Хочу узнать условия рассрочки 0-0-12.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative flex-none rounded-2xl bg-white px-6 py-[15px] text-center text-[15.5px] font-bold text-ze-primary shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#EBF1FE]"
-            >
-              Узнать условия
-            </a>
+
+            <div className="relative mt-6 grid gap-4 sm:grid-cols-2">
+              {[
+                { term: "12", message: "Здравствуйте! Хочу узнать условия рассрочки 0-0-12." },
+                { term: "24", message: "Здравствуйте! Хочу узнать условия рассрочки 0-0-24." },
+              ].map((plan) => (
+                <div key={plan.term} className="flex flex-col rounded-2xl bg-white/12 p-5 backdrop-blur-sm sm:p-6">
+                  <div className="flex items-center gap-2 text-[39px] font-extrabold leading-none tracking-tight sm:text-[48px]">
+                    0<span className="opacity-50">·</span>0<span className="opacity-50">·</span>{plan.term}
+                  </div>
+                  <p className="mt-3 max-w-[420px] text-[14px] leading-relaxed text-white/86 sm:text-[15px]">
+                    Без первоначального взноса и переплаты. Оформление в офисе за 15 минут.
+                  </p>
+                  <a
+                    href={waUrl(plan.message)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-[14px] font-bold text-ze-primary shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#EBF1FE]"
+                  >
+                    Узнать условия
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

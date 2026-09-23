@@ -147,7 +147,7 @@ export const LANGUAGE_PATHS: LanguagePath[] = [
     id: "hsk",
     exam: "HSK",
     country: "Китай",
-    title: "Китайский язык и HSK",
+    title: "Китайский язык HSK",
     description: "Подготовка к экзамену HSK для поступления в университеты Китая.",
     goalId: "hsk",
     hasCourse: false,
