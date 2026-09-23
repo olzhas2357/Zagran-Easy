@@ -27,14 +27,14 @@ export function ExamAnnouncement() {
     <section className="bg-[#F5F8FF] py-10 sm:py-14 dark:bg-[#0B132B]">
       <div className="mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <div className="overflow-hidden rounded-[24px] border border-blue-100 bg-white shadow-[0_12px_40px_rgba(30,80,160,0.1)] dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
-            <div className="bg-[#123fa6] px-5 py-6 text-white sm:px-8 sm:py-7">
-              <div className="flex flex-wrap items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#BDEBFF]">
+          <div className="overflow-hidden rounded-[24px] border border-[#CBEAF8] bg-white shadow-[0_12px_40px_rgba(74,157,196,0.12)] dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
+            <div className="bg-[#EAF7FD] px-5 py-6 text-[#174B63] sm:px-8 sm:py-7 dark:bg-[#18384A] dark:text-white">
+              <div className="flex flex-wrap items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4A9DC4] dark:text-[#A8E2F5]">
                 <CalendarDays className="h-4 w-4" />
                 Международный экзамен
               </div>
               <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[34px]">Регистрация на HSK и HSKK</h2>
-              <p className="mt-2 text-[15px] font-semibold text-white/85">Дата экзамена: 16.05.2026</p>
+              <p className="mt-2 text-[15px] font-semibold text-[#427B91] dark:text-white/80">Дата экзамена: 16.05.2026</p>
             </div>
 
             <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -44,7 +44,7 @@ export function ExamAnnouncement() {
                   {EXAM_PRICES.map(([exam, price]) => (
                     <div key={exam} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3.5 py-3 dark:bg-white/[0.06]">
                       <span className="text-[14px] font-semibold text-ze-ink dark:text-white">{exam}</span>
-                      <span className="whitespace-nowrap text-[14px] font-bold text-blue-700 dark:text-[#8FD9F5]">{price}</span>
+                      <span className="whitespace-nowrap text-[14px] font-bold text-[#3D8DAF] dark:text-[#A8E2F5]">{price}</span>
                     </div>
                   ))}
                 </div>
@@ -59,7 +59,7 @@ export function ExamAnnouncement() {
 
               <div className="flex flex-col">
                 <h3 className="flex items-center gap-2 text-[17px] font-extrabold text-ze-ink dark:text-white">
-                  <FileText className="h-5 w-5 text-blue-600 dark:text-[#8FD9F5]" />
+                  <FileText className="h-5 w-5 text-[#4A9DC4] dark:text-[#A8E2F5]" />
                   Для регистрации нужны
                 </h3>
                 <ul className="mt-4 space-y-3">
@@ -72,7 +72,7 @@ export function ExamAnnouncement() {
                 </ul>
 
                 <div className="mt-6 rounded-2xl bg-[#EBF1FE] p-4 dark:bg-white/[0.08]">
-                  <p className="text-[13px] font-bold uppercase tracking-wide text-blue-700 dark:text-[#8FD9F5]">Крайний срок регистрации</p>
+                  <p className="text-[13px] font-bold uppercase tracking-wide text-[#3D8DAF] dark:text-[#A8E2F5]">Крайний срок регистрации</p>
                   <p className="mt-1 text-[18px] font-extrabold text-ze-ink dark:text-white">до 17 апреля</p>
                 </div>
 
