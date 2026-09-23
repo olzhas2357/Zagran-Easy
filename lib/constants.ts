@@ -7,7 +7,7 @@ export const SITE = {
   tagline: "Весь мир — в одном месте",
   description: "Обучение, работа, туры, визы за рубежом. Одна команда решает все вопросы.",
   phone: "+7 747 911 2606",
-  phoneClean: "77479112606",
+  phoneClean: "77470382914",
   email: "ZagranEasy.office@gmail.com",
   instagram: "zagraneasyy",
   instagramUrl: "https://www.instagram.com/zagraneasyy",
