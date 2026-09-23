@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
+import { CorrectAnswer, SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
 import type { MatchingOptions } from "@/lib/task-types";
 
 const selectClass =
@@ -28,7 +28,7 @@ export function MatchingAnswer({
   initialAnswer: string | null;
 }) {
   const { submit, isPending, error, done } = useAnswerSubmit(taskId);
-  const pairs = options.pairs ?? [];
+  const pairs = useMemo(() => options.pairs ?? [], [options.pairs]);
   const rights = useMemo(() => shuffledRights(pairs), [pairs]);
 
   const [selection, setSelection] = useState<Record<string, string>>(() => {
@@ -74,7 +74,8 @@ export function MatchingAnswer({
         ))}
       </div>
 
-      <SubmitStatus error={error} done={done} />
+      <SubmitStatus error={error} done={done} autoChecked />
+      <CorrectAnswer show={done}>{pairs.map((pair) => `${pair.left} → ${pair.right}`).join("; ")}</CorrectAnswer>
       <SubmitButton isPending={isPending} hasInitial={!!initialAnswer} />
     </form>
   );

@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import { Clock, Video, ClipboardList, ChevronRight, MessageCircle, UserRound, Search } from "lucide-react";
 import { getCurrentUser, getMyApplication } from "@/lib/account-data";
 import { fetchAllUniversities } from "@/lib/data";
-import { getMyLessonsSplit, getMyAssignments, getMyGoal, getMyTeacherProfile } from "@/lib/student-data";
+import { getMyLessonsSplit, getMyAssignments, getMyGamification, getMyGoal, getMyTeacherProfile } from "@/lib/student-data";
 import { GoalCard } from "@/components/account/GoalCard";
+import { XpProgressCard } from "@/components/account/XpProgressCard";
 import { waUrl } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Кабинет студента — ZagranEasy" };
@@ -29,6 +30,7 @@ export default async function AccountPage() {
   const completedLessonsCount = pastLessons.length;
   const goal = await getMyGoal();
   const teacher = await getMyTeacherProfile();
+  const gamification = await getMyGamification();
 
   const ASSIGNMENT_ACTIVITY_LABEL: Record<string, string> = {
     completed: "Задание проверено",
@@ -141,6 +143,7 @@ export default async function AccountPage() {
           </div>
 
           <div className="flex flex-col gap-6">
+            {gamification && <XpProgressCard progress={gamification} />}
             <div className="rounded-[18px] border border-ze-border bg-white p-4.5 sm:p-5.5">
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-emerald-50">

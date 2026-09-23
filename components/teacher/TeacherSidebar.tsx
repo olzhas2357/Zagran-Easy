@@ -9,13 +9,13 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const NAV = [
   { href: "/teacher", label: "Главная", Icon: LayoutGrid },
-  { href: "/teacher/students", label: "Мои ученики", Icon: Users },
-  { href: "/teacher/schedule", label: "Моё расписание", Icon: CalendarDays },
   { href: "/teacher/lessons", label: "Уроки", Icon: BookOpen },
+  { href: "/teacher/students", label: "Мои ученики", Icon: Users },
   { href: "/teacher/tasks", label: "Банк заданий", Icon: ClipboardList },
-  { href: "/teacher/courses", label: "Мои курсы", Icon: GraduationCap },
   { href: "/teacher/assignments", label: "Проверка заданий", Icon: ClipboardCheck },
+  { href: "/teacher/schedule", label: "Моё расписание", Icon: CalendarDays },
   { href: "/teacher/materials", label: "Материалы", Icon: FolderOpen },
+  { href: "/teacher/courses", label: "Мои курсы", Icon: GraduationCap },
   { href: "/teacher/profile", label: "Профиль", Icon: UserCircle },
 ];
 

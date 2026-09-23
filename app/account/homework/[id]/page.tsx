@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { getCurrentStudent, getMyAssignmentById } from "@/lib/student-data";
 import { AssignmentQuestions } from "@/components/account/AssignmentQuestions";
 
@@ -28,6 +28,18 @@ export default async function StudentHomeworkDetailPage({ params }: { params: Pr
             </p>
           )}
         </div>
+
+        {assignment.status === "completed" && assignment.xpAwarded > 0 && (
+          <div className="mt-5 flex items-center gap-3 rounded-[18px] border border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-3.5 text-blue-900">
+            <span className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-white shadow-sm">
+              <Sparkles className="h-5 w-5 text-ze-primary" />
+            </span>
+            <div>
+              <div className="text-[14px] font-bold">Домашняя работа завершена</div>
+              <div className="mt-0.5 text-[13px] text-blue-700">Начислено +{assignment.xpAwarded} XP</div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-5">
           <AssignmentQuestions tasks={assignment.tasks} assignmentStatus={assignment.status} />

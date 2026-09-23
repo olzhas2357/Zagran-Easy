@@ -145,6 +145,45 @@ export async function getMyAssignments(): Promise<StudentAssignmentListItem[]> {
   return res.data.map(mapAssignmentRow);
 }
 
+export interface StudentXpTransaction {
+  id: string;
+  amount: number;
+  source: string;
+  sourceId: string | null;
+  createdAt: string;
+}
+
+export interface StudentGamification {
+  xp: number;
+  level: number;
+  streakDays: number;
+  levelStartXp: number;
+  nextLevelXp: number;
+  transactions: StudentXpTransaction[];
+}
+
+export async function getMyGamification(): Promise<StudentGamification | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>>("/gamification/me", token);
+  if (res.error || !res.data) return null;
+  const row = res.data;
+  const transactions = Array.isArray(row.transactions) ? row.transactions as Record<string, unknown>[] : [];
+  return {
+    xp: Number(row.xp ?? 0),
+    level: Number(row.level ?? 1),
+    streakDays: Number(row.streak_days ?? 0),
+    levelStartXp: Number(row.level_start_xp ?? 0),
+    nextLevelXp: Number(row.next_level_xp ?? 500),
+    transactions: transactions.map((item) => ({
+      id: String(item.id ?? ""),
+      amount: Number(item.amount ?? 0),
+      source: String(item.source ?? "activity"),
+      sourceId: item.source_id ? String(item.source_id) : null,
+      createdAt: String(item.created_at ?? ""),
+    })),
+  };
+}
+
 export interface StudentGoal {
   id: string;
   examType: string;
@@ -180,6 +219,7 @@ export async function getMyGoal(): Promise<StudentGoal | null> {
 
 export interface StudentAssignmentDetail extends StudentAssignmentListItem {
   tasks: StudentAssignmentTask[];
+  xpAwarded: number;
 }
 
 export interface StudentAssignmentTask {
@@ -205,6 +245,7 @@ export async function getMyAssignmentById(assignmentId: string): Promise<Student
 
   return {
     ...mapAssignmentRow(row),
+    xpAwarded: Number(row.xp_awarded ?? 0),
     tasks: tasks.map((task) => {
       const attempt = (task.attempt as Record<string, unknown>) || {};
       return {
@@ -213,7 +254,7 @@ export async function getMyAssignmentById(assignmentId: string): Promise<Student
         question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
         type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
         options: (task.options as Record<string, unknown>) ?? null,
-        audioUrl: (task.audio_url as string) ?? null,
+        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url"]) as string) ?? null,
         answerText: (attempt.answer as string) ?? null,
         reviewScore: (attempt.review_score as number) ?? null,
         reviewComment: (attempt.review_comment as string) ?? null,

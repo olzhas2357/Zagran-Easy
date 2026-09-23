@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
+import { CorrectAnswer, SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
 import type { FillBlanksOptions } from "@/lib/task-types";
 
 export function FillBlanksAnswer({
@@ -62,7 +62,8 @@ export function FillBlanksAnswer({
         ))}
       </div>
 
-      <SubmitStatus error={error} done={done} />
+      <SubmitStatus error={error} done={done} autoChecked />
+      <CorrectAnswer show={done}>{options.blanks.map((answer, index) => `${index + 1}. ${answer.split("|").join(" / ")}`).join("; ")}</CorrectAnswer>
       <SubmitButton isPending={isPending} hasInitial={!!initialAnswer} />
     </form>
   );

@@ -528,7 +528,7 @@ export async function getAssignmentById(teacherId: string, assignmentId: string)
         question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
         type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
         options: (task.options as Record<string, unknown>) ?? null,
-        audioUrl: (task.audio_url as string) ?? null,
+        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url"]) as string) ?? null,
         answerText: (attempt.answer as string) ?? null,
         reviewScore: (attempt.review_score as number) ?? null,
         reviewComment: (attempt.review_comment as string) ?? null,

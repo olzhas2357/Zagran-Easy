@@ -40,6 +40,10 @@ export const TASK_TYPE_LABEL: Record<string, string> = Object.fromEntries(
 // независимо от флага auto_check).
 export const MANUAL_ONLY_TYPES: TaskType[] = ["writing", "speaking"];
 
+// Эти типы имеют однозначный эталонный ответ и никогда не должны попадать
+// в очередь ручной проверки преподавателя.
+export const AUTO_CHECK_TYPES: TaskType[] = ["multiple_choice", "multiple_select", "fill_blanks", "matching"];
+
 // Типы с собственной структурой данных в поле `options` (см. ниже),
 // а не просто question + correctAnswer.
 export const STRUCTURED_TYPES: TaskType[] = ["multiple_choice", "multiple_select", "matching", "fill_blanks"];
@@ -76,6 +80,41 @@ export interface MatchingOptions {
 // blanks[i] — допустимые варианты ответа для i-го пропуска (через "|").
 export interface FillBlanksOptions {
   blanks: string[];
+}
+
+export interface ComprehensionQuestion {
+  id: string;
+  text: string;
+}
+
+export interface ComprehensionOptions {
+  questions: ComprehensionQuestion[];
+  questionCount: 5;
+  language?: string;
+}
+
+export interface SpeakingSubmission {
+  url: string;
+  durationSeconds: number | null;
+}
+
+export function parseSpeakingSubmission(raw: string | null): SpeakingSubmission | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<SpeakingSubmission>;
+    if (typeof parsed.url === "string" && parsed.url) {
+      return { url: parsed.url, durationSeconds: typeof parsed.durationSeconds === "number" ? parsed.durationSeconds : null };
+    }
+  } catch {
+    // Older submissions contain the URL directly.
+  }
+  return { url: raw, durationSeconds: null };
+}
+
+export function formatAudioDuration(seconds: number | null): string | null {
+  if (seconds === null || !Number.isFinite(seconds)) return null;
+  const rounded = Math.max(0, Math.round(seconds));
+  return `${Math.floor(rounded / 60)}:${String(rounded % 60).padStart(2, "0")}`;
 }
 
 /** Человекочитаемое представление ответа ученика (вместо сырого JSON) для карточек учителя/ученика. */
@@ -116,6 +155,14 @@ export function formatAnswerForDisplay(
     const answers = parseJsonArray(rawAnswer);
     if (!answers.length) return rawAnswer;
     return answers.map((a, i) => `${i + 1}. ${a}`).join("; ");
+  }
+
+  if (type === "reading" || type === "listening") {
+    const opts = options as unknown as ComprehensionOptions | null;
+    const answers = parseJsonRecord(rawAnswer);
+    if (opts?.questions?.length) {
+      return opts.questions.map((question, index) => `${index + 1}. ${answers[question.id] || "—"}`).join("; ");
+    }
   }
 
   return rawAnswer;

@@ -4,15 +4,27 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, Square } from "lucide-react";
 import { uploadSpeakingAudio } from "@/lib/student-actions";
 import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
+import { formatAudioDuration, parseSpeakingSubmission } from "@/lib/task-types";
 
 export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; initialAnswer: string | null }) {
   const { submit, isPending, error, done } = useAnswerSubmit(taskId);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recordingStartedAtRef = useRef(0);
+  const initialSubmission = parseSpeakingSubmission(initialAnswer);
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [recordedUrl, setRecordedUrl] = useState(initialAnswer ?? "");
+  const [recordedUrl, setRecordedUrl] = useState(initialSubmission?.url ?? "");
+  const [durationSeconds, setDurationSeconds] = useState(initialSubmission?.durationSeconds ?? 0);
   const [recordError, setRecordError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!recording) return;
+    const timer = window.setInterval(() => {
+      setDurationSeconds(Math.max(0, (Date.now() - recordingStartedAtRef.current) / 1000));
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [recording]);
 
   useEffect(() => () => recorderRef.current?.stop(), []);
 
@@ -25,7 +37,9 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
+      // MP4/M4A plays reliably in Safari/iPhone as well as Chromium. Keep WebM
+      // as a fallback for browsers that cannot record MP4.
+      const mimeType = ["audio/mp4", "audio/mp4;codecs=mp4a.40.2", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       chunksRef.current = [];
       recorder.ondataavailable = (event) => {
@@ -36,6 +50,8 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
         setRecording(false);
       };
       recorderRef.current = recorder;
+      recordingStartedAtRef.current = Date.now();
+      setDurationSeconds(0);
       recorder.start();
       setRecording(true);
     } catch {
@@ -69,7 +85,7 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
       }
       setRecordedUrl(upload.url);
       chunksRef.current = [];
-      submit(upload.url);
+      submit(JSON.stringify({ url: upload.url, durationSeconds: Math.max(1, Math.round(durationSeconds)) }));
       return;
     }
 
@@ -77,13 +93,18 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
       setRecordError("Запишите ответ перед отправкой");
       return;
     }
-    submit(recordedUrl);
+    submit(JSON.stringify({ url: recordedUrl, durationSeconds: durationSeconds || null }));
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="text-[13px] font-semibold text-ze-muted">Ваш устный ответ</div>
-      {recordedUrl && <audio controls src={recordedUrl} className="w-full" />}
+      {recordedUrl && <audio controls preload="metadata" src={recordedUrl} className="w-full" />}
+      {(recording || recordedUrl) && (
+        <div className="text-[13px] font-semibold tabular-nums text-ze-muted">
+          Длительность: {formatAudioDuration(durationSeconds) || "0:00"}
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2.5">
         {recording ? (
           <button

@@ -7,7 +7,8 @@ import { MatchingAnswer } from "./MatchingAnswer";
 import { FillBlanksAnswer } from "./FillBlanksAnswer";
 import { SpeakingAnswer } from "./SpeakingAnswer";
 import { ListeningAnswer } from "./ListeningAnswer";
-import type { FillBlanksOptions, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
+import { ComprehensionAnswer } from "./ComprehensionAnswer";
+import type { ComprehensionOptions, FillBlanksOptions, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
 
 /**
  * Раньше при решении задания ВСЕГДА рендерился один и тот же textarea-компонент,
@@ -58,10 +59,15 @@ export function AssignmentAnswerDispatcher({
     return <SpeakingAnswer taskId={taskId} initialAnswer={initialAnswer} />;
   }
 
+  if ((taskType === "reading" || taskType === "listening") && Array.isArray(taskOptions?.questions)) {
+    return <ComprehensionAnswer taskId={taskId} options={taskOptions as unknown as ComprehensionOptions} audioUrl={taskAudioUrl} initialAnswer={initialAnswer} />;
+  }
+
   if (taskType === "listening" && taskAudioUrl) {
     return <ListeningAnswer taskId={taskId} audioUrl={taskAudioUrl} initialAnswer={initialAnswer} />;
   }
 
   // vocabulary/grammar/reading/listening/writing — текстовый ответ.
-  return <AssignmentAnswerForm taskId={taskId} initialAnswer={initialAnswer} />;
+  const wordLimit = taskType === "writing" && typeof taskOptions?.wordLimit === "number" ? taskOptions.wordLimit : undefined;
+  return <AssignmentAnswerForm taskId={taskId} initialAnswer={initialAnswer} wordLimit={wordLimit} />;
 }

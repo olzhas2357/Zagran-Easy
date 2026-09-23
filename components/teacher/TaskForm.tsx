@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { createTask, uploadListeningAudio } from "@/lib/teacher-actions";
 import {
+  AUTO_CHECK_TYPES,
   MANUAL_ONLY_TYPES,
   STRUCTURED_TYPES,
   TASK_TYPES,
   type ChoiceOption,
+  type ComprehensionQuestion,
   type MatchingPair,
   type TaskType,
 } from "@/lib/task-types";
@@ -21,7 +23,12 @@ const EXAM_TYPES = [
   { value: "ielts", label: "IELTS" },
   { value: "hsk", label: "HSK" },
   { value: "sat", label: "SAT" },
-  { value: "general", label: "General English" },
+  { value: "general", label: "Общий курс" },
+];
+
+const LANGUAGES = [
+  { value: "english", label: "Английский" },
+  { value: "chinese", label: "Китайский" },
 ];
 
 const DIFFICULTIES = [
@@ -216,6 +223,25 @@ function BlanksEditor({ blanks, setBlanks }: { blanks: string[]; setBlanks: (b: 
   );
 }
 
+function ComprehensionEditor({ questions, setQuestions }: { questions: ComprehensionQuestion[]; setQuestions: (items: ComprehensionQuestion[]) => void }) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <div className="text-[13px] font-semibold text-ze-muted">5 вопросов для студента</div>
+      {questions.map((item, index) => (
+        <div key={item.id} className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-ze-surface text-[13px] font-semibold text-ze-muted">{index + 1}</span>
+          <input
+            value={item.text}
+            onChange={(event) => setQuestions(questions.map((question) => question.id === item.id ? { ...question, text: event.target.value } : question))}
+            placeholder={`Вопрос ${index + 1}`}
+            className={inputClass}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function TaskForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -224,6 +250,7 @@ export function TaskForm() {
   const [title, setTitle] = useState("");
   const [type, setType] = useState<TaskType>(TASK_TYPES[0].value);
   const [examType, setExamType] = useState(EXAM_TYPES[0].value);
+  const [language, setLanguage] = useState(LANGUAGES[0].value);
   const [section, setSection] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [question, setQuestion] = useState("");
@@ -233,6 +260,7 @@ export function TaskForm() {
   const [autoCheck, setAutoCheck] = useState(false);
   const [audioUrl, setAudioUrl] = useState("");
   const [audioUploading, setAudioUploading] = useState(false);
+  const [wordLimit, setWordLimit] = useState("250");
 
   // Структурированные данные под каждый тип задания.
   const [choices, setChoices] = useState<ChoiceOption[]>([
@@ -242,11 +270,16 @@ export function TaskForm() {
   const [correctIds, setCorrectIds] = useState<string[]>([]);
   const [pairs, setPairs] = useState<MatchingPair[]>([{ id: newId(), left: "", right: "" }]);
   const [blanks, setBlanks] = useState<string[]>([""]);
+  const [comprehensionQuestions, setComprehensionQuestions] = useState<ComprehensionQuestion[]>(() =>
+    Array.from({ length: 5 }, (_, index) => ({ id: `q${index + 1}-${newId()}`, text: "" }))
+  );
 
   const isManualOnly = MANUAL_ONLY_TYPES.includes(type);
   const isStructured = STRUCTURED_TYPES.includes(type);
   const isMultiSelect = type === "multiple_select";
   const isChoiceType = type === "multiple_choice" || type === "multiple_select";
+  const isAlwaysAutoChecked = AUTO_CHECK_TYPES.includes(type);
+  const isComprehension = type === "reading" || type === "listening";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -269,6 +302,20 @@ export function TaskForm() {
       const filled = blanks.filter((b) => b.trim());
       if (filled.length === 0) return setError("Укажите правильные ответы для пропусков");
       options = { blanks: filled };
+    } else if (type === "reading" || type === "listening") {
+      if (comprehensionQuestions.some((item) => !item.text.trim())) return setError("Заполните все 5 вопросов");
+      options = { questions: comprehensionQuestions.map((item) => ({ ...item, text: item.text.trim() })), questionCount: 5 };
+    }
+
+    options = {
+      ...(options ?? {}),
+      language,
+      ...((type === "reading" || type === "listening") ? { questionCount: 5 } : {}),
+      ...(type === "writing" ? { wordLimit: Number(wordLimit) } : {}),
+    };
+
+    if (type === "writing" && (!Number.isInteger(Number(wordLimit)) || Number(wordLimit) < 1)) {
+      return setError("Укажите корректный лимит слов");
     }
 
     startTransition(async () => {
@@ -279,10 +326,10 @@ export function TaskForm() {
         question,
         section,
         difficulty,
-        correctAnswer: isStructured || isManualOnly ? "" : correctAnswer,
+        correctAnswer: isStructured || isManualOnly || isComprehension ? "" : correctAnswer,
         explanation,
         xpReward: xpReward.trim() ? Number(xpReward) : null,
-        autoCheck: isManualOnly ? false : isStructured ? true : autoCheck,
+        autoCheck: isManualOnly ? false : isAlwaysAutoChecked ? true : autoCheck,
         options,
         audioUrl,
       });
@@ -306,6 +353,11 @@ export function TaskForm() {
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
+        <Field label="Язык курса">
+          <select value={language} onChange={(e) => setLanguage(e.target.value)} className={inputClass}>
+            {LANGUAGES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </select>
+        </Field>
         <Field label="Тип задания">
           <select value={type} onChange={(e) => setType(e.target.value as TaskType)} className={inputClass}>
             {TASK_TYPES.map((t) => (
@@ -325,6 +377,18 @@ export function TaskForm() {
           </select>
         </Field>
       </div>
+
+      {(type === "reading" || type === "listening") && (
+        <div className="rounded-xl bg-blue-50 px-3.5 py-3 text-[13px] font-medium text-ze-primary">
+          Добавьте полный текст для Reading или аудио для Listening, затем заполните ровно 5 вопросов ниже.
+        </div>
+      )}
+
+      {type === "writing" && (
+        <Field label="Количество слов" hint="Минимальный объём письменного ответа">
+          <input type="number" min={1} value={wordLimit} onChange={(e) => setWordLimit(e.target.value)} className={`${inputClass} max-w-[200px]`} />
+        </Field>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Раздел" hint="Необязательно, напр. Speaking">
@@ -383,8 +447,11 @@ export function TaskForm() {
       )}
       {type === "matching" && <MatchingEditor pairs={pairs} setPairs={setPairs} />}
       {type === "fill_blanks" && <BlanksEditor blanks={blanks} setBlanks={setBlanks} />}
+      {(type === "reading" || type === "listening") && (
+        <ComprehensionEditor questions={comprehensionQuestions} setQuestions={setComprehensionQuestions} />
+      )}
 
-      {!isStructured && !isManualOnly && (
+      {!isStructured && !isManualOnly && !isComprehension && (
         <Field
           label="Правильный ответ"
           hint="Необязательно. Если указан и включена автопроверка — ответ ученика сверяется автоматически."
@@ -397,6 +464,12 @@ export function TaskForm() {
         <div className="rounded-xl bg-amber-50 px-3.5 py-3 text-[13px] font-medium text-amber-700">
           Задания типа «{TASK_TYPES.find((t) => t.value === type)?.label}» проверяются только вручную преподавателем —
           автопроверка для них недоступна.
+        </div>
+      )}
+
+      {isAlwaysAutoChecked && (
+        <div className="rounded-xl bg-emerald-50 px-3.5 py-3 text-[13px] font-medium text-emerald-700">
+          Автопроверка включена. После отправки студент сразу увидит правильный ответ; проверка преподавателя не требуется.
         </div>
       )}
 
@@ -414,7 +487,7 @@ export function TaskForm() {
             className={inputClass}
           />
         </Field>
-        {!isStructured && !isManualOnly && (
+        {!isStructured && !isManualOnly && !isComprehension && (
           <label className="flex items-center gap-2.5 pb-3">
             <input
               type="checkbox"

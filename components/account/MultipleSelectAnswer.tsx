@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
+import { CorrectAnswer, SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
 import type { MultipleSelectOptions } from "@/lib/task-types";
 
 export function MultipleSelectAnswer({
@@ -53,7 +53,10 @@ export function MultipleSelectAnswer({
         ))}
       </div>
 
-      <SubmitStatus error={error} done={done} />
+      <SubmitStatus error={error} done={done} autoChecked />
+      <CorrectAnswer show={done}>
+        {options.choices.filter((choice) => options.correctIds.includes(choice.id)).map((choice) => choice.text).join(", ")}
+      </CorrectAnswer>
       <SubmitButton isPending={isPending} hasInitial={!!initialAnswer} />
     </form>
   );

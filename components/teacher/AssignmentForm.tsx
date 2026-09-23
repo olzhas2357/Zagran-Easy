@@ -40,7 +40,7 @@ export function AssignmentForm({ students, tasks }: { students: StudentOption[];
     if (!dueDate) return setError("Укажите дедлайн");
     if (taskIds.length === 0) return setError("Выберите хотя бы одно задание из банка");
 
-    const due = new Date(`${dueDate}T23:59:59`).toISOString();
+    const due = new Date(dueDate).toISOString();
 
     startTransition(async () => {
       const res = await createAssignment({ studentId, taskIds, title, dueDate: due });
@@ -90,7 +90,12 @@ export function AssignmentForm({ students, tasks }: { students: StudentOption[];
       </Field>
 
       <Field label="Дедлайн">
-        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={`${inputClass} max-w-[200px]`} />
+        <input
+          type="datetime-local"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className={`${inputClass} max-w-[260px]`}
+        />
       </Field>
 
       <Field label="Задания из банка">
