@@ -77,8 +77,8 @@ export async function validateScheduleGroup(input: ScheduleGroupInput) {
 export async function updateScheduleSession(sessionId: string, lessonDate: string, timeStart: string, timeEnd: string) {
   const token = await getToken();
   return result(apiPatch(`/schedule/sessions/${sessionId}`, {
-    starts_at: `${lessonDate}T${timeStart}:00+06:00`,
-    ends_at: `${lessonDate}T${timeEnd}:00+06:00`,
+    starts_at: `${lessonDate}T${timeStart}:00+05:00`,
+    ends_at: `${lessonDate}T${timeEnd}:00+05:00`,
   }, token));
 }
 
