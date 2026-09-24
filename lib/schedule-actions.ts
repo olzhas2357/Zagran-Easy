@@ -8,6 +8,8 @@ import type { ScheduleFormat, ScheduleLanguage } from "./schedule-data";
 async function result<T>(request: Promise<{ data: T; error?: string }>) {
   const response = await request;
   if (response.error) return { success: false as const, error: response.error };
+  revalidatePath("/admin/schedule");
+  revalidatePath("/teacher/schedule");
   revalidatePath("/staff/schedule");
   revalidatePath("/account/schedule");
   return { success: true as const, data: response.data };
@@ -95,6 +97,13 @@ export async function updateScheduleGroupFuture(groupId: string, effectiveDate: 
     effective_date: effectiveDate,
     rules: rules.map((rule) => ({ weekday: rule.weekday, time_start: rule.time_start, time_end: rule.time_end })),
   }, token));
+}
+
+export async function deleteScheduleGroupFuture(groupId: string, effectiveDate: string) {
+  const token = await getToken();
+  return result(apiDelete<{ deleted_sessions: number }>(
+    `/schedule/groups/${encodeURIComponent(groupId)}/future?effective_date=${encodeURIComponent(effectiveDate)}`, token,
+  ));
 }
 
 export async function cancelScheduleSession(sessionId: string, reason: string) {

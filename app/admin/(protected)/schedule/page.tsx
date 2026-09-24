@@ -40,5 +40,9 @@ export default function AdminSchedulePage() {
   if (loading) return <div className="p-8 text-sm text-slate-400">Загрузка расписания…</div>;
   if (error) return <div className="m-8 rounded-xl bg-red-50 p-4 text-sm text-red-700">{error}</div>;
 
-  return <StaffScheduleBackend profile={{ role: "admin" }} slots={slots} resources={resources} />;
+  return <StaffScheduleBackend profile={{ role: "admin" }} slots={slots} resources={resources} onChanged={async () => {
+    const response = await apiGet<ScheduleSlot[]>("/schedule", token);
+    if (response.error) throw new Error(response.error);
+    setSlots(response.data || []);
+  }} />;
 }

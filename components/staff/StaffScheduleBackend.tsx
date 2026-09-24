@@ -16,6 +16,7 @@ import {
   type EditableScheduleRule,
   updateScheduleSession,
   updateScheduleGroupFuture,
+  deleteScheduleGroupFuture,
   updateScheduleMeeting,
   validateScheduleGroup,
   type ScheduleConflict,
@@ -49,7 +50,7 @@ function today() { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Alm
 function shortDay(value: string) { return new Intl.DateTimeFormat("ru-RU", { weekday: "short" }).format(parseDate(value)).replace(".", ""); }
 function fullDate(value: string) { return new Intl.DateTimeFormat("ru-RU", { weekday: "long", day: "numeric", month: "long" }).format(parseDate(value)); }
 
-export function StaffScheduleBackend({ profile, slots, resources = { teachers: [], courses: [], classrooms: [] } }: { profile: { role: "admin" | "manager" | "teacher" }; slots: ScheduleSlot[]; resources?: ScheduleResources }) {
+export function StaffScheduleBackend({ profile, slots, onChanged, resources = { teachers: [], courses: [], classrooms: [] } }: { profile: { role: "admin" | "manager" | "teacher" }; slots: ScheduleSlot[]; onChanged?: () => Promise<void>; resources?: ScheduleResources }) {
   const router = useRouter();
   const isAdmin = profile.role === "admin";
   const initialDate = slots.find((slot) => slot.lesson_date >= today())?.lesson_date || today();
@@ -62,6 +63,7 @@ export function StaffScheduleBackend({ profile, slots, resources = { teachers: [
   const [courseId, setCourseId] = useState("all");
   const [status, setStatus] = useState("all");
   const [editing, setEditing] = useState<ScheduleSlot | null>(null);
+  const [deletingFuture, setDeletingFuture] = useState<ScheduleSlot | null>(null);
   const [groupOpen, setGroupOpen] = useState(false);
   const [details, setDetails] = useState<ScheduleSlot | null>(null);
   const [sessionEditing, setSessionEditing] = useState<ScheduleSlot | null>(null);
@@ -90,11 +92,21 @@ export function StaffScheduleBackend({ profile, slots, resources = { teachers: [
 
   async function mutate(action: () => Promise<{ success: boolean; error?: string }>, successText: string) {
     setPending(true); setNotice(null);
-    const response = await action();
-    if (!response.success) setNotice({ type: "error", text: response.error || "Не удалось сохранить изменения" });
-    else { setNotice({ type: "ok", text: successText }); router.refresh(); }
-    setPending(false);
-    return response.success;
+    try {
+      const response = await action();
+      if (!response.success) setNotice({ type: "error", text: response.error || "Не удалось сохранить изменения" });
+      else {
+        setNotice({ type: "ok", text: successText });
+        if (onChanged) await onChanged();
+        else router.refresh();
+      }
+      return response.success;
+    } catch {
+      setNotice({ type: "error", text: "Не удалось обновить расписание. Обновите страницу и проверьте результат." });
+      return false;
+    } finally {
+      setPending(false);
+    }
   }
 
   function movePeriod(amount: number) {
@@ -138,8 +150,11 @@ export function StaffScheduleBackend({ profile, slots, resources = { teachers: [
 
     {editing && <SlotModal slot={editing} initialDate={selectedDate} pending={pending} onClose={() => setEditing(null)} onSubmit={async (input) => { const ok = await mutate(() => updateScheduleSlot(editing.id, input), "Слот обновлён"); if (ok) setEditing(null); }} />}
     {groupOpen && <ScheduleGroupModal resources={resources} pending={pending} onClose={() => setGroupOpen(false)} onSubmit={async (input) => { const ok = await mutate(() => createScheduleGroup(input), "Расписание создано"); if (ok) setGroupOpen(false); }} />}
-    {details && <ScheduleDetails slot={details} canManage={isAdmin} canSetMeeting={(profile.role === "teacher" || isAdmin) && Boolean(details.group_id)} pending={pending} onClose={() => setDetails(null)} onMeeting={() => { setMeetingEditing(details); setDetails(null); }} onManage={() => { setManagingGroup(details); setDetails(null); }} onEdit={() => { setDetails(null); if (details.group_id) setSessionEditing(details); else setEditing(details); }} onCancel={async (reason) => { const ok = await mutate(() => cancelScheduleSession(details.id, reason), "Занятие отменено"); if (ok) setDetails(null); }} />}
-    {details && (profile.role === "manager" || isAdmin) && Boolean(details.group_id) && details.status !== "cancelled" && details.free_places > 0 && <button type="button" onClick={() => { setTrialBooking(details); setDetails(null); }} className="fixed bottom-6 right-6 z-[60] rounded-xl bg-amber-500 px-5 py-3 text-sm font-extrabold text-white shadow-xl hover:bg-amber-600">Записать на пробный урок</button>}
+    {details && <ScheduleDetails canBookTrial={(profile.role === "manager" || isAdmin) && Boolean(details.group_id) && details.status !== "cancelled" && details.free_places > 0} onBookTrial={() => { setTrialBooking(details); setDetails(null); }} onDeleteFuture={() => { setDeletingFuture(details); setDetails(null); }} slot={details} canManage={isAdmin} canSetMeeting={(profile.role === "teacher" || isAdmin) && Boolean(details.group_id)} pending={pending} onClose={() => setDetails(null)} onMeeting={() => { setMeetingEditing(details); setDetails(null); }} onManage={() => { setManagingGroup(details); setDetails(null); }} onEdit={() => { setDetails(null); if (details.group_id) setSessionEditing(details); else setEditing(details); }} onCancel={async (reason) => { const ok = await mutate(() => cancelScheduleSession(details.id, reason), "Занятие отменено"); if (ok) setDetails(null); }} />}
+    {deletingFuture?.group_id && <DeleteFutureModal slot={deletingFuture} pending={pending} onClose={() => { if (!pending) setDeletingFuture(null); }} onSubmit={async (date) => {
+      const ok = await mutate(() => deleteScheduleGroupFuture(deletingFuture.group_id!, date), "Будущие занятия удалены");
+      if (ok) setDeletingFuture(null);
+    }} />}
     {sessionEditing && <SessionEditModal slot={sessionEditing} pending={pending} onClose={() => setSessionEditing(null)} onSubmitOne={async (date, start, end) => { const ok = await mutate(() => updateScheduleSession(sessionEditing.id, date, start, end), "Занятие обновлено"); if (ok) setSessionEditing(null); }} onSubmitFuture={async (date, rules) => { const ok = await mutate(() => updateScheduleGroupFuture(sessionEditing.group_id!, date, rules), "Будущее расписание обновлено"); if (ok) setSessionEditing(null); }} />}
     {managingGroup?.group_id && <GroupStudentsModal groupId={managingGroup.group_id} title={managingGroup.group_title || managingGroup.language_name} onClose={() => setManagingGroup(null)} />}
     {meetingEditing && <MeetingModal slot={meetingEditing} pending={pending} onClose={() => setMeetingEditing(null)} onSubmit={async (url) => { const ok = await mutate(() => updateScheduleMeeting(meetingEditing.id, url), "Ссылка на встречу сохранена"); if (ok) setMeetingEditing(null); }} />}
@@ -200,11 +215,13 @@ function SlotCard({ slot, isAdmin, pending, onDetails, onEdit, onDelete, mutate 
   </article>;
 }
 
-function ScheduleDetails({ slot, canManage, canSetMeeting, pending, onClose, onMeeting, onManage, onEdit, onCancel }: { slot: ScheduleSlot; canManage: boolean; canSetMeeting: boolean; pending: boolean; onClose: () => void; onMeeting: () => void; onManage: () => void; onEdit: () => void; onCancel: (reason: string) => Promise<void> }) {
+function ScheduleDetails({ slot, canBookTrial, onBookTrial, canManage, canSetMeeting, pending, onClose, onMeeting, onManage, onEdit, onCancel, onDeleteFuture }: { slot: ScheduleSlot; canBookTrial: boolean; onBookTrial: () => void; canManage: boolean; canSetMeeting: boolean; pending: boolean; onClose: () => void; onMeeting: () => void; onManage: () => void; onEdit: () => void; onCancel: (reason: string) => Promise<void>; onDeleteFuture: () => void }) {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("");
   const statusLabel = slot.status === "cancelled" ? "Отменено" : slot.status === "completed" ? "Завершено" : "Запланировано";
-  return <div className="fixed inset-0 z-50 bg-slate-950/35" onMouseDown={onClose}><aside onMouseDown={(event) => event.stopPropagation()} className="ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><span className={`inline-flex rounded-lg px-2.5 py-1 text-[11px] font-bold uppercase ${LANGUAGE[slot.language].style}`}>{slot.course_name || LANGUAGE[slot.language].label}</span><h2 className="mt-3 text-2xl font-extrabold">{slot.group_title || slot.language_name}</h2><p className="mt-1 text-sm text-ze-muted">{slot.teacher_name || "Преподаватель пока не указан"}</p></div><button type="button" onClick={onClose} className="rounded-lg p-2 text-ze-muted hover:bg-slate-100"><X className="h-5 w-5" /></button></div><div className="mt-6 grid grid-cols-2 gap-3"><DetailValue label="Дата" value={fullDate(slot.lesson_date)} /><DetailValue label="Время" value={`${slot.time_start}–${slot.time_end}`} /><DetailValue label="Формат" value={slot.format === "online" ? "Online" : "Offline"} /><DetailValue label="Статус" value={statusLabel} /><DetailValue label="Вместимость" value={`${slot.enrollment_count} / ${slot.capacity}`} /><DetailValue label="Свободно" value={String(slot.free_places)} />{slot.classroom_name && <DetailValue label="Кабинет" value={slot.classroom_name} />}</div>{slot.meeting_url && <a href={slot.meeting_url} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700">Открыть Google Meet / Zoom ↗</a>}{canSetMeeting && slot.status !== "cancelled" && <button type="button" onClick={onMeeting} className="mt-2 w-full rounded-xl border border-emerald-200 py-2.5 text-sm font-bold text-emerald-700">{slot.meeting_url ? "Изменить ссылку встречи" : "Добавить ссылку Google Meet"}</button>}<div className="mt-6"><div className="text-xs font-bold uppercase tracking-wider text-ze-muted">Студенты</div><div className="mt-2 space-y-2">{slot.enrollments.length ? slot.enrollments.map((student) => <div key={student.id} className="rounded-xl bg-slate-50 px-3 py-2.5 text-sm font-semibold">{student.student_name}</div>) : <div className="rounded-xl border border-dashed border-ze-border p-4 text-sm text-ze-muted">Студенты пока не назначены.</div>}</div>{canManage && slot.group_id && <button type="button" onClick={onManage} className="mt-3 text-sm font-bold text-ze-primary">Управлять составом группы</button>}</div>{canManage && slot.status !== "completed" && <div className="mt-auto space-y-2 pt-8"><button type="button" onClick={onEdit} className="w-full rounded-xl bg-ze-primary py-3 text-sm font-bold text-white">Изменить занятие</button>{slot.group_id && slot.status !== "cancelled" && (!cancelOpen ? <button type="button" onClick={() => setCancelOpen(true)} className="w-full rounded-xl border border-red-200 py-3 text-sm font-bold text-red-600">Отменить занятие</button> : <div className="rounded-xl bg-red-50 p-3"><textarea value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Причина отмены (необязательно)" className="w-full rounded-lg border border-red-100 bg-white p-2 text-sm" /><div className="mt-2 flex gap-2"><button type="button" onClick={() => setCancelOpen(false)} className="flex-1 rounded-lg bg-white py-2 text-xs font-bold">Назад</button><button type="button" disabled={pending} onClick={() => void onCancel(reason)} className="flex-1 rounded-lg bg-red-600 py-2 text-xs font-bold text-white disabled:opacity-50">Подтвердить</button></div></div>)}</div>}</aside></div>;
+  return <div className="fixed inset-0 z-50 bg-slate-950/35" onMouseDown={onClose}><aside onMouseDown={(event) => event.stopPropagation()} className="ml-auto flex h-full w-full max-w-md flex-col overflow-y-auto bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><span className={`inline-flex rounded-lg px-2.5 py-1 text-[11px] font-bold uppercase ${LANGUAGE[slot.language].style}`}>{slot.course_name || LANGUAGE[slot.language].label}</span><h2 className="mt-3 text-2xl font-extrabold">{slot.group_title || slot.language_name}</h2><p className="mt-1 text-sm text-ze-muted">{slot.teacher_name || "Преподаватель пока не указан"}</p></div><button type="button" onClick={onClose} className="rounded-lg p-2 text-ze-muted hover:bg-slate-100"><X className="h-5 w-5" /></button></div><div className="mt-6 grid grid-cols-2 gap-3"><DetailValue label="Дата" value={fullDate(slot.lesson_date)} /><DetailValue label="Время" value={`${slot.time_start}–${slot.time_end}`} /><DetailValue label="Формат" value={slot.format === "online" ? "Online" : "Offline"} /><DetailValue label="Статус" value={statusLabel} /><DetailValue label="Вместимость" value={`${slot.enrollment_count} / ${slot.capacity}`} /><DetailValue label="Свободно" value={String(slot.free_places)} />{slot.classroom_name && <DetailValue label="Кабинет" value={slot.classroom_name} />}</div>{slot.meeting_url && <a href={slot.meeting_url} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700">Открыть Google Meet / Zoom ↗</a>}{canSetMeeting && slot.status !== "cancelled" && <button type="button" onClick={onMeeting} className="mt-2 w-full rounded-xl border border-emerald-200 py-2.5 text-sm font-bold text-emerald-700">{slot.meeting_url ? "Изменить ссылку встречи" : "Добавить ссылку Google Meet"}</button>}<div className="mt-6"><div className="text-xs font-bold uppercase tracking-wider text-ze-muted">Студенты</div>
+      {canBookTrial && <button type="button" disabled={pending} onClick={onBookTrial} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-amber-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:opacity-50"><UserPlus className="h-4 w-4 shrink-0" />Записать на пробный урок</button>}
+      <div className="mt-3 space-y-2">{slot.enrollments.length ? slot.enrollments.map((student) => <div key={student.id} className="rounded-xl bg-slate-50 px-3 py-2.5 text-sm font-semibold">{student.student_name}</div>) : <div className="rounded-xl border border-dashed border-ze-border p-4 text-sm text-ze-muted">Студенты пока не назначены.</div>}</div>{canManage && slot.group_id && <button type="button" onClick={onManage} className="mt-3 text-sm font-bold text-ze-primary">Управлять составом группы</button>}</div>{canManage && slot.status !== "completed" && <div className="mt-auto space-y-2 pt-8"><button type="button" onClick={onEdit} className="w-full rounded-xl bg-ze-primary py-3 text-sm font-bold text-white">Изменить занятие</button>{slot.group_id && slot.status !== "cancelled" && (!cancelOpen ? <button type="button" onClick={() => setCancelOpen(true)} className="w-full rounded-xl border border-red-200 py-3 text-sm font-bold text-red-600">Отменить занятие</button> : <div className="rounded-xl bg-red-50 p-3"><textarea value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Причина отмены (необязательно)" className="w-full rounded-lg border border-red-100 bg-white p-2 text-sm" /><div className="mt-2 flex gap-2"><button type="button" onClick={() => setCancelOpen(false)} className="flex-1 rounded-lg bg-white py-2 text-xs font-bold">Назад</button><button type="button" disabled={pending} onClick={() => void onCancel(reason)} className="flex-1 rounded-lg bg-red-600 py-2 text-xs font-bold text-white disabled:opacity-50">Подтвердить</button></div></div>)}</div>}{canManage && slot.group_id && <button type="button" disabled={pending} onClick={onDeleteFuture} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-3 text-sm font-bold text-red-600 disabled:opacity-50"><Trash2 className="h-4 w-4" />Удалить будущие занятия</button>}</aside></div>;
 }
 
 function TrialBookingModal({ slot, pending, onClose, onSubmit }: { slot: ScheduleSlot; pending: boolean; onClose: () => void; onSubmit: (input: { clientId?: string; clientName: string; clientPhone?: string; notes?: string }) => Promise<void> }) {
@@ -223,6 +240,19 @@ function TrialBookingModal({ slot, pending, onClose, onSubmit }: { slot: Schedul
 function MeetingModal({ slot, pending, onClose, onSubmit }: { slot: ScheduleSlot; pending: boolean; onClose: () => void; onSubmit: (url: string) => Promise<void> }) {
   const [url, setUrl] = useState(slot.meeting_url || ""); const valid = /^https:\/\/(meet\.google\.com|zoom\.us)\//.test(url);
   return <Modal title="Ссылка на онлайн-занятие" onClose={onClose}><Field label="Google Meet или Zoom"><input type="url" value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://meet.google.com/abc-defg-hij" className={FIELD_CLASS} /></Field><p className="mt-3 text-xs leading-5 text-ze-muted">Создайте встречу в Google Meet, скопируйте ссылку и вставьте её сюда. Студенты увидят кнопку подключения в своём уроке.</p><button type="button" disabled={pending || !valid} onClick={() => void onSubmit(url)} className="mt-5 w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white disabled:opacity-40">{pending ? "Сохраняем…" : "Сохранить ссылку"}</button></Modal>;
+}
+
+function DeleteFutureModal({ slot, pending, onClose, onSubmit }: { slot: ScheduleSlot; pending: boolean; onClose: () => void; onSubmit: (date: string) => Promise<void> }) {
+  const [date, setDate] = useState(slot.lesson_date > today() ? slot.lesson_date : today());
+  return <Modal title="Удалить будущие занятия?" onClose={onClose}>
+    <p className="text-sm leading-6 text-ze-muted">Группа: <b className="text-ze-ink">{slot.group_title || slot.language_name}</b></p>
+    <Field label="Удалить начиная с даты (включительно)"><input type="date" min={today()} value={date} disabled={pending} onChange={(event) => setDate(event.target.value)} className={FIELD_CLASS} /></Field>
+    <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm leading-6 text-red-800">Будут безвозвратно удалены ещё не начавшиеся занятия этой группы с выбранной даты, включая отменённые, и записи на их пробные уроки. Прошедшие и завершённые занятия, сама группа и её состав сохранятся.</p>
+    <div className="mt-5 grid grid-cols-2 gap-3">
+      <button type="button" disabled={pending} onClick={onClose} className="rounded-xl border border-ze-border py-3 text-sm font-bold disabled:opacity-50">Назад</button>
+      <button type="button" disabled={pending || !date || date < today()} onClick={() => void onSubmit(date)} className="rounded-xl bg-red-600 py-3 text-sm font-bold text-white disabled:opacity-50">{pending ? "Удаляем…" : "Удалить занятия"}</button>
+    </div>
+  </Modal>;
 }
 
 function SessionEditModal({ slot, pending, onClose, onSubmitOne, onSubmitFuture }: { slot: ScheduleSlot; pending: boolean; onClose: () => void; onSubmitOne: (date: string, start: string, end: string) => Promise<void>; onSubmitFuture: (date: string, rules: EditableScheduleRule[]) => Promise<void> }) {
