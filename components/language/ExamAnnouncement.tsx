@@ -1,4 +1,10 @@
-import { AlertTriangle, CalendarDays, Check, FileText, MessageCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarDays,
+  Check,
+  FileText,
+  MessageCircle,
+} from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { waUrl } from "@/lib/utils";
 
@@ -24,82 +30,160 @@ const REQUIRED_DOCUMENTS = [
 
 export function ExamAnnouncement() {
   return (
-    <section className="bg-[#F5F8FF] py-10 sm:py-14 dark:bg-[#0B132B]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-10">
+    <section className="relative overflow-hidden bg-[#F5F8FF] py-16 sm:py-20 lg:py-24 dark:bg-[#0B132B]">
+      {/* background decoration */}
+      <div className="pointer-events-none absolute -right-32 top-10 h-[420px] w-[420px] rounded-full bg-cyan-300/10 blur-3xl" />
+      <div className="pointer-events-none absolute -left-40 bottom-0 h-[360px] w-[360px] rounded-full bg-blue-400/10 blur-3xl" />
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-10">
         <FadeIn>
-          <div
-                className="
-                    overflow-hidden rounded-[24px]
-                    border border-[#CBEAF8]
-                    bg-[#EAF7FD]
-                    px-5 py-6
-                    text-[#174B63]
-                    shadow-[0_12px_40px_rgba(74,157,196,0.12)]
-                    sm:px-8 sm:py-7
-                    dark:border-white/10
-                    dark:bg-[#18384A]
-                    dark:text-white
-                    dark:shadow-none
-                "
-                >
-            <div className="bg-[#EAF7FD] px-5 py-6 text-[#174B63] sm:px-8 sm:py-7 dark:bg-[#18384A] dark:text-white">
-              <div className="flex flex-wrap items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#4A9DC4] dark:text-[#A8E2F5]">
-                <CalendarDays className="h-4 w-4" />
-                Международный экзамен
-              </div>
-              <h2 className="mt-2 text-[25px] font-extrabold tracking-tight sm:text-[34px]">Регистрация на HSK и HSKK</h2>
-              <p className="mt-2 text-[15px] font-semibold text-[#427B91] dark:text-white/80">Дата экзамена: 16.05.2026</p>
+          {/* Header */}
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-[#EDF4FF] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.1em] text-[#2563EB] dark:border-white/10 dark:bg-white/[0.06] dark:text-[#8DDDF5]">
+              <CalendarDays className="h-4 w-4" />
+              Международный экзамен
             </div>
 
-            <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr]">
-              <div>
-                <h3 className="text-[17px] font-extrabold text-ze-ink dark:text-white">Стоимость экзаменов</h3>
-                <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <h2 className="mt-5 text-[36px] font-black leading-[1.03] tracking-[-0.035em] text-[#101828] sm:text-[48px] lg:text-[58px] dark:text-white">
+              Регистрация на
+              <br />
+              <span className="text-[#2563EB] dark:text-[#67D5F5]">
+                HSK и HSKK
+              </span>
+            </h2>
+
+            <p className="mt-5 max-w-2xl text-[16px] leading-7 text-[#52637A] sm:text-[18px] dark:text-white/65">
+              Зарегистрируйтесь на международный экзамен по китайскому
+              языку. Мы поможем подготовить необходимые документы и
+              пройти регистрацию.
+            </p>
+          </div>
+
+          {/* Main content */}
+          <div className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            {/* LEFT — prices */}
+            <div className="rounded-[28px] border border-[#E3EAF5] bg-white p-5 shadow-[0_20px_60px_rgba(35,70,120,0.08)] sm:p-7 dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
+              <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
+                <div>
+                  <p className="text-[13px] font-bold uppercase tracking-[0.1em] text-[#70829A] dark:text-white/50">
+                    Дата проведения
+                  </p>
+
+                  <p className="mt-1 text-[25px] font-black tracking-tight text-[#101828] dark:text-white">
+                    16 мая 2026
+                  </p>
+                </div>
+
+                <div className="inline-flex w-fit items-center gap-2 rounded-2xl bg-[#EEF5FF] px-4 py-3 text-[14px] font-bold text-[#2563EB] dark:bg-blue-400/10 dark:text-[#8DDDF5]">
+                  <CalendarDays className="h-4 w-4" />
+                  16.05.2026
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-[20px] font-extrabold tracking-tight text-[#101828] dark:text-white">
+                  Стоимость экзаменов
+                </h3>
+
+                <p className="mt-1 text-[14px] text-[#70829A] dark:text-white/50">
+                  Выберите необходимый уровень экзамена
+                </p>
+
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {EXAM_PRICES.map(([exam, price]) => (
-                    <div key={exam} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3.5 py-3 dark:bg-white/[0.06]">
-                      <span className="text-[14px] font-semibold text-ze-ink dark:text-white">{exam}</span>
-                      <span className="whitespace-nowrap text-[14px] font-bold text-[#3D8DAF] dark:text-[#A8E2F5]">{price}</span>
+                    <div
+                      key={exam}
+                      className="group flex items-center justify-between gap-4 rounded-[16px] border border-[#E8EEF7] bg-[#F8FAFD] px-4 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B8D9F8] hover:bg-[#F0F7FF] hover:shadow-sm dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]"
+                    >
+                      <span className="text-[14px] font-bold text-[#172033] dark:text-white">
+                        {exam}
+                      </span>
+
+                      <span className="whitespace-nowrap text-[14px] font-extrabold text-[#2586D8] dark:text-[#8DDDF5]">
+                        {price}
+                      </span>
                     </div>
                   ))}
                 </div>
+              </div>
 
-                <div className="mt-5 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-300/20 dark:bg-amber-400/10">
-                  <AlertTriangle className="mt-0.5 h-5 w-5 flex-none text-amber-600 dark:text-amber-300" />
-                  <p className="text-[13.5px] leading-relaxed text-amber-950 dark:text-amber-100">
-                    Для уровней HSK 3, 4, 5 и 6 сдача устного экзамена HSKK обязательна. Регистрация только на письменный экзамен для этих уровней не принимается.
+              <div className="mt-6 flex items-start gap-3 rounded-[18px] border border-[#F8DFAC] bg-[#FFF9EC] p-4 dark:border-amber-300/15 dark:bg-amber-300/[0.07]">
+                <div className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-300/10">
+                  <AlertTriangle className="h-4.5 w-4.5 text-amber-600 dark:text-amber-300" />
+                </div>
+
+                <p className="text-[13.5px] leading-6 text-[#755A20] dark:text-amber-100/80">
+                  Для уровней <strong>HSK 3, 4, 5 и 6</strong> сдача
+                  устного экзамена HSKK обязательна. Регистрация только
+                  на письменный экзамен для этих уровней не принимается.
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT — registration */}
+            <div className="flex flex-col rounded-[28px] border border-[#DCE8F7] bg-gradient-to-b from-[#EFF7FF] to-[#EAF8FC] p-5 shadow-[0_20px_60px_rgba(35,70,120,0.07)] sm:p-7 dark:border-white/10 dark:from-[#152A3A] dark:to-[#18384A] dark:shadow-none">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#2586D8] shadow-sm dark:bg-white/10 dark:text-[#8DDDF5]">
+                <FileText className="h-5 w-5" />
+              </div>
+
+              <h3 className="mt-5 text-[24px] font-black tracking-tight text-[#101828] dark:text-white">
+                Для регистрации нужны
+              </h3>
+
+              <p className="mt-2 text-[14px] leading-6 text-[#61748A] dark:text-white/55">
+                Подготовьте документы заранее — это ускорит процесс
+                регистрации.
+              </p>
+
+              <ul className="mt-6 space-y-4">
+                {REQUIRED_DOCUMENTS.map((document) => (
+                  <li
+                    key={document}
+                    className="flex items-start gap-3 text-[14px] leading-6 text-[#405269] dark:text-white/75"
+                  >
+                    <span className="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-white text-[#2586D8] shadow-sm dark:bg-white/10 dark:text-[#8DDDF5]">
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+
+                    {document}
+                  </li>
+                ))}
+              </ul>
+
+              {/* deadline */}
+              <div className="mt-7 rounded-[20px] bg-white p-5 shadow-[0_8px_30px_rgba(60,100,140,0.08)] dark:bg-white/[0.07] dark:shadow-none">
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.13em] text-[#6A7D94] dark:text-white/45">
+                  Крайний срок регистрации
+                </p>
+
+                <div className="mt-1 flex items-end justify-between gap-3">
+                  <p className="text-[25px] font-black tracking-tight text-[#101828] dark:text-white">
+                    до 17 апреля
                   </p>
+
+                  <span className="rounded-full bg-red-50 px-3 py-1 text-[11px] font-bold text-red-500 dark:bg-red-400/10 dark:text-red-300">
+                    Не пропустите
+                  </span>
                 </div>
               </div>
 
-              <div className="flex flex-col">
-                <h3 className="flex items-center gap-2 text-[17px] font-extrabold text-ze-ink dark:text-white">
-                  <FileText className="h-5 w-5 text-[#4A9DC4] dark:text-[#A8E2F5]" />
-                  Для регистрации нужны
-                </h3>
-                <ul className="mt-4 space-y-3">
-                  {REQUIRED_DOCUMENTS.map((document) => (
-                    <li key={document} className="flex items-start gap-2.5 text-[14px] leading-snug text-slate-600 dark:text-white/70">
-                      <Check className="mt-0.5 h-4 w-4 flex-none text-emerald-500" strokeWidth={2.5} />
-                      {document}
-                    </li>
-                  ))}
-                </ul>
+              {/* CTA */}
+              <a
+                href={waUrl(
+                  "Здравствуйте! Хочу зарегистрироваться на экзамен HSK/HSKK 16.05.2026."
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex min-h-[54px] items-center justify-center gap-2 rounded-[16px] bg-gradient-to-r from-[#2586E6] to-[#26C7DD] px-6 text-[15px] font-extrabold text-white shadow-[0_12px_30px_rgba(37,134,230,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(37,134,230,0.3)]"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Зарегистрироваться
+                <span aria-hidden>→</span>
+              </a>
 
-                <div className="mt-6 rounded-2xl bg-[#EBF1FE] p-4 dark:bg-white/[0.08]">
-                  <p className="text-[13px] font-bold uppercase tracking-wide text-[#3D8DAF] dark:text-[#A8E2F5]">Крайний срок регистрации</p>
-                  <p className="mt-1 text-[18px] font-extrabold text-ze-ink dark:text-white">до 17 апреля</p>
-                </div>
-
-                <a
-                  href={waUrl("Здравствуйте! Хочу зарегистрироваться на экзамен HSK/HSKK 16.05.2026.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-ze-whatsapp px-5 py-3 text-[14px] font-bold text-white transition-colors hover:bg-ze-whatsapp-dark"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Уточнить детали в WhatsApp
-                </a>
-              </div>
+              <p className="mt-3 text-center text-[11px] font-medium text-[#718399] dark:text-white/40">
+                Поможем с регистрацией и ответим на вопросы
+              </p>
             </div>
           </div>
         </FadeIn>

@@ -13,7 +13,6 @@ export function TeacherCard({ teacher, onOpen }: { teacher: LanguageTeacher; onO
     >
       <div className="relative aspect-[5/4] w-full overflow-hidden bg-slate-100 sm:aspect-[4/5] dark:bg-white/5">
         {teacher.photo ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={teacher.photo}
             alt={teacher.name}
