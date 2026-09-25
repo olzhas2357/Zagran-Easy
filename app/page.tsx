@@ -469,6 +469,11 @@ export default async function HomePage() {
                         </li>
                       ))}
                     </ul>
+                    {card.title === "Родитель" && (
+                      <Link href="/parents/login" className="mt-6 inline-flex items-center rounded-xl bg-ze-primary px-4 py-2.5 text-[13.5px] font-bold text-white transition-colors hover:bg-ze-primary-dark">
+                        Войти в кабинет
+                      </Link>
+                    )}
                   </div>
                 </FadeIn>
               );

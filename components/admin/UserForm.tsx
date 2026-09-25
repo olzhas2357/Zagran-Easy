@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ParentChildren } from "./ParentChildren";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet, apiPatch, apiPost } from "@/lib/api";
 
@@ -236,7 +237,7 @@ export function UserForm({ mode = "create", userId }: UserFormProps) {
         }
       }
 
-      router.push("/admin/users");
+      router.push(role === "parent" ? `/admin/users/${newUserId}/edit` : "/admin/users");
     });
   }
 
@@ -342,9 +343,11 @@ export function UserForm({ mode = "create", userId }: UserFormProps) {
         </>
       )}
 
-      {role === "parent" && (
+      {role === "parent" && isEdit && userId && <ParentChildren parentId={userId} token={token} />}
+
+      {role === "parent" && !isEdit && (
         <div className="rounded-xl bg-amber-50 px-3.5 py-3 text-[13px] leading-relaxed text-amber-700">
-          Привязку детей к родителю нужно будет сделать отдельно — API пока не поддерживает это при создании.
+          После создания родителя откроется страница, на которой можно привязать детей.
         </div>
       )}
 
