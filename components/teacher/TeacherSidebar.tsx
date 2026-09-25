@@ -11,7 +11,7 @@ const NAV = [
   { href: "/teacher", label: "Главная", Icon: LayoutGrid },
   { href: "/teacher/lessons", label: "Уроки", Icon: BookOpen },
   { href: "/teacher/students", label: "Мои ученики", Icon: Users },
-  { href: "/teacher/tasks", label: "Банк заданий", Icon: ClipboardList },
+  { href: "/teacher/tasks", label: "База знаний", Icon: ClipboardList },
   { href: "/teacher/assignments", label: "Проверка заданий", Icon: ClipboardCheck },
   { href: "/teacher/schedule", label: "Моё расписание", Icon: CalendarDays },
   { href: "/teacher/materials", label: "Материалы", Icon: FolderOpen },

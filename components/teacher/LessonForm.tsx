@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { X, Upload } from "lucide-react";
+import { TaskPicker } from "./TaskPicker";
 import type { StudentOption, TaskOption } from "@/lib/teacher-data";
 import { createLesson, updateLesson, uploadLessonMaterial } from "@/lib/teacher-actions";
 
@@ -257,29 +258,10 @@ export function LessonForm({
         </div>
       </Field>
 
-      {tasks.length > 0 && (
-        <Field label="Домашнее задание">
-          <div className="flex flex-wrap gap-2">
-            {tasks.map((t) => {
-              const active = homeworkTaskIds.includes(t.id);
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => toggle(homeworkTaskIds, setHomeworkTaskIds, t.id)}
-                  className={`rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors ${
-                    active
-                      ? "border-ze-primary bg-ze-primary text-white"
-                      : "border-ze-border bg-white text-ze-ink hover:border-slate-300"
-                  }`}
-                >
-                  {t.title}
-                </button>
-              );
-            })}
-          </div>
-        </Field>
-      )}
+      <div>
+        <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">Домашнее задание из базы знаний</div>
+        <TaskPicker tasks={tasks} selectedIds={homeworkTaskIds} onToggle={(id) => toggle(homeworkTaskIds, setHomeworkTaskIds, id)} />
+      </div>
 
       {error && <div className="rounded-xl bg-red-50 px-3.5 py-3 text-[13.5px] font-medium text-red-600">{error}</div>}
 

@@ -281,7 +281,17 @@ function pickFirst(row: Record<string, unknown>, keys: string[]): unknown {
   return null;
 }
 
+export interface TaskFolder { id: string; name: string }
+
+export async function getTaskFolders(): Promise<TaskFolder[]> {
+  const response = await apiGet<TaskFolder[]>("/tasks/folders", await getToken());
+  if (response.error) throw new Error(response.error);
+  return response.data || [];
+}
+
 export interface TaskOption {
+  folderId: string | null;
+  folderName: string | null;
   id: string;
   title: string;
   type: string | null;
@@ -289,7 +299,7 @@ export interface TaskOption {
 
 export async function getTaskBank(): Promise<TaskOption[]> {
   const tasks = await getTasks();
-  return tasks.map((t) => ({ id: t.id, title: t.title, type: t.type }));
+  return tasks.map((t) => ({ id: t.id, title: t.title, type: t.type, folderId: t.folderId, folderName: t.folderName }));
 }
 
 export async function getTeacherCourse(courseId: string): Promise<(RealLanguageCourse & { sections: CourseModule[] }) | null> {
@@ -345,6 +355,8 @@ export async function getTeacherCourses(): Promise<RealLanguageCourse[]> {
 }
 
 export interface TaskListItem {
+  folderId: string | null;
+  folderName: string | null;
   id: string;
   title: string;
   type: string | null;
@@ -359,7 +371,8 @@ export interface TaskListItem {
 export async function getTasks(): Promise<TaskListItem[]> {
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>[]>("/tasks", token);
-  if (res.error || !res.data) return [];
+  if (res.error) throw new Error(res.error);
+  if (!res.data) return [];
   return res.data
     .map((row) => ({
       id: row.id as string,
@@ -367,6 +380,8 @@ export async function getTasks(): Promise<TaskListItem[]> {
       type: (pickFirst(row, ["type", "task_type"]) as string) ?? null,
       examType: (row.exam_type as string) ?? null,
       section: (row.section as string) ?? null,
+      folderId: (row.folder_id as string) ?? null,
+      folderName: (row.task_folders as { name?: string } | null)?.name ?? null,
       difficulty: (row.difficulty as string) ?? null,
       question: (row.question as string) || "",
       options: (row.options as Record<string, unknown>) ?? null,

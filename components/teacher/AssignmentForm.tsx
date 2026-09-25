@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { StudentOption, TaskListItem } from "@/lib/teacher-data";
+import { TaskPicker } from "./TaskPicker";
 import { createAssignment } from "@/lib/teacher-actions";
 
 const inputClass =
@@ -98,32 +99,10 @@ export function AssignmentForm({ students, tasks }: { students: StudentOption[];
         />
       </Field>
 
-      <Field label="Задания из банка">
-        {tasks.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            {tasks.map((t) => {
-              const active = taskIds.includes(t.id);
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => toggleTask(t.id)}
-                  className={`flex items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left text-[13.5px] font-medium transition-colors ${
-                    active ? "border-ze-primary bg-blue-50 text-ze-ink" : "border-ze-border bg-white text-ze-ink hover:border-slate-300"
-                  }`}
-                >
-                  <span className="truncate">{t.title}</span>
-                  {t.examType && <span className="flex-none text-[11.5px] font-bold uppercase text-ze-muted">{t.examType}</span>}
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-[13px] text-ze-muted">
-            В банке пока нет заданий. Сначала создайте задание в разделе «Банк заданий».
-          </div>
-        )}
-      </Field>
+      <div>
+        <div className="mb-1.5 text-[13px] font-semibold text-ze-muted">Задания из базы знаний</div>
+        <TaskPicker tasks={tasks} selectedIds={taskIds} onToggle={toggleTask} />
+      </div>
 
       {error && <div className="rounded-xl bg-red-50 px-3.5 py-3 text-[13.5px] font-medium text-red-600">{error}</div>}
 

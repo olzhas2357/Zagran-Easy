@@ -3,6 +3,7 @@
 import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
+import type { TaskFolder } from "@/lib/teacher-data";
 import { createTask, uploadListeningAudio } from "@/lib/teacher-actions";
 import {
   AUTO_CHECK_TYPES,
@@ -242,7 +243,8 @@ function ComprehensionEditor({ questions, setQuestions }: { questions: Comprehen
   );
 }
 
-export function TaskForm() {
+export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolder[]; initialFolderId?: string }) {
+  const [folderId, setFolderId] = useState(initialFolderId);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -325,6 +327,7 @@ export function TaskForm() {
         examType,
         question,
         section,
+        folderId,
         difficulty,
         correctAnswer: isStructured || isManualOnly || isComprehension ? "" : correctAnswer,
         explanation,
@@ -343,6 +346,12 @@ export function TaskForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 flex max-w-xl flex-col gap-5">
+      <Field label="Папка в базе знаний">
+        <select value={folderId} onChange={(event) => setFolderId(event.target.value)} className={inputClass}>
+          <option value="">Без папки</option>
+          {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
+        </select>
+      </Field>
       <Field label="Название задания">
         <input
           value={title}

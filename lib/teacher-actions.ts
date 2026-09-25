@@ -283,6 +283,7 @@ export async function saveLessonBoard(
 }
 
 export interface NewTaskInput {
+  folderId?: string;
   title: string;
   type: string;
   examType: string;
@@ -313,6 +314,7 @@ export async function createTask(input: NewTaskInput): Promise<{ success: boolea
       exam_type: input.examType.trim(),
       question: input.question.trim(),
       section: input.section.trim() || undefined,
+      folder_id: input.folderId || undefined,
       difficulty: input.difficulty.trim() || undefined,
       options: input.options ?? undefined,
       correct_answer: input.correctAnswer.trim() || undefined,
@@ -449,4 +451,19 @@ export async function uploadTeacherAvatar(
   } catch {
     return { success: false, error: "Нет подключения к серверу" };
   }
+}
+
+export async function createTaskFolder(name: string) {
+  if (!name.trim() || name.trim().length > 100) return { success: false as const, error: "Название папки: от 1 до 100 символов" };
+  const response = await apiPost<{ id: string; name: string }>("/tasks/folders", { name: name.trim() }, await getToken());
+  if (response.error || !response.data) return { success: false as const, error: response.error || "Не удалось создать папку" };
+  revalidatePath("/teacher/tasks");
+  return { success: true as const, data: response.data };
+}
+
+export async function moveTaskToFolder(taskId: string, folderId: string | null) {
+  const response = await apiPatch(`/tasks/${taskId}/folder`, { folder_id: folderId }, await getToken());
+  if (response.error) return { success: false as const, error: response.error };
+  revalidatePath("/teacher/tasks");
+  return { success: true as const };
 }
