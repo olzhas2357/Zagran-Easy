@@ -12,6 +12,7 @@ export type ScheduleEnrollment = {
   enrolled_at: string;
   enrollment_type?: "group" | "trial";
   trial_status?: "booked" | "attended" | "enrolled" | "thinking" | "declined" | "no_show" | "cancelled";
+  duration_minutes?: number;
 };
 
 export type ScheduleSlot = {

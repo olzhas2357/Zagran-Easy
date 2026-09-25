@@ -40,7 +40,6 @@ export const ABOUT = {
 // .jpg того же файла) — воспроизводить N копий <video> в бесконечной ленте на 90%
 // мобильного трафика было бы слишком тяжело, поэтому лента остаётся картинкой + бейдж.
 const CLOUDINARY = "https://res.cloudinary.com/dwq9aesrb";
-// https://res.cloudinary.com/dwq9aesrb%20%20intro2_qmkezg.png
 
 export const MEDIA_REEL_ITEMS = [
   { id: "reel-01", type: "photo", label: "Офис ZagranEasy", src: `${CLOUDINARY}/image/upload/q_auto:eco,f_auto/v1776028171/about_of_us_yhf2hw.png` },

@@ -213,6 +213,7 @@ export async function createTrialBooking(input: { sessionId: string; clientId?: 
   return result(apiPost("/schedule/trials", {
     session_id: input.sessionId, client_id: input.clientId || undefined, client_name: input.clientName.trim(),
     client_phone: input.clientPhone?.trim() || undefined, notes: input.notes?.trim() || undefined,
+    duration_minutes: 45,
   }, token));
 }
 
