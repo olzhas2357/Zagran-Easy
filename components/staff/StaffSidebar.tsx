@@ -12,8 +12,8 @@ const NAV = [
   { href: "/staff/directory", label: "Университеты", Icon: BookOpen },
   { href: "/staff/materials", label: "Материалы", Icon: FolderOpen },
   { href: "/staff/schedule", label: "Расписание", Icon: CalendarDays },
-  { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
   { href: "/staff/tasks", label: "Задачи", Icon: ListTodo },
+  { href: "/staff/leads", label: "Заявки студентов", Icon: ClipboardList },
   { href: "/staff/clients", label: "Клиенты", Icon: UsersRound },
   { href: "/staff/knowledge", label: "База знаний", Icon: Library },
 ];
