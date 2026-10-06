@@ -28,6 +28,8 @@ interface ApiOptions {
 export interface ApiResponse<T = unknown> {
   data: T;
   error?: string;
+  status?: number;
+  authExpired?: boolean;
   total?: number;
   page?: number;
   limit?: number;
@@ -81,7 +83,13 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
 
   if (!res.ok || json.success === false) {
     const message = Array.isArray(json.message) ? json.message.join(", ") : json.message;
-    return { data: null as T, error: message || "Ошибка сервера" };
+    const authExpired = res.status === 401;
+    return {
+      data: null as T,
+      error: authExpired ? "Сессия истекла. Выйдите и войдите снова." : message || "Ошибка сервера",
+      status: res.status,
+      authExpired,
+    };
   }
 
   if (!("data" in json)) {

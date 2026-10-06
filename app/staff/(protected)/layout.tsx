@@ -1,8 +1,14 @@
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/staff-data";
 import { StaffSidebar } from "@/components/staff/StaffSidebar";
+import { getSessionUser, getToken } from "@/lib/session-data";
 
 export default async function StaffLayout({ children }: LayoutProps<"/staff">) {
+  const session = await getSessionUser();
+  if (!session) {
+    const token = await getToken();
+    redirect(token ? "/auth/session-expired?login=/staff/login&next=/staff" : "/staff/login");
+  }
   const profile = await getCurrentProfile();
   if (!profile) redirect("/staff/login");
   if (profile.role !== "admin" && profile.role !== "manager") redirect("/staff/login");

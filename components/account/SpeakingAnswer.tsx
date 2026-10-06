@@ -5,6 +5,7 @@ import { Mic, Square } from "lucide-react";
 import { uploadSpeakingAudio } from "@/lib/student-actions";
 import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
 import { formatAudioDuration, parseSpeakingSubmission } from "@/lib/task-types";
+import { AudioPlayback } from "./AudioPlayback";
 
 export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; initialAnswer: string | null }) {
   const { submit, isPending, error, done } = useAnswerSubmit(taskId);
@@ -15,6 +16,7 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState(initialSubmission?.url ?? "");
+  const [recordedMimeType, setRecordedMimeType] = useState(initialSubmission?.mimeType ?? "");
   const [durationSeconds, setDurationSeconds] = useState(initialSubmission?.durationSeconds ?? 0);
   const [recordError, setRecordError] = useState<string | null>(null);
 
@@ -37,9 +39,16 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // MP4/M4A plays reliably in Safari/iPhone as well as Chromium. Keep WebM
-      // as a fallback for browsers that cannot record MP4.
-      const mimeType = ["audio/mp4", "audio/mp4;codecs=mp4a.40.2", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+      // Prefer a real AAC stream when the browser can create one. Chromium may
+      // claim generic audio/mp4 support but write Opus into fragmented MP4,
+      // which its own audio player reports as 0:00. WebM/Opus is reliable there.
+      const mimeType = [
+        "audio/mp4;codecs=mp4a.40.2",
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/mp4",
+      ].find((type) => MediaRecorder.isTypeSupported(type));
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       chunksRef.current = [];
       recorder.ondataavailable = (event) => {
@@ -84,8 +93,10 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
         return;
       }
       setRecordedUrl(upload.url);
+      const normalizedMimeType = blob.type.split(";", 1)[0] || "audio/webm";
+      setRecordedMimeType(normalizedMimeType);
       chunksRef.current = [];
-      submit(JSON.stringify({ url: upload.url, durationSeconds: Math.max(1, Math.round(durationSeconds)) }));
+      submit(JSON.stringify({ url: upload.url, durationSeconds: Math.max(1, Math.round(durationSeconds)), mimeType: normalizedMimeType }));
       return;
     }
 
@@ -93,13 +104,13 @@ export function SpeakingAnswer({ taskId, initialAnswer }: { taskId: string; init
       setRecordError("Запишите ответ перед отправкой");
       return;
     }
-    submit(JSON.stringify({ url: recordedUrl, durationSeconds: durationSeconds || null }));
+    submit(JSON.stringify({ url: recordedUrl, durationSeconds: durationSeconds || null, mimeType: recordedMimeType || null }));
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="text-[13px] font-semibold text-ze-muted">Ваш устный ответ</div>
-      {recordedUrl && <audio controls preload="metadata" src={recordedUrl} className="w-full" />}
+      {recordedUrl && <AudioPlayback url={recordedUrl} mimeType={recordedMimeType} />}
       {(recording || recordedUrl) && (
         <div className="text-[13px] font-semibold tabular-nums text-ze-muted">
           Длительность: {formatAudioDuration(durationSeconds) || "0:00"}

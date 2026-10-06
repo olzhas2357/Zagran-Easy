@@ -57,7 +57,7 @@ export async function getDashboardStats(teacherId: string): Promise<DashboardSta
   const [studentsRes, lessonsRes, pendingRes] = await Promise.all([
     apiGet<unknown[]>(`/teachers/${teacherId}/students`, token),
     apiGet<unknown[]>(`/scheduled-lessons?from=${startOfToday}&to=${startOfTomorrow}`, token),
-    apiGet<unknown[]>("/assignments?status=pending", token),
+    apiGet<unknown[]>("/assignments?status=submitted", token),
   ]);
 
   return {
@@ -119,7 +119,7 @@ export async function getTeacherDashboard(teacherId: string): Promise<{
   const [studentsRes, lessonsRes, assignmentsRes] = await Promise.all([
     apiGet<unknown[]>(`/teachers/${teacherId}/students`, token),
     apiGet<Record<string, unknown>[]>(`/scheduled-lessons?from=${now.toISOString()}`, token),
-    apiGet<Record<string, unknown>[]>("/assignments?status=pending", token),
+    apiGet<Record<string, unknown>[]>("/assignments?status=submitted", token),
   ]);
 
   const lessons = lessonsRes.data || [];
@@ -167,7 +167,7 @@ export async function getTeacherDashboard(teacherId: string): Promise<{
 // Бэкенд сам ограничивает список ролью teacher → teacher_id текущего пользователя.
 export async function getPendingReviews(_teacherId: string, limit = 5): Promise<PendingReview[]> {
   const token = await getToken();
-  const res = await apiGet<Record<string, unknown>[]>("/assignments?status=pending", token);
+  const res = await apiGet<Record<string, unknown>[]>("/assignments?status=submitted", token);
   if (res.error || !res.data) return [];
 
   return res.data.slice(0, limit).map((row) => {
@@ -479,7 +479,6 @@ export interface AssignmentListItem {
   taskTitle: string;
   status: string;
   createdAt: string;
-  reviewScore: number | null;
 }
 
 function mapAssignmentRow(row: Record<string, unknown>): AssignmentListItem {
@@ -493,13 +492,13 @@ function mapAssignmentRow(row: Record<string, unknown>): AssignmentListItem {
     taskTitle: (row.title as string) || "Задание",
     status: (row.status as string) || "pending",
     createdAt: (row.created_at as string) || (row.due_date as string) || "",
-    reviewScore: (row.review_score as number) ?? null,
   };
 }
 
 // Бэкенд сам ограничивает список ассайнментов ролью teacher → teacher_id
 // текущего пользователя (см. AssignmentsController.findAll).
 export async function getAssignments(_teacherId: string): Promise<AssignmentListItem[]> {
+  void _teacherId;
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>[]>("/assignments", token);
   if (res.error || !res.data) return [];
@@ -508,6 +507,8 @@ export async function getAssignments(_teacherId: string): Promise<AssignmentList
 
 export interface AssignmentDetail extends AssignmentListItem {
   tasks: AssignmentTaskDetail[];
+  xpReward: number;
+  xpAwarded: number;
 }
 
 export interface AssignmentTaskDetail {
@@ -518,9 +519,9 @@ export interface AssignmentTaskDetail {
   options: Record<string, unknown> | null;
   audioUrl: string | null;
   answerText: string | null;
-  reviewScore: number | null;
+  isCorrect: boolean | null;
   reviewComment: string | null;
-  reviewErrors: string | null;
+  xpReward: number;
 }
 
 export async function getAssignmentById(teacherId: string, assignmentId: string): Promise<AssignmentDetail | null> {
@@ -535,19 +536,24 @@ export async function getAssignmentById(teacherId: string, assignmentId: string)
 
   return {
     ...mapAssignmentRow(row),
+    xpReward: tasks.reduce((sum, task) => sum + Math.max(0, Number(task.xp_reward ?? 0)), 0),
+    xpAwarded: Math.max(0, Number(row.xp_awarded ?? 0)),
     tasks: tasks.map((task) => {
       const attempt = (task.attempt as Record<string, unknown>) || {};
+      const options = (task.options as Record<string, unknown>) ?? null;
       return {
         id: task.id as string,
         title: (task.title as string) || "Задание",
         question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
         type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
-        options: (task.options as Record<string, unknown>) ?? null,
-        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url"]) as string) ?? null,
+        options,
+        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url", "video_url", "media_url"]) as string)
+          ?? (options ? (pickFirst(options, ["audioUrl", "audio_url", "videoUrl", "video_url", "mediaUrl", "media_url"]) as string) : null)
+          ?? null,
         answerText: (attempt.answer as string) ?? null,
-        reviewScore: (attempt.review_score as number) ?? null,
+        isCorrect: typeof attempt.is_correct === "boolean" ? attempt.is_correct : null,
         reviewComment: (attempt.review_comment as string) ?? null,
-        reviewErrors: (attempt.review_errors as string) ?? null,
+        xpReward: Math.max(0, Number(task.xp_reward ?? 0)),
       };
     }),
   };

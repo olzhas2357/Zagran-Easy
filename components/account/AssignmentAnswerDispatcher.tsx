@@ -8,7 +8,8 @@ import { FillBlanksAnswer } from "./FillBlanksAnswer";
 import { SpeakingAnswer } from "./SpeakingAnswer";
 import { ListeningAnswer } from "./ListeningAnswer";
 import { ComprehensionAnswer } from "./ComprehensionAnswer";
-import type { ComprehensionOptions, FillBlanksOptions, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
+import { TextAnswer } from "./TextAnswer";
+import type { ComprehensionOptions, FillBlanksOptions, HomeworkSubmissionMode, MatchingOptions, MultipleChoiceOptions, MultipleSelectOptions } from "@/lib/task-types";
 
 /**
  * Раньше при решении задания ВСЕГДА рендерился один и тот же textarea-компонент,
@@ -60,14 +61,43 @@ export function AssignmentAnswerDispatcher({
   }
 
   if ((taskType === "reading" || taskType === "listening") && Array.isArray(taskOptions?.questions)) {
-    return <ComprehensionAnswer taskId={taskId} options={taskOptions as unknown as ComprehensionOptions} audioUrl={taskAudioUrl} initialAnswer={initialAnswer} />;
+    return <ComprehensionAnswer taskId={taskId} options={taskOptions as unknown as ComprehensionOptions} audioUrl={taskAudioUrl} requiresMedia={taskType === "listening"} initialAnswer={initialAnswer} />;
   }
 
   if (taskType === "listening" && taskAudioUrl) {
-    return <ListeningAnswer taskId={taskId} audioUrl={taskAudioUrl} initialAnswer={initialAnswer} />;
+    return <ListeningAnswer taskId={taskId} audioUrl={taskAudioUrl} mediaKind={taskOptions?.mediaKind} initialAnswer={initialAnswer} />;
+  }
+
+  if (taskType === "listening") {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-[13.5px] font-medium text-amber-900">
+        Медиафайл не прикреплён. Сообщите преподавателю — отправка ответа временно недоступна.
+      </div>
+    );
+  }
+
+  if (taskType === "open_question") {
+    return <TextAnswer taskId={taskId} initialAnswer={initialAnswer} placeholder="Напишите развёрнутый ответ или комментарий…" autoChecked={false} />;
+  }
+
+  // Сохранённые задания старого типа продолжают открываться.
+  if (taskType === "error_correction") {
+    return <TextAnswer taskId={taskId} initialAnswer={initialAnswer} placeholder="Напишите исправленное предложение…" autoChecked={false} />;
+  }
+
+  if (taskType === "word_order") {
+    return <TextAnswer taskId={taskId} initialAnswer={initialAnswer} placeholder="Соберите и напишите предложение в правильном порядке…" />;
+  }
+
+  // Старые задания продолжают работать после удаления категорий из списка типов.
+  if (taskType === "vocabulary" || taskType === "grammar") {
+    return <TextAnswer taskId={taskId} initialAnswer={initialAnswer} placeholder="Введите ответ…" />;
   }
 
   // vocabulary/grammar/reading/listening/writing — текстовый ответ.
   const wordLimit = taskType === "writing" && typeof taskOptions?.wordLimit === "number" ? taskOptions.wordLimit : undefined;
-  return <AssignmentAnswerForm taskId={taskId} initialAnswer={initialAnswer} wordLimit={wordLimit} />;
+  const submissionMode = taskType === "writing" && ["photo", "text", "choice"].includes(String(taskOptions?.submissionMode))
+    ? taskOptions?.submissionMode as HomeworkSubmissionMode
+    : "choice";
+  return <AssignmentAnswerForm taskId={taskId} initialAnswer={initialAnswer} wordLimit={wordLimit} submissionMode={submissionMode} />;
 }

@@ -11,8 +11,8 @@ export type TaskType =
   | "multiple_select"
   | "fill_blanks"
   | "matching"
-  | "vocabulary"
-  | "grammar"
+  | "open_question"
+  | "word_order"
   | "reading"
   | "listening"
   | "writing"
@@ -23,22 +23,25 @@ export const TASK_TYPES: { value: TaskType; label: string }[] = [
   { value: "multiple_select", label: "Несколько вариантов" },
   { value: "fill_blanks", label: "Заполнить пропуски" },
   { value: "matching", label: "Сопоставление" },
-  { value: "vocabulary", label: "Лексика" },
-  { value: "grammar", label: "Грамматика" },
+  { value: "open_question", label: "Открытый вопрос" },
+  { value: "word_order", label: "Собрать предложение" },
   { value: "reading", label: "Чтение" },
   { value: "listening", label: "Аудирование" },
   { value: "writing", label: "Письмо" },
   { value: "speaking", label: "Говорение" },
 ];
 
-export const TASK_TYPE_LABEL: Record<string, string> = Object.fromEntries(
-  TASK_TYPES.map((t) => [t.value, t.label])
-);
+export const TASK_TYPE_LABEL: Record<string, string> = {
+  ...Object.fromEntries(TASK_TYPES.map((t) => [t.value, t.label])),
+  vocabulary: "Лексика (старый тип)",
+  grammar: "Грамматика (старый тип)",
+  error_correction: "Исправить ошибку (старый тип)",
+};
 
 // Письмо и говорение — всегда ручная проверка преподавателем (см. backend
 // tasks.service.ts submit(): для этих типов is_correct всегда null,
 // независимо от флага auto_check).
-export const MANUAL_ONLY_TYPES: TaskType[] = ["writing", "speaking"];
+export const MANUAL_ONLY_TYPES: TaskType[] = ["writing", "speaking", "open_question"];
 
 // Эти типы имеют однозначный эталонный ответ и никогда не должны попадать
 // в очередь ручной проверки преподавателя.
@@ -74,6 +77,7 @@ export interface MatchingPair {
 
 export interface MatchingOptions {
   pairs: MatchingPair[];
+  rights?: Array<Pick<MatchingPair, "id" | "right">>;
 }
 
 // Текст с пропусками — в `question` пропуски отмечены как ___.
@@ -91,11 +95,55 @@ export interface ComprehensionOptions {
   questions: ComprehensionQuestion[];
   questionCount: 5;
   language?: string;
+  mediaKind?: "audio" | "video";
 }
 
 export interface SpeakingSubmission {
   url: string;
   durationSeconds: number | null;
+  mimeType: string | null;
+}
+
+export interface HomeworkPhoto {
+  url: string;
+  path?: string;
+  name: string;
+}
+
+export interface HomeworkSubmission {
+  kind: "homework_submission";
+  text: string;
+  photos: HomeworkPhoto[];
+}
+
+export type HomeworkSubmissionMode = "photo" | "text" | "choice";
+
+export const HOMEWORK_SUBMISSION_MODE_LABEL: Record<HomeworkSubmissionMode, string> = {
+  photo: "Рукописная работа — фото",
+  text: "Текст на компьютере",
+  choice: "На выбор ученика",
+};
+
+export function parseHomeworkSubmission(raw: string | null): HomeworkSubmission | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<HomeworkSubmission>;
+    if (parsed.kind !== "homework_submission" || !Array.isArray(parsed.photos)) return null;
+    const photos = parsed.photos
+      .filter((photo): photo is HomeworkPhoto => Boolean(photo) && typeof photo.url === "string" && Boolean(photo.url))
+      .map((photo) => ({
+        url: photo.url,
+        ...(typeof photo.path === "string" && photo.path ? { path: photo.path } : {}),
+        name: typeof photo.name === "string" ? photo.name : "Фото задания",
+      }));
+    return {
+      kind: "homework_submission",
+      text: typeof parsed.text === "string" ? parsed.text : "",
+      photos,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export function parseSpeakingSubmission(raw: string | null): SpeakingSubmission | null {
@@ -103,12 +151,16 @@ export function parseSpeakingSubmission(raw: string | null): SpeakingSubmission 
   try {
     const parsed = JSON.parse(raw) as Partial<SpeakingSubmission>;
     if (typeof parsed.url === "string" && parsed.url) {
-      return { url: parsed.url, durationSeconds: typeof parsed.durationSeconds === "number" ? parsed.durationSeconds : null };
+      return {
+        url: parsed.url,
+        durationSeconds: typeof parsed.durationSeconds === "number" ? parsed.durationSeconds : null,
+        mimeType: typeof parsed.mimeType === "string" ? parsed.mimeType : null,
+      };
     }
   } catch {
     // Older submissions contain the URL directly.
   }
-  return { url: raw, durationSeconds: null };
+  return { url: raw, durationSeconds: null, mimeType: null };
 }
 
 export function formatAudioDuration(seconds: number | null): string | null {
@@ -124,6 +176,12 @@ export function formatAnswerForDisplay(
   rawAnswer: string | null
 ): string {
   if (!rawAnswer) return "";
+
+  const homework = parseHomeworkSubmission(rawAnswer);
+  if (homework) {
+    const photoLabel = homework.photos.length > 0 ? `Прикреплено фото: ${homework.photos.length}` : "";
+    return [homework.text, photoLabel].filter(Boolean).join("\n");
+  }
 
   if (type === "multiple_choice") {
     const opts = options as unknown as MultipleChoiceOptions | null;

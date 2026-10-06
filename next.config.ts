@@ -5,9 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
   },
   experimental: {
-    // Дефолт 1MB мал для загрузки фото/презентаций через Server Actions (lib/staff-actions.ts → uploadUniversityFile).
+    // Listening-видео проходит через Server Action и на API ограничено 50 МБ.
+    // Небольшой запас нужен для multipart-обёртки; MIME и точный размер повторно
+    // проверяются в NestJS перед записью в Storage.
     serverActions: {
-      bodySizeLimit: "15mb",
+      bodySizeLimit: "55mb",
     },
   },
 };

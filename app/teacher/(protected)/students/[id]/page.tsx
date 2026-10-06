@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, Flame, Zap, Target } from "lucide-react";
-import { getCurrentTeacher, getStudentById } from "@/lib/teacher-data";
+import { ArrowLeft, User, Flame, Zap, Plus, ClipboardCheck, Clock3, CheckCircle2, ChevronRight } from "lucide-react";
+import { getAssignments, getCurrentTeacher, getStudentById } from "@/lib/teacher-data";
 
 function initials(name: string | null) {
   if (!name) return "?";
@@ -14,10 +14,19 @@ export default async function TeacherStudentPage({ params }: { params: Promise<{
   const teacher = await getCurrentTeacher();
   if (!teacher) return null;
 
-  const student = await getStudentById(teacher.id, id);
+  const [student, assignments] = await Promise.all([getStudentById(teacher.id, id), getAssignments(teacher.id)]);
   if (!student) notFound();
 
-  const progress = student.progress ?? 0;
+  const studentAssignments = assignments.filter((assignment) => assignment.studentId === student.id);
+  const acceptedCount = studentAssignments.filter((assignment) => assignment.status === "completed").length;
+  const reviewCount = studentAssignments.filter((assignment) => assignment.status === "submitted").length;
+  const activeCount = studentAssignments.filter((assignment) => !["completed", "submitted"].includes(assignment.status)).length;
+  const completionRate = studentAssignments.length > 0 ? Math.round((acceptedCount / studentAssignments.length) * 100) : 0;
+  const level = Math.floor(Math.max(0, student.xp ?? 0) / 500) + 1;
+  const recentAssignments = [...studentAssignments]
+    .sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+    .slice(0, 6);
+  const statusLabel: Record<string, string> = { pending: "Выдано", assigned: "Выдано", in_progress: "В работе", submitted: "На проверке", returned: "На доработке", completed: "Принято", overdue: "Просрочено" };
 
   return (
     <div className="flex flex-col gap-6 p-5 sm:p-8">
@@ -40,11 +49,7 @@ export default async function TeacherStudentPage({ params }: { params: Promise<{
                 {student.phone && <div className="mt-0.5 text-[13.5px] text-ze-muted">{student.phone}</div>}
               </div>
             </div>
-            {student.examType && (
-              <span className="w-fit rounded-full bg-blue-50 px-3.5 py-1.5 text-[13px] font-bold text-blue-700">
-                Цель: {student.examType.toUpperCase()}
-              </span>
-            )}
+            <Link href={`/teacher/assignments/new?student=${student.id}`} className="flex w-fit items-center gap-2 rounded-xl bg-ze-primary px-4 py-2.5 text-[13.5px] font-semibold text-white"><Plus className="h-4 w-4" />Дать задание</Link>
           </div>
 
           {/* Unified activity strip — same pattern as the dashboard stat strip, for product-wide consistency */}
@@ -65,32 +70,38 @@ export default async function TeacherStudentPage({ params }: { params: Promise<{
             </div>
             <div className="flex flex-col items-center gap-1 py-3.5">
               <div className="flex items-center gap-1.5 text-[20px] font-extrabold text-ze-ink">
-                <Target className="h-4.5 w-4.5 text-emerald-600" strokeWidth={2} />
-                {progress}%
+                <ClipboardCheck className="h-4.5 w-4.5 text-emerald-600" strokeWidth={2} />
+                {acceptedCount}
               </div>
-              <div className="text-[12px] text-ze-muted">К цели</div>
+              <div className="text-[12px] text-ze-muted">Принято работ</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Progress toward goal gets its own dedicated panel — it's the most decision-relevant info for a teacher */}
-      {(student.currentScore !== null && student.targetScore !== null) && (
-        <div className="rounded-[20px] border border-ze-border bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
-          <div className="flex items-center justify-between text-[13px] font-semibold text-ze-muted">
-            <span>Прогресс к цели</span>
-            <span>
-              {student.currentScore} <span className="text-ze-border">→</span> {student.targetScore}
-            </span>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[{ label: "Уровень", value: level, icon: Zap, tone: "text-blue-600 bg-blue-50" }, { label: "На проверке", value: reviewCount, icon: ClipboardCheck, tone: "text-amber-700 bg-amber-50" }, { label: "В работе", value: activeCount, icon: Clock3, tone: "text-slate-600 bg-slate-100" }, { label: "Выполнено", value: `${completionRate}%`, icon: CheckCircle2, tone: "text-emerald-700 bg-emerald-50" }].map((item) => (
+          <div key={item.label} className="rounded-[18px] border border-ze-border bg-white p-4">
+            <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${item.tone}`}><item.icon className="h-4.5 w-4.5" /></span>
+            <div className="mt-3 text-[22px] font-extrabold text-ze-ink">{item.value}</div>
+            <div className="mt-0.5 text-[12px] text-ze-muted">{item.label}</div>
           </div>
-          <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-ze-surface">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-ze-primary to-[#3D7BFF] transition-all duration-500"
-              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-            />
+        ))}
+      </div>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between gap-3"><h2 className="text-[17px] font-bold text-ze-ink">Последние задания</h2><span className="text-[12.5px] text-ze-muted">Всего {studentAssignments.length}</span></div>
+        {recentAssignments.length > 0 ? (
+          <div className="divide-y divide-ze-border overflow-hidden rounded-[20px] border border-ze-border bg-white">
+            {recentAssignments.map((assignment) => (
+              <Link key={assignment.id} href={`/teacher/assignments/${assignment.id}`} className="flex items-center justify-between gap-3 px-4.5 py-4 transition-colors hover:bg-ze-surface sm:px-5">
+                <div className="min-w-0"><div className="truncate text-[14px] font-semibold text-ze-ink">{assignment.taskTitle}</div><div className="mt-1 text-[12px] text-ze-muted">{new Date(assignment.createdAt).toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}</div></div>
+                <div className="flex items-center gap-2"><span className={`text-[12.5px] font-semibold ${assignment.status === "completed" ? "text-emerald-700" : assignment.status === "submitted" ? "text-amber-700" : "text-ze-muted"}`}>{statusLabel[assignment.status] || assignment.status}</span><ChevronRight className="h-4 w-4 text-ze-muted" /></div>
+              </Link>
+            ))}
           </div>
-        </div>
-      )}
+        ) : <div className="rounded-[20px] border border-dashed border-ze-border bg-white px-5 py-8 text-center text-[13.5px] text-ze-muted">Заданий пока нет.</div>}
+      </section>
     </div>
   );
 }

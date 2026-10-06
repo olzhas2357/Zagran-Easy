@@ -59,6 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (saved) {
           localStorage.removeItem(TOKEN_KEY);
           setToken(null);
+          if (res?.authExpired) {
+            await logoutAction();
+            if (!cancelled) window.location.replace("/admin/login?reason=session_expired");
+            return;
+          }
         }
         setLoading(false);
       });

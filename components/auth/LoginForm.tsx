@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, TriangleAlert } from "lucide-react";
 import { loginAction } from "@/lib/session";
 
 export function LoginForm({
@@ -41,6 +41,7 @@ export function LoginForm({
   }
 
   const buttonClass = accent === "navy" ? "bg-ze-navy hover:bg-[#182338]" : "bg-ze-primary hover:bg-ze-primary-dark";
+  const sessionExpired = searchParams.get("reason") === "session_expired";
 
   // Красиво форматируем заголовок без уродливых запятых и пробелов
   const welcomeText = roleLabel && roleLabel.trim() 
@@ -80,7 +81,14 @@ export function LoginForm({
         </h1>
         <p className="mx-auto mt-2 max-w-[300px] text-center text-[14px] leading-relaxed text-ze-muted">{subtitle}</p>
 
-        <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-4">
+        {sessionExpired && (
+          <div className="mt-5 flex gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-[13px] leading-relaxed text-amber-900">
+            <TriangleAlert className="mt-0.5 h-4 w-4 flex-none" />
+            <span>Сессия истекла. Войдите в аккаунт ещё раз.</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className={`${sessionExpired ? "mt-5" : "mt-7"} flex flex-col gap-4`}>
           <div>
             <label className="text-[13px] font-semibold text-ze-muted">Электронная почта</label>
             <div className="relative mt-1.5">

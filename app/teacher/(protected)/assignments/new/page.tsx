@@ -3,11 +3,13 @@ import { ArrowLeft } from "lucide-react";
 import { getCurrentTeacher, getStudentsForSelect, getTasks } from "@/lib/teacher-data";
 import { AssignmentForm } from "@/components/teacher/AssignmentForm";
 
-export default async function NewAssignmentPage() {
+export default async function NewAssignmentPage({ searchParams }: { searchParams: Promise<{ student?: string }> }) {
   const teacher = await getCurrentTeacher();
   if (!teacher) return null;
 
   const [students, tasks] = await Promise.all([getStudentsForSelect(teacher.id), getTasks()]);
+  const { student } = await searchParams;
+  const initialStudentId = students.some((item) => item.id === student) ? student : "";
 
   return (
     <div className="p-5 sm:p-8">
@@ -16,7 +18,7 @@ export default async function NewAssignmentPage() {
         Задания на проверку
       </Link>
       <h1 className="mt-3 text-[24px] font-extrabold tracking-tight text-ze-ink sm:text-[28px]">Назначить задание</h1>
-      <AssignmentForm students={students} tasks={tasks} />
+      <AssignmentForm students={students} tasks={tasks} initialStudentId={initialStudentId} />
     </div>
   );
 }

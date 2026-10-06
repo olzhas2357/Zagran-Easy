@@ -122,7 +122,6 @@ export interface StudentAssignmentListItem {
   status: string;
   dueDate: string | null;
   createdAt: string;
-  reviewScore: number | null;
 }
 
 function mapAssignmentRow(row: Record<string, unknown>): StudentAssignmentListItem {
@@ -132,7 +131,6 @@ function mapAssignmentRow(row: Record<string, unknown>): StudentAssignmentListIt
     status: (row.status as string) || "pending",
     dueDate: (row.due_date as string) ?? null,
     createdAt: (row.created_at as string) || (row.due_date as string) || "",
-    reviewScore: (row.review_score as number) ?? null,
   };
 }
 
@@ -220,6 +218,7 @@ export async function getMyGoal(): Promise<StudentGoal | null> {
 export interface StudentAssignmentDetail extends StudentAssignmentListItem {
   tasks: StudentAssignmentTask[];
   xpAwarded: number;
+  isOverdue: boolean;
 }
 
 export interface StudentAssignmentTask {
@@ -230,9 +229,9 @@ export interface StudentAssignmentTask {
   options: Record<string, unknown> | null;
   audioUrl: string | null;
   answerText: string | null;
-  reviewScore: number | null;
+  correctAnswer: string | null;
+  isCorrect: boolean | null;
   reviewComment: string | null;
-  reviewErrors: string | null;
 }
 
 export async function getMyAssignmentById(assignmentId: string): Promise<StudentAssignmentDetail | null> {
@@ -246,19 +245,23 @@ export async function getMyAssignmentById(assignmentId: string): Promise<Student
   return {
     ...mapAssignmentRow(row),
     xpAwarded: Number(row.xp_awarded ?? 0),
+    isOverdue: Boolean(row.is_overdue),
     tasks: tasks.map((task) => {
       const attempt = (task.attempt as Record<string, unknown>) || {};
+      const options = (task.options as Record<string, unknown>) ?? null;
       return {
         id: task.id as string,
         title: (task.title as string) || "Задание",
         question: (pickFirst(task, ["question", "prompt", "description", "title"]) as string) ?? null,
         type: (pickFirst(task, ["type", "task_type"]) as string) ?? null,
-        options: (task.options as Record<string, unknown>) ?? null,
-        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url"]) as string) ?? null,
+        options,
+        audioUrl: (pickFirst(task, ["question_audio_url", "audio_url", "video_url", "media_url"]) as string)
+          ?? (options ? (pickFirst(options, ["audioUrl", "audio_url", "videoUrl", "video_url", "mediaUrl", "media_url"]) as string) : null)
+          ?? null,
         answerText: (attempt.answer as string) ?? null,
-        reviewScore: (attempt.review_score as number) ?? null,
+        correctAnswer: (task.correct_answer as string) ?? null,
+        isCorrect: typeof attempt.is_correct === "boolean" ? attempt.is_correct : null,
         reviewComment: (attempt.review_comment as string) ?? null,
-        reviewErrors: (attempt.review_errors as string) ?? null,
       };
     }),
   };

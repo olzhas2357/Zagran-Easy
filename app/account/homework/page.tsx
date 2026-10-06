@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ClipboardList, Star, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ClipboardList, CheckCircle2 } from "lucide-react";
 import { getCurrentStudent, getMyAssignments } from "@/lib/student-data";
 
 export const metadata: Metadata = { title: "Домашние задания — ZagranEasy" };
@@ -12,8 +12,12 @@ function formatDate(iso: string) {
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Не отправлено",
+  assigned: "Нужно выполнить",
+  in_progress: "В работе",
   submitted: "На проверке",
-  completed: "Проверено",
+  returned: "Нужно исправить",
+  completed: "Принято",
+  overdue: "Просрочено",
 };
 
 export default async function StudentHomeworkPage() {
@@ -54,7 +58,7 @@ export default async function StudentHomeworkPage() {
                     <span className="truncate font-semibold text-ze-ink">{a.taskTitle}</span>
                   </span>
                   <span className="flex-none text-[13px] text-ze-muted">
-                    {a.status === "submitted" ? STATUS_LABEL.submitted : a.dueDate ? `до ${formatDate(a.dueDate)}` : STATUS_LABEL.pending}
+                    {a.status === "submitted" || a.status === "returned" ? STATUS_LABEL[a.status] : a.dueDate ? `до ${formatDate(a.dueDate)}` : STATUS_LABEL[a.status] || STATUS_LABEL.pending}
                   </span>
                 </Link>
               ))}
@@ -84,16 +88,7 @@ export default async function StudentHomeworkPage() {
                     </span>
                     <span className="truncate font-semibold text-ze-ink">{a.taskTitle}</span>
                   </span>
-                  <span className="flex flex-none items-center gap-1 text-[13px] font-semibold text-ze-muted">
-                    {a.reviewScore !== null ? (
-                      <>
-                        <Star className="h-3.5 w-3.5 text-amber-500" strokeWidth={2} fill="currentColor" />
-                        {a.reviewScore}
-                      </>
-                    ) : (
-                      STATUS_LABEL.completed
-                    )}
-                  </span>
+                  <span className="flex flex-none items-center gap-1 text-[13px] font-semibold text-emerald-700">{STATUS_LABEL.completed}</span>
                 </Link>
               ))}
             </div>

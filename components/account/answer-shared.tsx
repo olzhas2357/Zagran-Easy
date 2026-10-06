@@ -44,20 +44,10 @@ export function SubmitStatus({ error, done, autoChecked = false }: { error: stri
       {done && !error && (
         <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3.5 py-3 text-[13.5px] font-medium text-emerald-700">
           <CheckCircle2 className="h-4.5 w-4.5" strokeWidth={2} />
-          {autoChecked ? "Ответ проверен автоматически." : "Ответ отправлен на проверку преподавателю."}
+          {autoChecked ? "Ответ проверен и сохранён в черновике." : "Ответ сохранён в черновике. Его можно изменить до сдачи работы."}
         </div>
       )}
     </>
-  );
-}
-
-export function CorrectAnswer({ children, show }: { children: React.ReactNode; show: boolean }) {
-  if (!show) return null;
-  return (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-[13.5px] text-emerald-800">
-      <div className="font-semibold">Правильный ответ</div>
-      <div className="mt-1">{children}</div>
-    </div>
   );
 }
 
@@ -68,7 +58,7 @@ export function SubmitButton({ isPending, hasInitial, disabled = false }: { isPe
       disabled={isPending || disabled}
       className="w-fit rounded-xl bg-ze-primary px-6 py-3 text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(26,86,219,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ze-primary-dark disabled:translate-y-0 disabled:opacity-60"
     >
-      {isPending ? "Отправляем…" : hasInitial ? "Отправить ещё раз" : "Отправить ответ"}
+      {isPending ? "Сохраняем…" : hasInitial ? "Обновить ответ" : "Сохранить ответ"}
     </button>
   );
 }
