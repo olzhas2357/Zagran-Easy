@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GraduationCap, ArrowLeft, ArrowRight, CheckCircle2, Check, Sparkles } from "lucide-react";
 import { createLead } from "@/lib/actions";
-import { waUrl, isValidPhone } from "@/lib/utils";
+import { formatKazakhstanPhone, KAZAKHSTAN_PHONE_START, waUrl, isValidPhone } from "@/lib/utils";
 
 /**
  * Field keys are unique by construction (derived from STEPS itself below),
@@ -182,7 +182,7 @@ export function FormStudent() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [otherProfession, setOtherProfession] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(KAZAKHSTAN_PHONE_START);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -248,7 +248,7 @@ export function FormStudent() {
     setStep(0);
     setAnswers({});
     setOtherProfession("");
-    setPhone("");
+    setPhone(KAZAKHSTAN_PHONE_START);
     setSubmitted(false);
     setSubmitError(null);
   }, []);
@@ -273,7 +273,7 @@ export function FormStudent() {
   );
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setPhone(e.target.value.replace(/[^\d+]/g, "").slice(0, 16));
+    setPhone(formatKazakhstanPhone(e.target.value));
   }
 
   function handleSubmitPhone() {
@@ -480,6 +480,7 @@ export function FormStudent() {
               inputMode="tel"
               autoComplete="tel"
               placeholder="+7 (___) ___ __ __"
+              maxLength={18}
               aria-label="Номер телефона"
               className="min-w-0 flex-1 rounded-xl border border-ze-border bg-ze-surface px-4 py-[15px] text-[15px] text-ze-ink dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/30"
             />

@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { CatalogUniversity } from "@/lib/education-catalog";
 import { formatTuition } from "@/lib/education-catalog";
 import { createLead } from "@/lib/actions";
-import { isValidPhone } from "@/lib/utils";
+import { formatKazakhstanPhone, isValidPhone, KAZAKHSTAN_PHONE_START } from "@/lib/utils";
 
 interface Question {
   q: string;
@@ -26,7 +26,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>([null, null, null]);
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(KAZAKHSTAN_PHONE_START);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -59,7 +59,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
   function reset() {
     setStep(0);
     setAnswers([null, null, null]);
-    setPhone("");
+    setPhone(KAZAKHSTAN_PHONE_START);
     setSubmitted(false);
     setSubmitError(null);
   }
@@ -177,8 +177,12 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
           <div className="mt-4.5 flex flex-col gap-2.5 sm:flex-row">
             <input
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(formatKazakhstanPhone(e.target.value))}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               placeholder="+7 (___) ___ __ __"
+              maxLength={18}
               className="min-w-0 flex-1 rounded-xl border border-ze-border bg-ze-surface px-4 py-[15px] text-[15px] text-ze-ink"
             />
             <button

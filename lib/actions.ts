@@ -6,6 +6,7 @@
 // ============================================================
 
 import { apiPost } from "./api";
+import { isValidPhone, normalizeKazakhstanPhone } from "./utils";
 
 // ---- Типы для actions ----
 interface LeadInput {
@@ -30,9 +31,14 @@ export async function createLead(input: LeadInput): Promise<ActionResult> {
     if (!input.name?.trim()) {
       return { success: false, error: "Укажите имя" };
     }
-    if (!input.phone?.trim()) {
-      return { success: false, error: "Укажите телефон" };
-    }
+  }
+
+  if (input.source !== "whatsapp" && !input.phone?.trim()) {
+    return { success: false, error: "Укажите телефон" };
+  }
+
+  if (input.phone && !isValidPhone(input.phone)) {
+    return { success: false, error: "Укажите корректный мобильный номер Казахстана" };
   }
 
   if (input.source === "quiz" && !input.quizAnswers) {
@@ -43,7 +49,7 @@ export async function createLead(input: LeadInput): Promise<ActionResult> {
     source: input.source,
     service: input.service,
     name: input.name,
-    phone: input.phone,
+    phone: input.phone ? normalizeKazakhstanPhone(input.phone) : undefined,
     message: input.message,
     quiz_answers: input.quizAnswers,
   });

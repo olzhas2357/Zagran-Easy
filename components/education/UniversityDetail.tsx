@@ -6,7 +6,7 @@ import type { University } from "@/lib/types";
 import { formatTuitionAmount } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { createLead } from "@/lib/actions";
-import { waUrl } from "@/lib/utils";
+import { formatKazakhstanPhone, isValidPhone, KAZAKHSTAN_PHONE_START, waUrl } from "@/lib/utils";
 
 export function UniversitySidebar({ university, countryName }: { university: University; countryName: string }) {
   const { ids, toggle, max } = useCompareList();
@@ -14,7 +14,7 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
   const [applied, setApplied] = useState(false);
   const [applicationOpen, setApplicationOpen] = useState(false);
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(KAZAKHSTAN_PHONE_START);
   const [applicationError, setApplicationError] = useState<string | null>(null);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -22,6 +22,10 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
   function apply(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setApplicationError(null);
+    if (!isValidPhone(phone)) {
+      setApplicationError("Укажите корректный мобильный номер Казахстана");
+      return;
+    }
     startTransition(async () => {
       const result = await createLead({
         source: "form",
@@ -92,12 +96,14 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
                   required
                   type="tel"
                   value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder="+7 700 000 00 00"
+                  onChange={(event) => setPhone(formatKazakhstanPhone(event.target.value))}
+                  placeholder="+7 (___) ___ __ __"
                   autoComplete="tel"
+                  inputMode="tel"
+                  maxLength={18}
                   className="rounded-xl border border-ze-border bg-white px-3 py-2.5 text-[13px] outline-none focus:border-ze-primary"
                 />
-                <button type="submit" disabled={isPending} className="rounded-xl bg-ze-primary px-3 py-2.5 text-[13px] font-bold text-white disabled:opacity-60">
+                <button type="submit" disabled={isPending || !isValidPhone(phone)} className="rounded-xl bg-ze-primary px-3 py-2.5 text-[13px] font-bold text-white disabled:opacity-60">
                   {isPending ? "Отправляем…" : "Отправить заявку"}
                 </button>
               </div>

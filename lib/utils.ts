@@ -60,9 +60,58 @@ export function formatDuration(days: number): string {
 }
 
 // ---- Валидация ----
+const KAZAKHSTAN_MOBILE_PREFIXES = new Set([
+  "700", "701", "702", "705", "706", "707", "708",
+  "747", "771", "775", "776", "777", "778",
+]);
+
+export const KAZAKHSTAN_PHONE_START = "+7 ";
+
+function getKazakhstanNationalDigits(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+
+  if (phone.trim().startsWith("+7") || (digits.length === 11 && (digits.startsWith("7") || digits.startsWith("8")))) {
+    return digits.slice(1, 11);
+  }
+
+  return digits.slice(0, 10);
+}
+
+export function formatKazakhstanPhone(phone: string): string {
+  const national = getKazakhstanNationalDigits(phone);
+  if (!national) return KAZAKHSTAN_PHONE_START;
+
+  const prefix = national.slice(0, 3);
+  const first = national.slice(3, 6);
+  const second = national.slice(6, 8);
+  const third = national.slice(8, 10);
+
+  let formatted = `+7 (${prefix}`;
+  if (prefix.length === 3) formatted += ")";
+  if (first) formatted += ` ${first}`;
+  if (second) formatted += ` ${second}`;
+  if (third) formatted += ` ${third}`;
+  return formatted;
+}
+
+export function normalizeKazakhstanPhone(phone: string): string | null {
+  if (!isValidPhone(phone)) return null;
+  return `+7${getKazakhstanNationalDigits(phone)}`;
+}
+
+function isObviouslyFakeSubscriber(subscriber: string): boolean {
+  if (/^(\d)\1{6}$/.test(subscriber)) return true;
+
+  const ascending = "01234567890123456";
+  const descending = "98765432109876543";
+  return ascending.includes(subscriber) || descending.includes(subscriber);
+}
+
 export function isValidPhone(phone: string): boolean {
-  const cleaned = phone.replace(/\D/g, "");
-  return cleaned.length >= 10 && cleaned.length <= 12;
+  const national = getKazakhstanNationalDigits(phone);
+  if (national.length !== 10) return false;
+  if (!KAZAKHSTAN_MOBILE_PREFIXES.has(national.slice(0, 3))) return false;
+  return !isObviouslyFakeSubscriber(national.slice(3));
 }
 
 export function isValidEmail(email: string): boolean {

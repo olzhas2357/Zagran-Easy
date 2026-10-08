@@ -11,7 +11,7 @@ import {
 import type { EducationCountry, University, UniversityCatalog, UniversityCatalogItem } from "@/lib/types";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { createLead } from "@/lib/actions";
-import { waUrl } from "@/lib/utils";
+import { formatKazakhstanPhone, isValidPhone, KAZAKHSTAN_PHONE_START, waUrl } from "@/lib/utils";
 import { formatCurrency } from "@/lib/currency";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
@@ -190,7 +190,7 @@ function ApplicationCard({ university }: { university: University }) { return <d
 function ApplyButton({ university, className = "" }: { university: University; className?: string }) { const [open, setOpen] = useState(false); return <><button onClick={() => setOpen(true)} className={`items-center justify-center rounded-xl bg-ze-primary px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(26,86,219,.2)] transition hover:bg-ze-primary-dark ${className}`}>Хочу поступить</button>{open && <ApplicationModal university={university} onClose={() => setOpen(false)} />}</>; }
 function ApplicationModal({ university, onClose }: { university: University; onClose: () => void }) {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(KAZAKHSTAN_PHONE_START);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -210,6 +210,10 @@ function ApplicationModal({ university, onClose }: { university: University; onC
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (!isValidPhone(phone)) {
+      setError("Укажите корректный мобильный номер Казахстана");
+      return;
+    }
     startTransition(async () => {
       const result = await createLead({
         source: "form",
@@ -271,13 +275,15 @@ function ApplicationModal({ university, onClose }: { university: University; onC
                 type="tel"
                 inputMode="tel"
                 value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                placeholder="+7 700 000 00 00"
+                onChange={(event) => setPhone(formatKazakhstanPhone(event.target.value))}
+                placeholder="+7 (___) ___ __ __"
+                autoComplete="tel"
+                maxLength={18}
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-base outline-none focus:border-ze-primary"
               />
               <button
                 type="submit"
-                disabled={pending}
+                disabled={pending || !isValidPhone(phone)}
                 className="w-full rounded-xl bg-ze-primary py-3.5 font-bold text-white disabled:opacity-60"
               >
                 {pending ? "Отправляем…" : "Отправить заявку"}
