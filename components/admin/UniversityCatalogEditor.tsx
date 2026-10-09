@@ -38,15 +38,15 @@ const sections: Record<UniversityCatalogKind, { title: string; singular: string;
   costs: { title: "Стоимость", singular: "стоимость", fields: [
     { key: "program_id", label: "Программа (необязательно)", type: "program" },
     { key: "intake_id", label: "Intake (необязательно)", type: "intake" },
-    { key: "category", label: "Категория", required: true, placeholder: "tuition / dormitory / fee" },
+    { key: "category", label: "Категория", required: true, placeholder: "tuition / rector_grant / zagraneasy_service" },
     { key: "title", label: "Название", required: true }, { key: "amount", label: "Сумма", type: "number", required: true },
-    { key: "currency", label: "Валюта", placeholder: "USD" }, { key: "period", label: "Период", placeholder: "year / semester / once" },
+    { key: "currency", label: "Валюта", placeholder: "USD" }, { key: "period", label: "Период", placeholder: "year / за все 5 лет / единоразово" },
     { key: "valid_from", label: "Действует с", type: "date" }, { key: "valid_until", label: "Действует до", type: "date" },
     { key: "is_required", label: "Обязательный расход", type: "boolean" },
   ] },
   scholarships: { title: "Стипендии и гранты", singular: "стипендию", fields: [
     { key: "program_id", label: "Программа (необязательно)", type: "program" }, { key: "name", label: "Название", required: true },
-    { key: "description", label: "Описание", type: "textarea" }, { key: "coverage_type", label: "Тип покрытия", placeholder: "percent / fixed / full" },
+    { key: "description", label: "Описание", type: "textarea" }, { key: "coverage_type", label: "Тип покрытия", placeholder: "rector_4_plus_1 / percent / fixed / full" },
     { key: "coverage_value", label: "Размер покрытия", type: "number" }, { key: "currency", label: "Валюта" },
     { key: "eligibility", label: "Критерии", type: "textarea" }, { key: "application_deadline", label: "Дедлайн", type: "date" },
     { key: "source_url", label: "Ссылка на источник" }, { key: "is_active", label: "Активна", type: "boolean" },
@@ -115,6 +115,15 @@ export function UniversityCatalogEditor({ universityId, initialCatalog }: { univ
     <div>
       <h2 className="text-[21px] font-extrabold text-ze-ink">Связанные справочники</h2>
       <p className="mt-1 text-[13.5px] text-ze-muted">Программы, наборы, требования, цены и стипендии хранятся отдельными записями.</p>
+    </div>
+    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-[13px] leading-5 text-slate-700">
+      <div className="font-extrabold text-emerald-800">Как добавить ректорский грант «1 + 4»</div>
+      <ol className="mt-2 list-decimal space-y-1 pl-5">
+        <li>Добавьте грант с типом покрытия <b>rector_4_plus_1</b>.</li>
+        <li>Для каждой цены за 5 лет добавьте стоимость с категорией <b>rector_grant</b>.</li>
+        <li>Услуги компании добавьте отдельной стоимостью с категорией <b>zagraneasy_service</b>.</li>
+      </ol>
+      <p className="mt-2 text-slate-500">Специальный блок появится только у университетов, где заполнен такой грант.</p>
     </div>
     {(Object.keys(sections) as UniversityCatalogKind[]).map((kind) => {
       const section = sections[kind];

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   ArrowLeft, ArrowRight, BadgeCheck, BedDouble, BookOpen, Building2, CalendarDays, Check,
@@ -18,7 +19,7 @@ import { ImageLightbox } from "@/components/ui/ImageLightbox";
 type Props = { university: University; catalog: UniversityCatalog; country: EducationCountry | null; related: University[] };
 
 const navItems = [
-  ["overview", "Обзор"], ["programs", "Программы"], ["admission", "Поступление"],
+  ["overview", "Обзор"], ["offer", "Грант 1 + 4"], ["programs", "Программы"], ["admission", "Поступление"],
   ["cost", "Стоимость"], ["scholarships", "Гранты"], ["campus", "Кампус"],
 ] as const;
 
@@ -33,9 +34,42 @@ function dateLabel(value: unknown) {
   const date = new Date(raw); return Number.isNaN(date.valueOf()) ? raw : date.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 }
 
+function normalizedCatalogValue(value: unknown) {
+  return text(value).toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
+}
+
+function isRectorGrant(item: UniversityCatalogItem) {
+  const value = `${normalizedCatalogValue(item.coverage_type)} ${normalizedCatalogValue(item.name)} ${normalizedCatalogValue(item.description)}`;
+  return /rector_4_plus_1|rector|ректор|4\s*\+\s*1/.test(value);
+}
+
+function isRectorOfferCost(item: UniversityCatalogItem) {
+  return /rector_grant|grant_package|scholarship_package|4\s*\+\s*1|ректор/.test(`${normalizedCatalogValue(item.category)} ${normalizedCatalogValue(item.title)}`);
+}
+
+function isZagranEasyServiceCost(item: UniversityCatalogItem) {
+  return /zagraneasy_service|zagraneasy|услуг/.test(`${normalizedCatalogValue(item.category)} ${normalizedCatalogValue(item.title)}`);
+}
+
+function getRectorGrantOffer(catalog: UniversityCatalog) {
+  const scholarship = catalog.scholarships.find(isRectorGrant);
+  if (!scholarship) return null;
+  return {
+    scholarship,
+    tuition: catalog.costs.filter(isRectorOfferCost),
+    services: catalog.costs.filter(isZagranEasyServiceCost),
+  };
+}
+
 export function UniversityExperience({ university, catalog, country, related }: Props) {
   const [active, setActive] = useState("overview");
-  const sections = useMemo(() => navItems.filter(([id]) => id !== "scholarships" || catalog.scholarships.length > 0), [catalog.scholarships.length]);
+  const rectorGrantOffer = useMemo(() => getRectorGrantOffer(catalog), [catalog]);
+  const otherScholarships = useMemo(() => catalog.scholarships.filter((item) => !isRectorGrant(item)), [catalog.scholarships]);
+  const sections = useMemo(() => navItems.filter(([id]) => {
+    if (id === "offer") return Boolean(rectorGrantOffer);
+    if (id === "scholarships") return otherScholarships.length > 0;
+    return true;
+  }), [otherScholarships.length, rectorGrantOffer]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -64,20 +98,62 @@ export function UniversityExperience({ university, catalog, country, related }: 
       <div className="mx-auto grid max-w-[1240px] gap-10 px-4 py-10 sm:px-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:px-10">
         <div className="min-w-0 space-y-16">
           <Overview university={university} />
+          {rectorGrantOffer && <RectorGrantOffer university={university} offer={rectorGrantOffer} />}
           <Programs university={university} catalog={catalog} />
           <Admission university={university} catalog={catalog} />
           {(university.youtubeUrl || university.virtualTourUrl || university.presentationUrl) && <UniversityMedia university={university} />}
           <Tuition university={university} catalog={catalog} />
-          {catalog.scholarships.length > 0 && <Scholarships items={catalog.scholarships} />}
+          {otherScholarships.length > 0 && <Scholarships items={otherScholarships} />}
           <Campus university={university} />
           {(university.address || university.googleMapsUrl || university.city) && <Location university={university} country={country} />}
         </div>
-        <aside className="hidden lg:block"><div className="sticky top-24"><ApplicationCard university={university} /></div></aside>
+        <aside className="hidden lg:block"><div className="sticky top-24"><ApplicationCard university={university} catalog={catalog} /></div></aside>
       </div>
       {related.length > 0 && <Related universities={related} country={country} />}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-3 backdrop-blur lg:hidden"><ApplyButton university={university} className="w-full" /></div>
     </main>
   );
+}
+
+function RectorGrantOffer({ university, offer }: { university: University; offer: NonNullable<ReturnType<typeof getRectorGrantOffer>> }) {
+  const { scholarship, tuition, services } = offer;
+  const description = text(scholarship.description) || "1 год языковой подготовки + 4 года бакалавриата";
+  return <Section id="offer">
+    <div className="relative overflow-hidden rounded-[28px] border-2 border-[#ef4d3d] bg-gradient-to-br from-[#fff3f0] via-white to-[#fff8f7] p-6 shadow-[0_20px_50px_rgba(239,77,61,.12)] sm:p-9">
+      <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full border-[34px] border-[#ffd9d3]/70" />
+      <div className="relative">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#ef4d3d] px-4 py-2 text-xs font-extrabold uppercase tracking-[.10em] text-white shadow-sm">
+            <ShieldCheck className="h-4 w-4" /> Ректорский грант · 1 + 4
+          </div>
+          <span className="rounded-full border border-[#ef4d3d] bg-white/80 px-3 py-1.5 text-xs font-extrabold text-[#ef4d3d]">Специальное предложение ZagranEasy</span>
+        </div>
+        <h2 className="mt-5 max-w-3xl text-2xl font-extrabold tracking-[-.025em] sm:text-4xl">Обучение в {university.name} по ректорскому гранту</h2>
+        <p className="mt-3 max-w-2xl whitespace-pre-line text-[15px] leading-6 text-slate-600">{description}</p>
+
+        {tuition.length > 0 && <div className="mt-7 grid gap-3 sm:grid-cols-2">
+          {tuition.map((item) => <div key={item.id} className="rounded-2xl border border-[#ffd8d2] bg-white/95 p-5 shadow-sm">
+            <div className="text-sm font-semibold text-slate-600">{text(item.title) || "Бакалавриат"}</div>
+            <div className="mt-2 text-3xl font-extrabold tracking-tight text-[#ef4d3d]">{money(item.amount, text(item.currency) || "USD")}</div>
+            <div className="mt-1 text-sm font-bold text-slate-500">{text(item.period) || "за весь период обучения"}</div>
+          </div>)}
+        </div>}
+
+        <div className="mt-7 rounded-2xl border border-[#ffe0db] bg-white/70 p-5">
+          <div className="text-xs font-extrabold uppercase tracking-[.14em] text-[#ef4d3d]">Что входит в программу</div>
+          <div className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-3">
+            {["1 год языковой подготовки", "4 года бакалавриата", "Ректорский грант на весь период"].map((label) => <div key={label} className="flex items-start gap-2.5"><span className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full border border-[#ef4d3d] text-[#ef4d3d]"><Check className="h-3.5 w-3.5" /></span><span className="font-semibold">{label}</span></div>)}
+          </div>
+        </div>
+
+        {services.map((item) => <div key={item.id} className="mt-5 flex flex-col justify-between gap-4 rounded-2xl bg-[#ef4d3d] p-5 text-white shadow-[0_12px_28px_rgba(239,77,61,.22)] sm:flex-row sm:items-center sm:px-6">
+          <div><div className="text-sm font-extrabold">{text(item.title) || "Услуги ZagranEasy"}</div><div className="mt-1 text-xs text-white/80">Консультация и сопровождение.</div></div>
+          <div className="text-3xl font-extrabold tracking-tight">{money(item.amount, text(item.currency) || "KZT")}</div>
+        </div>)}
+        <p className="mt-5 text-xs leading-5 text-slate-500">Стоимость университета и услуги ZagranEasy указаны раздельно. Проживание, перелёт и личные расходы не включены.</p>
+      </div>
+    </div>
+  </Section>;
 }
 
 function Breadcrumb({ university, country }: { university: University; country: EducationCountry | null }) {
@@ -147,12 +223,12 @@ function Programs({ university, catalog }: { university: University; catalog: Un
 }
 
 function ProgramCard({ program, catalog, onOpen }: { program: UniversityCatalogItem; catalog: UniversityCatalog; onOpen: () => void }) {
-  const costs = catalog.costs.filter((item) => item.program_id === program.id && positive(item.amount)); const requirements = catalog.requirements.filter((item) => item.program_id === program.id).slice(0, 2); const intake = catalog.intakes.find((item) => item.program_id === program.id);
+  const costs = catalog.costs.filter((item) => item.program_id === program.id && positive(item.amount) && !isRectorOfferCost(item) && !isZagranEasyServiceCost(item)); const requirements = catalog.requirements.filter((item) => item.program_id === program.id).slice(0, 2); const intake = catalog.intakes.find((item) => item.program_id === program.id);
   return <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_25px_rgba(15,23,42,.04)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_35px_rgba(15,23,42,.08)]"><h3 className="text-lg font-extrabold">{text(program.name)}</h3><div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm text-slate-500">{text(program.degree_level) && <span className="flex items-center gap-1.5"><GraduationCap className="h-4 w-4" />{text(program.degree_level)}</span>}{positive(program.duration_months) && <span className="flex items-center gap-1.5"><Clock3 className="h-4 w-4" />{program.duration_months} мес.</span>}{text(program.language) && <span className="flex items-center gap-1.5"><Languages className="h-4 w-4" />{text(program.language)}</span>}</div><div className="mt-5 text-xl font-extrabold text-ze-primary">{costs[0] ? `${money(costs[0].amount, text(costs[0].currency) || "USD")}${text(costs[0].period) ? ` / ${costs[0].period}` : ""}` : text(program.legacy_price) || "Стоимость уточняется"}</div>{requirements.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{requirements.map((item) => <span key={item.id} className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{text(item.title)}{positive(item.minimum_value) ? ` ${item.minimum_value}${text(item.unit)}` : ""}</span>)}</div>}{intake && text(intake.application_deadline) && <div className="mt-4 flex items-center gap-2 text-sm text-slate-500"><CalendarDays className="h-4 w-4" /> Дедлайн: {dateLabel(intake.application_deadline)}</div>}<button onClick={onOpen} className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-bold text-ze-primary">Подробнее о программе <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></button></article>;
 }
 
 function ProgramModal({ program, catalog, university, onClose }: { program: UniversityCatalogItem; catalog: UniversityCatalog; university: University; onClose: () => void }) {
-  const requirements = catalog.requirements.filter((item) => !item.program_id || item.program_id === program.id); const costs = catalog.costs.filter((item) => item.program_id === program.id && positive(item.amount)); const intake = catalog.intakes.find((item) => item.program_id === program.id);
+  const requirements = catalog.requirements.filter((item) => !item.program_id || item.program_id === program.id); const costs = catalog.costs.filter((item) => item.program_id === program.id && positive(item.amount) && !isRectorOfferCost(item) && !isZagranEasyServiceCost(item)); const intake = catalog.intakes.find((item) => item.program_id === program.id);
   return <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/45 backdrop-blur-sm" onMouseDown={onClose}><div className="h-full w-full max-w-xl overflow-y-auto bg-white p-6 shadow-2xl sm:p-9" onMouseDown={(event) => event.stopPropagation()}><button onClick={onClose} className="ml-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100" aria-label="Закрыть"><X className="h-5 w-5" /></button><div className="mt-4 text-xs font-bold uppercase tracking-widest text-ze-primary">{university.name}</div><h2 className="mt-2 text-3xl font-extrabold">{text(program.name)}</h2><div className="mt-6 divide-y divide-slate-100 rounded-2xl border border-slate-200 px-5">{[["Уровень", program.degree_level], ["Продолжительность", positive(program.duration_months) ? `${program.duration_months} мес.` : ""], ["Язык", program.language], ["Дедлайн", intake?.application_deadline ? dateLabel(intake.application_deadline) : ""]].filter(([, value]) => value).map(([label, value]) => <div key={String(label)} className="flex justify-between gap-4 py-4 text-sm"><span className="text-slate-500">{String(label)}</span><b className="text-right">{String(value)}</b></div>)}</div>{text(program.description) && <p className="mt-6 text-[15px] leading-7 text-slate-600">{text(program.description)}</p>}{costs.length > 0 && <div className="mt-7"><h3 className="font-bold">Стоимость</h3><div className="mt-3 space-y-2">{costs.map((item) => <div key={item.id} className="flex justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm"><span>{text(item.title)}</span><b>{money(item.amount, text(item.currency) || "USD")}</b></div>)}</div></div>}{requirements.length > 0 && <div className="mt-7"><h3 className="font-bold">Требования</h3><ul className="mt-3 space-y-2">{requirements.map((item) => <li key={item.id} className="flex gap-2 text-sm text-slate-600"><Check className="h-4 w-4 flex-none text-emerald-600" />{text(item.title)}{text(item.description) ? ` — ${item.description}` : ""}</li>)}</ul></div>}<a href={waUrl(`Здравствуйте! Хочу узнать о программе ${text(program.name)} в ${university.name}.`)} target="_blank" rel="noreferrer" className="mt-8 block rounded-xl bg-ze-primary px-5 py-3.5 text-center text-sm font-bold text-white">Хочу поступить на программу</a></div></div>;
 }
 
@@ -164,7 +240,7 @@ function Admission({ university, catalog }: { university: University; catalog: U
 }
 
 function Tuition({ university, catalog }: { university: University; catalog: UniversityCatalog }) {
-  const costs = catalog.costs.filter((item) => positive(item.amount)); const tuitionCosts = costs.filter((item) => /tuition|обуч/i.test(`${item.category} ${item.title}`)); const extra = costs.filter((item) => !tuitionCosts.includes(item));
+  const costs = catalog.costs.filter((item) => positive(item.amount) && !isRectorOfferCost(item) && !isZagranEasyServiceCost(item)); const tuitionCosts = costs.filter((item) => /tuition|обуч/i.test(`${item.category} ${item.title}`)); const extra = costs.filter((item) => !tuitionCosts.includes(item));
   const tuitionFallback = positive(university.tuitionFrom); const extras = [...extra];
   if (positive(university.dormitoryCost) && !extras.some((item) => /dorm|общеж/i.test(text(item.title)))) extras.push({ id: "dorm", title: "Общежитие", amount: university.dormitoryCost, currency: university.dormitoryCurrency });
   if (positive(university.applicationFee)) extras.push({ id: "application", title: "Application fee", amount: university.applicationFee, currency: university.applicationFeeCurrency });
@@ -185,7 +261,11 @@ function VideoCard({ url, title, imageUrl }: { url: string; title: string; image
 
 function Location({ university, country }: { university: University; country: EducationCountry | null }) { return <section className="scroll-mt-24"><SectionTitle eyebrow="Локация" title="Город и расположение" /><div className="flex flex-col justify-between gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center"><div><div className="flex items-center gap-2 text-xl font-extrabold"><MapPin className="h-5 w-5 text-ze-primary" />{university.city}{country?.name ? `, ${country.name}` : ""}</div>{university.address && <p className="mt-2 text-sm text-slate-500">{university.address}</p>}</div>{university.googleMapsUrl && <a href={university.googleMapsUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-ze-primary">Открыть на карте <ExternalLink className="h-4 w-4" /></a>}</div></section>; }
 
-function ApplicationCard({ university }: { university: University }) { return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,.08)]"><div className="text-sm font-bold">{university.name}</div><div className="mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Обучение</div><div className="mt-1 text-2xl font-extrabold">{positive(university.tuitionFrom) ? `от ${money(university.tuitionFrom, university.tuitionCurrency)}` : "Уточняется"}<span className="text-sm font-medium text-slate-400"> / год</span></div><div className="mt-5 space-y-2.5 text-sm text-slate-600">{university.deadlineLabel && <div className="flex gap-2"><CalendarDays className="h-4 w-4 text-ze-primary" />{university.deadlineLabel}</div>}{university.hasGrant && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Доступны гранты</div>}{university.hasDormitory && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Есть общежитие</div>}</div><ApplyButton university={university} className="mt-6 w-full" /><a href={waUrl(`Здравствуйте! Хочу узнать про поступление в ${university.name}.`)} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm font-bold text-emerald-700">Спросить менеджера</a></div>; }
+function ApplicationCard({ university, catalog }: { university: University; catalog: UniversityCatalog }) {
+  const offer = getRectorGrantOffer(catalog);
+  const firstOfferPrice = offer?.tuition[0];
+  return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,.08)]"><div className="text-sm font-bold">{university.name}</div>{offer ? <><div className="mt-5 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-emerald-700">Ректорский грант 4+1</div><div className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-400">За весь период</div><div className="mt-1 text-2xl font-extrabold">{firstOfferPrice ? money(firstOfferPrice.amount, text(firstOfferPrice.currency) || "USD") : "Уточняется"}</div><div className="mt-1 text-xs font-semibold text-slate-500">1 год языка + 4 года бакалавриата</div>{offer.services[0] && <div className="mt-4 rounded-xl bg-blue-50 px-3 py-2.5 text-xs text-slate-600"><b className="block text-ze-primary">Услуги ZagranEasy</b>{money(offer.services[0].amount, text(offer.services[0].currency) || "KZT")} отдельно</div>}</> : <><div className="mt-5 text-xs font-semibold uppercase tracking-wider text-slate-400">Обучение</div><div className="mt-1 text-2xl font-extrabold">{positive(university.tuitionFrom) ? `от ${money(university.tuitionFrom, university.tuitionCurrency)}` : "Уточняется"}<span className="text-sm font-medium text-slate-400"> / год</span></div></>}<div className="mt-5 space-y-2.5 text-sm text-slate-600">{university.deadlineLabel && <div className="flex gap-2"><CalendarDays className="h-4 w-4 text-ze-primary" />{university.deadlineLabel}</div>}{university.hasGrant && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Доступны гранты</div>}{university.hasDormitory && <div className="flex gap-2"><Check className="h-4 w-4 text-emerald-600" />Есть общежитие</div>}</div><ApplyButton university={university} className="mt-6 w-full" /><a href={waUrl(`Здравствуйте! Хочу узнать про поступление в ${university.name}.`)} target="_blank" rel="noreferrer" className="mt-3 block text-center text-sm font-bold text-emerald-700">Спросить менеджера</a></div>;
+}
 
 function ApplyButton({ university, className = "" }: { university: University; className?: string }) { const [open, setOpen] = useState(false); return <><button onClick={() => setOpen(true)} className={`items-center justify-center rounded-xl bg-ze-primary px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(26,86,219,.2)] transition hover:bg-ze-primary-dark ${className}`}>Хочу поступить</button>{open && <ApplicationModal university={university} onClose={() => setOpen(false)} />}</>; }
 function ApplicationModal({ university, onClose }: { university: University; onClose: () => void }) {
@@ -227,18 +307,19 @@ function ApplicationModal({ university, onClose }: { university: University; onC
     });
   }
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`Поступить в ${university.name}`}
-      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-slate-950/50 pt-4 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-950/55 pt-4 backdrop-blur-sm sm:items-center sm:p-4"
       onMouseDown={onClose}
     >
       <div
-        className="max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl bg-white px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5 shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl sm:p-6"
+        className="relative max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-[28px] bg-white px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3 shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl sm:p-6"
         onMouseDown={(event) => event.stopPropagation()}
       >
+        <div className="mx-auto mb-2 h-1.5 w-11 rounded-full bg-slate-200 sm:hidden" />
         <button
           type="button"
           onClick={onClose}
@@ -293,7 +374,8 @@ function ApplicationModal({ university, onClose }: { university: University; onC
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
