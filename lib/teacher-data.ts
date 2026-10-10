@@ -8,6 +8,7 @@ import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 import type { TeacherProfile } from "./types";
 import type { CourseModule, RealLanguageCourse } from "./language-data";
+import { mapCourseSyllabus, type CourseSyllabus } from "./course-syllabus";
 
 function unwrapProfile(row: Record<string, unknown>): Record<string, unknown> | undefined {
   const p = row.profiles;
@@ -336,13 +337,16 @@ export async function getTeacherCourse(courseId: string): Promise<(RealLanguageC
 
 export async function getTeacherCourses(): Promise<RealLanguageCourse[]> {
   const token = await getToken();
-  let res = await apiGet<Record<string, unknown>[]>("/courses/manage?limit=100", token);
+  const res = await apiGet<Record<string, unknown>[]>("/courses/manage?limit=100", token);
   if (res.error || !res.data) {
-    console.error("Failed to load teacher courses from manage endpoint", { error: String(res.error || "empty response"), hasToken: Boolean(token) });
-    res = await apiGet<Record<string, unknown>[]>("/courses?limit=100", token);
-  }
-  if (res.error || !res.data) {
-    console.error("Failed to load teacher courses", { error: String(res.error || "empty response"), hasToken: Boolean(token) });
+    // Не используем console.error: в dev-режиме Next.js превращает его в
+    // красный runtime overlay, хотя страница умеет показать пустое состояние.
+    // Публичный /courses здесь тоже не подходит — он может вернуть курсы
+    // других преподавателей, которыми текущий учитель не имеет права управлять.
+    console.warn("Teacher courses are temporarily unavailable", {
+      status: res.status,
+      reason: res.error || "empty response",
+    });
     return [];
   }
   return res.data.map((row) => ({
@@ -352,6 +356,13 @@ export async function getTeacherCourses(): Promise<RealLanguageCourse[]> {
     estimated_hours: Number(row.estimated_hours ?? 0), image_url: row.image_url ? String(row.image_url) : null,
     is_active: Boolean(row.is_active), sort_order: Number(row.sort_order ?? 0), created_at: String(row.created_at ?? ""),
   }));
+}
+
+export async function getTeacherCourseSyllabus(courseId: string): Promise<CourseSyllabus | null> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown> | null>(`/courses/manage/${courseId}/syllabus`, token);
+  if (res.error || !res.data) return null;
+  return mapCourseSyllabus(res.data);
 }
 
 export interface TaskListItem {

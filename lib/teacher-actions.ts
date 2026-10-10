@@ -8,6 +8,7 @@
 import { revalidatePath } from "next/cache";
 import { apiDelete, apiPatch, apiPost } from "./api";
 import { getSessionUser, getToken } from "./session-data";
+import { mapCourseSyllabus, type CourseSyllabus } from "./course-syllabus";
 
 export interface UpdateLessonInput {
   title: string;
@@ -264,6 +265,57 @@ export async function deleteCourseSection(courseId: string, sectionId: string) {
   const res = await apiDelete(`/courses/${courseId}/sections/${sectionId}`, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath(`/teacher/courses/${courseId}/edit`);
+  return { success: true };
+}
+
+export async function uploadCourseSyllabus(formData: FormData): Promise<{ success: boolean; syllabus?: CourseSyllabus; error?: string }> {
+  const courseId = String(formData.get("courseId") ?? "");
+  const comment = String(formData.get("comment") ?? "");
+  const file = formData.get("file");
+  if (!courseId) return { success: false, error: "Выберите курс" };
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Выберите файл syllabus" };
+  const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  if (!allowedTypes.includes(file.type) && !["pdf", "doc", "docx"].includes(extension || "")) {
+    return { success: false, error: "Выберите PDF, DOC или DOCX" };
+  }
+  if (file.size > 20 * 1024 * 1024) return { success: false, error: "Файл должен быть меньше 20 МБ" };
+
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  const upload = new FormData();
+  upload.set("file", file);
+  upload.set("comment", comment);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const response = await fetch(`${API_URL}/courses/manage/${encodeURIComponent(courseId)}/syllabus`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: upload,
+      cache: "no-store",
+    });
+    const json = await response.json();
+    if (!response.ok || json.success === false || !json.data) {
+      const message = Array.isArray(json.message) ? json.message.join(", ") : json.message;
+      return { success: false, error: message || "Не удалось загрузить syllabus" };
+    }
+    const syllabus = mapCourseSyllabus(json.data as Record<string, unknown>);
+    revalidatePath("/teacher/syllabus");
+    revalidatePath("/account/syllabus");
+    revalidatePath("/account/course");
+    return { success: true, syllabus };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
+}
+
+export async function deleteCourseSyllabus(courseId: string): Promise<{ success: boolean; error?: string }> {
+  const token = await getToken();
+  const res = await apiDelete(`/courses/manage/${courseId}/syllabus`, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/teacher/syllabus");
+  revalidatePath("/account/syllabus");
+  revalidatePath("/account/course");
   return { success: true };
 }
 

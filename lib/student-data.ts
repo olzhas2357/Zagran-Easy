@@ -6,6 +6,7 @@
 
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
+import { mapCourseSyllabus, mapStudentLearningCourse, type CourseSyllabus, type StudentLearningCourse } from "./course-syllabus";
 
 export async function getCurrentStudent(): Promise<{ id: string; email?: string } | null> {
   const user = await getSessionUser();
@@ -40,6 +41,16 @@ export async function getMyTeacherProfile(): Promise<StudentTeacherProfile | nul
       ? (teacherRes.data.specializations as string[])
       : [],
     imageUrl: (teacherRes.data.image_url as string) ?? null,
+  };
+}
+
+export async function getMyLearning(): Promise<{ course: StudentLearningCourse | null; syllabus: CourseSyllabus | null }> {
+  const token = await getToken();
+  const res = await apiGet<{ course: Record<string, unknown> | null; syllabus: Record<string, unknown> | null }>("/courses/my/learning", token);
+  if (res.error || !res.data) return { course: null, syllabus: null };
+  return {
+    course: res.data.course ? mapStudentLearningCourse(res.data.course) : null,
+    syllabus: res.data.syllabus ? mapCourseSyllabus(res.data.syllabus) : null,
   };
 }
 
