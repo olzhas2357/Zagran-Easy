@@ -22,10 +22,10 @@ import { waUrl } from "@/lib/utils";
 const NAV = [
   { href: "/account", label: "Главная", Icon: LayoutGrid },
   { href: "/account/course", label: "Мой курс", Icon: GraduationCap },
+  { href: "/account/syllabus", label: "Syllabus", Icon: FileText },
   { href: "/account/lessons", label: "Уроки", Icon: Video },
   { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
-  { href: "/account/schedule", label: "Расписание", Icon: CalendarDays },
-  { href: "/account/syllabus", label: "Syllabus", Icon: FileText },
+  // { href: "/account/schedule", label: "Расписание", Icon: CalendarDays },
 ];
 
 function initials(email?: string) {
