@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardCheck, CheckCircle2, Star, Plus } from "lucide-react";
+import { ClipboardCheck, CheckCircle2, Clock3, Plus } from "lucide-react";
 import { getCurrentTeacher, getAssignments } from "@/lib/teacher-data";
 
 function formatDate(iso: string) {
@@ -7,8 +7,13 @@ function formatDate(iso: string) {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  pending: "На проверке",
-  completed: "Проверено",
+  pending: "Выдано",
+  assigned: "Выдано",
+  in_progress: "В работе",
+  submitted: "На проверке",
+  returned: "На доработке",
+  completed: "Принято",
+  overdue: "Просрочено",
 };
 
 export default async function TeacherAssignmentsPage() {
@@ -16,7 +21,8 @@ export default async function TeacherAssignmentsPage() {
   if (!teacher) return null;
 
   const assignments = await getAssignments(teacher.id);
-  const pending = assignments.filter((a) => a.status !== "completed");
+  const pending = assignments.filter((a) => a.status === "submitted");
+  const active = assignments.filter((a) => !["submitted", "completed"].includes(a.status));
   const reviewed = assignments.filter((a) => a.status === "completed");
 
   return (
@@ -24,7 +30,7 @@ export default async function TeacherAssignmentsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[24px] font-extrabold tracking-tight text-ze-ink sm:text-[28px]">Задания на проверку</h1>
-          <p className="mt-1.5 text-[14.5px] text-ze-muted">{pending.length} ожидают проверки.</p>
+          <p className="mt-1.5 text-[14.5px] text-ze-muted">{pending.length > 0 ? `${pending.length} ожидают проверки.` : "Новых работ на проверку нет."}</p>
         </div>
         <Link
           href="/teacher/assignments/new"
@@ -34,6 +40,20 @@ export default async function TeacherAssignmentsPage() {
           Назначить задание
         </Link>
       </div>
+
+      {active.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-[17px] font-bold text-ze-ink">Выданные</h2>
+          <div className="divide-y divide-ze-border overflow-hidden rounded-[20px] border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            {active.map((a) => (
+              <Link key={a.id} href={`/teacher/assignments/${a.id}`} className="flex items-center justify-between gap-3 px-5 py-4 text-[14px] transition-colors hover:bg-ze-surface">
+                <span className="flex min-w-0 items-center gap-3"><span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-blue-50"><Clock3 className="h-4.5 w-4.5 text-blue-700" strokeWidth={1.75} /></span><span className="truncate text-ze-ink"><span className="font-semibold">{a.studentName}</span> · {a.taskTitle}</span></span>
+                <span className={`flex-none text-[13px] font-semibold ${a.status === "returned" || a.status === "overdue" ? "text-amber-700" : "text-ze-muted"}`}>{STATUS_LABEL[a.status] || "Выдано"}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <h2 className="mb-3 text-[17px] font-bold text-ze-ink">На проверке</h2>
@@ -84,16 +104,7 @@ export default async function TeacherAssignmentsPage() {
                     <span className="font-semibold">{a.studentName}</span> · {a.taskTitle}
                   </span>
                 </span>
-                <span className="flex flex-none items-center gap-1 text-[13px] font-semibold text-ze-muted">
-                  {a.reviewScore !== null ? (
-                    <>
-                      <Star className="h-3.5 w-3.5 text-amber-500" strokeWidth={2} fill="currentColor" />
-                      {a.reviewScore}
-                    </>
-                  ) : (
-                    STATUS_LABEL[a.status]
-                  )}
-                </span>
+                <span className="flex flex-none items-center gap-1 text-[13px] font-semibold text-emerald-700">{STATUS_LABEL[a.status]}</span>
               </Link>
             ))}
           </div>

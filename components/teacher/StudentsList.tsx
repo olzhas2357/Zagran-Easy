@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, User, Flame, ChevronRight, Users } from "lucide-react";
+import { Search, User, Flame, ChevronRight, Users, Zap } from "lucide-react";
 import type { StudentListItem } from "@/lib/teacher-data";
 
 function initials(name: string | null) {
@@ -45,7 +45,6 @@ export function StudentsList({ students }: { students: StudentListItem[] }) {
 
       <div className="divide-y divide-ze-border overflow-hidden rounded-[20px] border border-ze-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         {filtered.map((student) => {
-          const progress = Math.min(100, Math.max(0, student.progress ?? 0));
           return (
             <Link
               key={student.id}
@@ -65,8 +64,9 @@ export function StudentsList({ students }: { students: StudentListItem[] }) {
                     </span>
                   )}
                 </div>
-                <div className="mt-1.5 h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-ze-surface">
-                  <div className="h-full rounded-full bg-ze-primary transition-all duration-500" style={{ width: `${progress}%` }} />
+                <div className="mt-1 flex items-center gap-1 text-[12px] font-semibold text-blue-700">
+                  <Zap className="h-3.5 w-3.5" fill="currentColor" />
+                  {(student.xp ?? 0).toLocaleString("ru-RU")} XP
                 </div>
               </div>
 
@@ -77,7 +77,7 @@ export function StudentsList({ students }: { students: StudentListItem[] }) {
                     {student.streak}
                   </span>
                 )}
-                <span className="w-9 text-right font-semibold text-ze-ink">{progress}%</span>
+                <span className="text-[12px]">Уровень {Math.floor(Math.max(0, student.xp ?? 0) / 500) + 1}</span>
               </div>
 
               <ChevronRight className="h-4.5 w-4.5 flex-none text-ze-muted" strokeWidth={2} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CorrectAnswer, SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
+import { SubmitButton, SubmitStatus, useAnswerSubmit } from "./answer-shared";
 import type { MultipleSelectOptions } from "@/lib/task-types";
 
 export function MultipleSelectAnswer({
@@ -25,7 +25,10 @@ export function MultipleSelectAnswer({
   });
 
   function toggle(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setSelected((prev) => {
+      const current = Array.isArray(prev) ? prev : [];
+      return current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+    });
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -44,7 +47,7 @@ export function MultipleSelectAnswer({
           >
             <input
               type="checkbox"
-              checked={selected.includes(c.id)}
+              checked={Array.isArray(selected) && selected.includes(c.id)}
               onChange={() => toggle(c.id)}
               className="h-4.5 w-4.5 accent-ze-primary"
             />
@@ -54,9 +57,6 @@ export function MultipleSelectAnswer({
       </div>
 
       <SubmitStatus error={error} done={done} autoChecked />
-      <CorrectAnswer show={done}>
-        {options.choices.filter((choice) => options.correctIds.includes(choice.id)).map((choice) => choice.text).join(", ")}
-      </CorrectAnswer>
       <SubmitButton isPending={isPending} hasInitial={!!initialAnswer} />
     </form>
   );

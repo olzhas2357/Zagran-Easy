@@ -6,37 +6,68 @@
 // ============================================================
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { apiPost, apiPatch } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 
-export async function uploadSpeakingAudio(
-  formData: FormData
-): Promise<{ success: boolean; url?: string; error?: string }> {
+function redirectExpiredSession(nextPath: string): never {
+  redirect(`/auth/session-expired?login=/account/login&next=${encodeURIComponent(nextPath)}`);
+}
+
+async function uploadStudentFile(
+  formData: FormData,
+  options: { bucket: "speaking-audio" | "assignment-photos"; kind: "audio" | "image"; maxBytes: number }
+): Promise<{ success: boolean; url?: string; path?: string; name?: string; error?: string }> {
   const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Запись не найдена" };
-  if (!file.type.startsWith("audio/")) return { success: false, error: "Файл записи должен быть аудио" };
-  if (file.size > 20 * 1024 * 1024) return { success: false, error: "Запись не должна быть больше 20 МБ" };
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Файл не найден" };
+  if (!file.type.startsWith(`${options.kind}/`)) {
+    return { success: false, error: options.kind === "image" ? "Можно загрузить только изображение" : "Файл записи должен быть аудио" };
+  }
+  if (file.size > options.maxBytes) {
+    return { success: false, error: options.kind === "image" ? "Фото должно быть меньше 8 МБ" : "Запись не должна быть больше 20 МБ" };
+  }
 
   const token = await getToken();
-  if (!token) return { success: false, error: "Не авторизован" };
+  if (!token) redirectExpiredSession("/account/homework");
 
   const upload = new FormData();
   upload.set("file", file);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
+  let res: Response;
+  let json: { success?: boolean; message?: string; url?: string; path?: string; name?: string; data?: { url?: string; path?: string; name?: string } };
   try {
-    const res = await fetch(`${API_URL}/uploads?bucket=speaking-audio`, {
+    res = await fetch(`${API_URL}/uploads?bucket=${options.bucket}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: upload,
       cache: "no-store",
     });
-    const json = await res.json();
-    if (!res.ok || json.success === false) return { success: false, error: json.message || "Не удалось загрузить запись" };
-    return { success: true, url: json.data?.url || json.url };
+    json = await res.json() as typeof json;
   } catch {
     return { success: false, error: "Нет подключения к серверу" };
   }
+  if (res.status === 401) redirectExpiredSession("/account/homework");
+  if (!res.ok || json.success === false) return { success: false, error: String(json.message || "Не удалось загрузить файл") };
+  const data = json.data;
+  return {
+    success: true,
+    url: String(data?.url || json.url || ""),
+    path: String(data?.path || json.path || ""),
+    name: String(data?.name || json.name || file.name),
+  };
+}
+
+export async function uploadSpeakingAudio(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  return uploadStudentFile(formData, { bucket: "speaking-audio", kind: "audio", maxBytes: 20 * 1024 * 1024 });
+}
+
+export async function uploadHomeworkPhoto(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; path?: string; name?: string; error?: string }> {
+  return uploadStudentFile(formData, { bucket: "assignment-photos", kind: "image", maxBytes: 8 * 1024 * 1024 });
 }
 
 export interface SetGoalInput {
@@ -62,6 +93,7 @@ export async function setMyGoal(input: SetGoalInput): Promise<{ success: boolean
       },
       token
     );
+    if (res.authExpired) redirectExpiredSession("/account");
     if (res.error) return { success: false, error: res.error };
   } else {
     const user = await getSessionUser();
@@ -77,6 +109,7 @@ export async function setMyGoal(input: SetGoalInput): Promise<{ success: boolean
       },
       token
     );
+    if (res.authExpired) redirectExpiredSession("/account");
     if (res.error) return { success: false, error: res.error };
   }
 
@@ -98,8 +131,27 @@ export async function submitAssignmentAnswer(
 
   const token = await getToken();
   const res = await apiPost(`/tasks/${taskId}/submit`, { answer: answer.trim(), time_spent_seconds: Math.max(0, Math.round(timeSpentSeconds)) }, token);
+  if (res.authExpired) redirectExpiredSession("/account/homework");
   if (res.error) return { success: false, error: res.error };
 
+  revalidatePath("/account/homework");
+  return { success: true };
+}
+
+export async function turnInAssignment(assignmentId: string): Promise<{ success: boolean; error?: string }> {
+  const res = await apiPost(`/assignments/${assignmentId}/submit`, {}, await getToken());
+  if (res.authExpired) redirectExpiredSession(`/account/homework/${assignmentId}`);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/account/homework/${assignmentId}`);
+  revalidatePath("/account/homework");
+  return { success: true };
+}
+
+export async function reopenSubmittedAssignment(assignmentId: string): Promise<{ success: boolean; error?: string }> {
+  const res = await apiPost(`/assignments/${assignmentId}/reopen`, {}, await getToken());
+  if (res.authExpired) redirectExpiredSession(`/account/homework/${assignmentId}`);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath(`/account/homework/${assignmentId}`);
   revalidatePath("/account/homework");
   return { success: true };
 }

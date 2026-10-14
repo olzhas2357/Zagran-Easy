@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import type { TaskFolder } from "@/lib/teacher-data";
 import { createTask, uploadListeningAudio } from "@/lib/teacher-actions";
+import { TaskMedia } from "@/components/account/TaskMedia";
 import {
   AUTO_CHECK_TYPES,
   MANUAL_ONLY_TYPES,
@@ -12,6 +13,7 @@ import {
   TASK_TYPES,
   type ChoiceOption,
   type ComprehensionQuestion,
+  type HomeworkSubmissionMode,
   type MatchingPair,
   type TaskType,
 } from "@/lib/task-types";
@@ -261,8 +263,10 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
   const [xpReward, setXpReward] = useState("10");
   const [autoCheck, setAutoCheck] = useState(false);
   const [audioUrl, setAudioUrl] = useState("");
+  const [mediaKind, setMediaKind] = useState<"audio" | "video">("audio");
   const [audioUploading, setAudioUploading] = useState(false);
   const [wordLimit, setWordLimit] = useState("250");
+  const [submissionMode, setSubmissionMode] = useState<HomeworkSubmissionMode>("choice");
 
   // Структурированные данные под каждый тип задания.
   const [choices, setChoices] = useState<ChoiceOption[]>([
@@ -289,6 +293,7 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
 
     if (!title.trim()) return setError("Укажите название задания");
     if (!question.trim()) return setError("Укажите текст задания");
+    if (type === "listening" && !audioUrl) return setError("Прикрепите аудио или видео для задания");
 
     let options: Record<string, unknown> | undefined;
     if (isChoiceType) {
@@ -313,10 +318,11 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
       ...(options ?? {}),
       language,
       ...((type === "reading" || type === "listening") ? { questionCount: 5 } : {}),
-      ...(type === "writing" ? { wordLimit: Number(wordLimit) } : {}),
+      ...(type === "listening" && audioUrl ? { mediaKind } : {}),
+      ...(type === "writing" ? { wordLimit: Number(wordLimit), submissionMode } : {}),
     };
 
-    if (type === "writing" && (!Number.isInteger(Number(wordLimit)) || Number(wordLimit) < 1)) {
+    if (type === "writing" && submissionMode !== "photo" && (!Number.isInteger(Number(wordLimit)) || Number(wordLimit) < 1)) {
       return setError("Укажите корректный лимит слов");
     }
 
@@ -394,9 +400,20 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
       )}
 
       {type === "writing" && (
-        <Field label="Количество слов" hint="Минимальный объём письменного ответа">
-          <input type="number" min={1} value={wordLimit} onChange={(e) => setWordLimit(e.target.value)} className={`${inputClass} max-w-[200px]`} />
-        </Field>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Как ученик сдаёт работу" hint="Для иероглифов выберите рукописную работу">
+            <select value={submissionMode} onChange={(e) => setSubmissionMode(e.target.value as HomeworkSubmissionMode)} className={inputClass}>
+              <option value="photo">Рукописно — загрузить фото</option>
+              <option value="text">Напечатать на компьютере</option>
+              <option value="choice">На выбор ученика</option>
+            </select>
+          </Field>
+          {submissionMode !== "photo" && (
+            <Field label="Количество слов" hint="Минимальный объём печатного ответа">
+              <input type="number" min={1} value={wordLimit} onChange={(e) => setWordLimit(e.target.value)} className={inputClass} />
+            </Field>
+          )}
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
@@ -422,7 +439,7 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
       </Field>
 
       {type === "listening" && (
-        <Field label="Аудио для аудирования" hint="Загрузите MP3, WAV или MP4. Студент услышит файл перед ответом.">
+        <Field label="Аудио или видео для задания" hint="Загрузите аудиофайл или MP4. Студент увидит плеер и прямую ссылку на файл.">
           <input
             type="file"
             accept="audio/*,video/mp4"
@@ -431,17 +448,21 @@ export function TaskForm({ folders, initialFolderId = "" }: { folders: TaskFolde
             onChange={async (event) => {
               const file = event.target.files?.[0];
               if (!file) return;
+              const nextMediaKind = file.type.startsWith("video/") ? "video" : "audio";
               setAudioUploading(true);
               const formData = new FormData();
               formData.set("file", file);
               const result = await uploadListeningAudio(formData);
               setAudioUploading(false);
-              if (result.success && result.url) setAudioUrl(result.url);
+              if (result.success && result.url) {
+                setAudioUrl(result.url);
+                setMediaKind(nextMediaKind);
+              }
               else setError(result.error || "Не удалось загрузить аудио");
             }}
           />
-          {audioUploading && <div className="mt-1.5 text-[12.5px] text-ze-muted">Загружаем аудио…</div>}
-          {audioUrl && <audio controls src={audioUrl} className="mt-3 w-full" />}
+          {audioUploading && <div className="mt-1.5 text-[12.5px] text-ze-muted">Загружаем файл…</div>}
+          {audioUrl && <TaskMedia url={audioUrl} mediaKind={mediaKind} className="mt-3" />}
         </Field>
       )}
 

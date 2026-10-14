@@ -1,8 +1,14 @@
 import type { ReactNode } from "react";
 import { getCurrentParent } from "@/lib/parent-data";
 import { ParentSidebar } from "@/components/parent/ParentSidebar";
+import { redirect } from "next/navigation";
+import { getSessionUser, getToken } from "@/lib/session-data";
 
 export default async function ParentsLayout({ children }: { children: ReactNode }) {
+  const session = await getSessionUser();
+  if (!session && await getToken()) {
+    redirect("/auth/session-expired?login=/parents/login&next=/parents");
+  }
   const parent = await getCurrentParent();
   if (!parent) return <>{children}</>;
 

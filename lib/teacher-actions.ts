@@ -8,6 +8,7 @@
 import { revalidatePath } from "next/cache";
 import { apiDelete, apiPatch, apiPost } from "./api";
 import { getSessionUser, getToken } from "./session-data";
+import { mapCourseSyllabus, type CourseSyllabus } from "./course-syllabus";
 
 export interface UpdateLessonInput {
   title: string;
@@ -80,6 +81,7 @@ export async function uploadLessonMaterial(
       body: upload,
     });
     const json = await res.json();
+    if (res.status === 401) return { success: false, error: "Сессия истекла. Выйдите и войдите снова." };
     if (!res.ok || json.success === false) {
       return { success: false, error: json.message || "Ошибка загрузки файла" };
     }
@@ -101,6 +103,7 @@ export async function uploadListeningAudio(formData: FormData): Promise<{ succes
   try {
     const response = await fetch(`${API_URL}/uploads?bucket=listening-audio`, { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: upload });
     const json = await response.json();
+    if (response.status === 401) return { success: false, error: "Сессия истекла. Выйдите и войдите снова." };
     if (!response.ok || json.success === false) return { success: false, error: json.message || "Не удалось загрузить аудио" };
     return { success: true, url: json.data?.url || json.url };
   } catch {
@@ -265,6 +268,57 @@ export async function deleteCourseSection(courseId: string, sectionId: string) {
   return { success: true };
 }
 
+export async function uploadCourseSyllabus(formData: FormData): Promise<{ success: boolean; syllabus?: CourseSyllabus; error?: string }> {
+  const courseId = String(formData.get("courseId") ?? "");
+  const comment = String(formData.get("comment") ?? "");
+  const file = formData.get("file");
+  if (!courseId) return { success: false, error: "Выберите курс" };
+  if (!(file instanceof File) || file.size === 0) return { success: false, error: "Выберите файл syllabus" };
+  const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  if (!allowedTypes.includes(file.type) && !["pdf", "doc", "docx"].includes(extension || "")) {
+    return { success: false, error: "Выберите PDF, DOC или DOCX" };
+  }
+  if (file.size > 20 * 1024 * 1024) return { success: false, error: "Файл должен быть меньше 20 МБ" };
+
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  const upload = new FormData();
+  upload.set("file", file);
+  upload.set("comment", comment);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+  try {
+    const response = await fetch(`${API_URL}/courses/manage/${encodeURIComponent(courseId)}/syllabus`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: upload,
+      cache: "no-store",
+    });
+    const json = await response.json();
+    if (!response.ok || json.success === false || !json.data) {
+      const message = Array.isArray(json.message) ? json.message.join(", ") : json.message;
+      return { success: false, error: message || "Не удалось загрузить syllabus" };
+    }
+    const syllabus = mapCourseSyllabus(json.data as Record<string, unknown>);
+    revalidatePath("/teacher/syllabus");
+    revalidatePath("/account/syllabus");
+    revalidatePath("/account/course");
+    return { success: true, syllabus };
+  } catch {
+    return { success: false, error: "Нет подключения к серверу" };
+  }
+}
+
+export async function deleteCourseSyllabus(courseId: string): Promise<{ success: boolean; error?: string }> {
+  const token = await getToken();
+  const res = await apiDelete(`/courses/manage/${courseId}/syllabus`, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/teacher/syllabus");
+  revalidatePath("/account/syllabus");
+  revalidatePath("/account/course");
+  return { success: true };
+}
+
 export async function saveLessonBoard(
   lessonId: string,
   boardData: Record<string, unknown>,
@@ -366,12 +420,41 @@ export async function createAssignment(
   return { success: true, id: res.data.id };
 }
 
+export async function createQuickAssignment(input: {
+  studentId: string;
+  title: string;
+  instructions: string;
+  xpReward: number;
+  dueDate: string;
+}): Promise<{ success: boolean; id?: string; error?: string }> {
+  if (!input.instructions.trim()) return { success: false, error: "Напишите, что нужно сделать" };
+  if (!Number.isInteger(input.xpReward) || input.xpReward < 0 || input.xpReward > 1000) {
+    return { success: false, error: "XP должны быть от 0 до 1000" };
+  }
+
+  const task = await createTask({
+    title: input.title,
+    type: "writing",
+    examType: "general",
+    question: input.instructions,
+    section: "",
+    folderId: "",
+    difficulty: "",
+    correctAnswer: "",
+    explanation: "",
+    xpReward: input.xpReward,
+    autoCheck: false,
+    audioUrl: "",
+  });
+  if (!task.success || !task.id) return { success: false, error: task.error || "Не удалось создать задание" };
+
+  return createAssignment({ studentId: input.studentId, taskIds: [task.id], title: input.title, dueDate: input.dueDate });
+}
+
 export interface ReviewInput {
   assignmentId: string;
-  taskId: string;
-  score: number;
+  decision: "accepted" | "returned";
   comment: string;
-  errors: string;
 }
 
 export async function reviewAssignment(input: ReviewInput): Promise<{ success: boolean; error?: string }> {
@@ -379,10 +462,8 @@ export async function reviewAssignment(input: ReviewInput): Promise<{ success: b
   const res = await apiPatch(
     `/assignments/${input.assignmentId}/review`,
     {
-      task_id: input.taskId,
-      score: input.score,
+      decision: input.decision,
       comment: input.comment.trim() || undefined,
-      errors: input.errors.trim() || undefined,
     },
     token
   );
@@ -390,6 +471,7 @@ export async function reviewAssignment(input: ReviewInput): Promise<{ success: b
 
   revalidatePath("/teacher/assignments");
   revalidatePath(`/teacher/assignments/${input.assignmentId}`);
+  revalidatePath("/teacher/students");
   revalidatePath("/teacher");
   return { success: true };
 }

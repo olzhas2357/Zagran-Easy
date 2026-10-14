@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Users, BookOpen, ClipboardList, ClipboardCheck, FolderOpen, GraduationCap, UserCircle, Menu, CalendarDays } from "lucide-react";
+import { LayoutGrid, Users, BookOpen, ClipboardList, ClipboardCheck, FolderOpen, GraduationCap, UserCircle, Menu, CalendarDays, FileText } from "lucide-react";
 import type { TeacherProfile } from "@/lib/types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 
 const NAV = [
   { href: "/teacher", label: "Главная", Icon: LayoutGrid },
   { href: "/teacher/lessons", label: "Уроки", Icon: BookOpen },
+  { href: "/teacher/syllabus", label: "Syllabus", Icon: FileText },
   { href: "/teacher/students", label: "Мои ученики", Icon: Users },
   { href: "/teacher/tasks", label: "База знаний", Icon: ClipboardList },
   { href: "/teacher/assignments", label: "Проверка заданий", Icon: ClipboardCheck },

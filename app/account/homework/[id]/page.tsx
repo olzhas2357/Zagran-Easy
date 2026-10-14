@@ -35,14 +35,19 @@ export default async function StudentHomeworkDetailPage({ params }: { params: Pr
               <Sparkles className="h-5 w-5 text-ze-primary" />
             </span>
             <div>
-              <div className="text-[14px] font-bold">Домашняя работа завершена</div>
+              <div className="text-[14px] font-bold">Работа принята</div>
               <div className="mt-0.5 text-[13px] text-blue-700">Начислено +{assignment.xpAwarded} XP</div>
             </div>
           </div>
         )}
 
         <div className="mt-5">
-          <AssignmentQuestions tasks={assignment.tasks} assignmentStatus={assignment.status} />
+          <AssignmentQuestions
+            tasks={assignment.tasks}
+            assignmentId={assignment.id}
+            assignmentStatus={assignment.status}
+            isOverdue={assignment.isOverdue}
+          />
         </div>
       </div>
     </div>
