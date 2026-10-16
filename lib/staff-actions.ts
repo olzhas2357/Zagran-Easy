@@ -572,3 +572,54 @@ export async function publishCostCalculation(id: string, clientId: string) {
   revalidatePath(`/staff/clients/${clientId}`);
   return { success: true as const, token: res.data.public_token };
 }
+
+export interface ChecklistInput {
+  month: string; title: string; goal: string; targetCount: number; targetLabel: string;
+  steps: { id?: string; title: string; say: string; do: string }[];
+}
+
+function checklistBody(input: ChecklistInput) {
+  return {
+    title: input.title.trim(), goal: input.goal.trim(), target_count: Math.max(0, Math.floor(input.targetCount) || 0),
+    target_label: input.targetLabel.trim(),
+    steps: input.steps.filter((s) => s.title.trim()).map((s) => ({ id: s.id, title: s.title, say: s.say, do: s.do })),
+  };
+}
+
+export async function saveChecklist(id: string | null, input: ChecklistInput) {
+  const token = await getToken();
+  if (!token) return { success: false, error: "Не авторизован" };
+  if (!input.title.trim()) return { success: false, error: "Укажите название" };
+  const body = checklistBody(input);
+  const res = id ? await apiPatch(`/manager-checklists/${id}`, body, token) : await apiPost("/manager-checklists", { ...body, month: input.month }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/admin/checklists");
+  revalidatePath("/staff");
+  return { success: true };
+}
+
+export async function deleteChecklist(id: string) {
+  const token = await getToken();
+  const res = await apiDelete(`/manager-checklists/${id}`, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/admin/checklists");
+  revalidatePath("/staff");
+  return { success: true };
+}
+
+export async function copyChecklists(from: string, to: string) {
+  const token = await getToken();
+  const res = await apiPost("/manager-checklists/copy", { from, to }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/admin/checklists");
+  revalidatePath("/staff");
+  return { success: true };
+}
+
+export async function saveChecklistProgress(id: string, completedSteps: string[], doneCount: number) {
+  const token = await getToken();
+  const res = await apiPost(`/manager-checklists/${id}/progress`, { completed_steps: completedSteps, done_count: Math.max(0, Math.floor(doneCount) || 0) }, token);
+  if (res.error) return { success: false, error: res.error };
+  revalidatePath("/admin/checklists");
+  return { success: true };
+}

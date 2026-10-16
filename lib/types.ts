@@ -373,3 +373,10 @@ export interface Service {
   color: string;
   href: string;
 }
+
+export interface ChecklistStep { id: string; title: string; say: string; do: string }
+export interface ChecklistProgress { managerId: string; managerName: string | null; completedSteps: string[]; doneCount: number }
+export interface ManagerChecklist {
+  id: string; month: string; title: string; goal: string; targetCount: number; targetLabel: string;
+  steps: ChecklistStep[]; myProgress: ChecklistProgress | null; teamProgress: ChecklistProgress[];
+}

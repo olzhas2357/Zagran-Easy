@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutGrid, Users, GraduationCap, ClipboardList, LogOut, Menu, Landmark, CalendarDays } from "lucide-react";
+import { LayoutGrid, Users, GraduationCap, ClipboardList, LogOut, Menu, Landmark, CalendarDays, ListChecks } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/admin/students", label: "Студенты", Icon: GraduationCap },
   { href: "/admin/schedule", label: "Расписание", Icon: CalendarDays },
   { href: "/admin/leads", label: "Заявки", Icon: ClipboardList },
+  { href: "/admin/checklists", label: "Чек-листы", Icon: ListChecks },
   { href: "/admin/universities", label: "Университеты", Icon: Landmark },
 ];
 

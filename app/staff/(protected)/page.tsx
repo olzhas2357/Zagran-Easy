@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, BriefcaseBusiness, CalendarDays, CheckCircle2, CircleAlert, ClipboardList, Clock3, FileCheck2, FolderOpen, GraduationCap, House, Languages, Landmark, ListTodo, Plane, Sparkles, UsersRound } from "lucide-react";
-import { getCurrentProfile, getLeadsForAdmin } from "@/lib/staff-data";
+import { getCurrentProfile, getLeadsForAdmin, getManagerChecklists } from "@/lib/staff-data";
 import { fetchAllUniversities } from "@/lib/data";
 import { isVerificationStale } from "@/lib/education-catalog";
+import { ManagerChecklists } from "@/components/staff/ManagerChecklists";
+import { currentMonth, monthLabel } from "@/lib/checklist-month";
 import { AIChatCard } from "@/components/staff/AIChat";
 import type { Lead } from "@/lib/types";
 import { FullOurWork } from "@/components/home/FullOurWork";
 import { StudentJourney } from "@/components/home/StudentJourney";
 
 export default async function StaffDashboardPage() {
-  const [profile, leads, universities] = await Promise.all([getCurrentProfile(), getLeadsForAdmin(), fetchAllUniversities()]);
+  const month = currentMonth();
+  const [profile, leads, universities, checklists] = await Promise.all([getCurrentProfile(), getLeadsForAdmin(), fetchAllUniversities(), getManagerChecklists(month)]);
   const newLeads = leads.filter((lead) => lead.status === "new").length;
   const inProgress = leads.filter((lead) => lead.status === "in_progress").length;
   const stale = universities.filter((university) => isVerificationStale(university.lastVerifiedAt)).length;
@@ -21,6 +24,8 @@ export default async function StaffDashboardPage() {
       <div className="relative flex flex-col justify-between gap-7 lg:flex-row lg:items-end"><div><div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-blue-100"><Sparkles className="h-4 w-4" /> Рабочее пространство менеджера</div><h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">Здравствуйте, {profile?.fullName?.split(" ")[0] || "коллега"}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">Заявки, продукты ZagranEasy и база университетов — всё необходимое для консультации клиента.</p></div><div className="flex flex-wrap gap-2"><Link href="/staff/leads" className="rounded-xl bg-white px-4 py-3 text-sm font-bold text-ze-primary">Открыть заявки</Link><Link href="/staff/materials" className="flex items-center gap-2 rounded-xl border border-white/40 bg-white/20 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/30"><FolderOpen className="h-4 w-4" />Материалы</Link><Link href="/staff/clients/new" className="rounded-xl border border-white/30 bg-white/15 px-4 py-3 text-sm font-bold text-white">Добавить клиента</Link></div></div>
     </section>
               
+    <ManagerChecklists checklists={checklists} monthTitle={monthLabel(month)} />
+
     <div className="mt-5">
       <AIChatCard />
       </div>

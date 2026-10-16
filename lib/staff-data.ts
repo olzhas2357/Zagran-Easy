@@ -6,7 +6,7 @@
 import { cache } from "react";
 import { apiGet } from "./api";
 import { getSessionUser, getToken } from "./session-data";
-import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity, ManagerTask, KnowledgeArticle, StaffResource } from "./types";
+import type { Profile, Lead, LeadActivity, University, Client, ClientNote, ClientUniversity, ManagerTask, KnowledgeArticle, StaffResource, ManagerChecklist, ChecklistProgress, ChecklistStep } from "./types";
 import { DEFAULT_CALCULATOR_SETTINGS, type CalculatorSettings } from "./calculator";
 
 function mapProfileRow(row: Record<string, unknown>): Profile {
@@ -355,4 +355,24 @@ export async function getStaffResources(): Promise<StaffResource[]> {
   const token = await getToken();
   const res = await apiGet<Record<string, unknown>[]>("/staff-resources?limit=100", token);
   return res.data?.map(mapStaffResourceRow) || [];
+}
+
+function mapChecklistProgress(row: Record<string, unknown>): ChecklistProgress {
+  const manager = row.manager as Record<string, unknown> | null;
+  return {
+    managerId: row.manager_id as string, managerName: (manager?.full_name as string) ?? null,
+    completedSteps: (row.completed_steps as string[]) || [], doneCount: Number(row.done_count) || 0,
+  };
+}
+
+export async function getManagerChecklists(month: string): Promise<ManagerChecklist[]> {
+  const token = await getToken();
+  const res = await apiGet<Record<string, unknown>[]>(`/manager-checklists?month=${encodeURIComponent(month)}`, token);
+  return (Array.isArray(res.data) ? res.data : []).map((row) => ({
+    id: row.id as string, month: (row.month as string).slice(0, 7), title: row.title as string,
+    goal: (row.goal as string) || "", targetCount: Number(row.target_count) || 0, targetLabel: (row.target_label as string) || "",
+    steps: ((row.steps as ChecklistStep[]) || []).map((s) => ({ id: s.id, title: s.title, say: s.say || "", do: s.do || "" })),
+    myProgress: row.my_progress ? mapChecklistProgress(row.my_progress as Record<string, unknown>) : null,
+    teamProgress: ((row.team_progress as Record<string, unknown>[]) || []).map(mapChecklistProgress),
+  }));
 }
