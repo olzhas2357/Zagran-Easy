@@ -137,13 +137,13 @@ export function UniversityForm({ countries, university }: { countries: Education
   const [longitude, setLongitude] = useState(university?.longitude != null ? String(university.longitude) : "");
   const [address, setAddress] = useState(university?.address ?? "");
   const [googleMapsUrl, setGoogleMapsUrl] = useState(university?.googleMapsUrl ?? "");
-  const [type, setType] = useState<"public" | "private">(university?.type ?? "public");
+  const [type, setType] = useState<University["type"]>(university ? university.type : "public");
 
   const [programs, setPrograms] = useState<string[]>(university?.programs ?? []);
   const [languages, setLanguages] = useState<string[]>(university?.languages ?? []);
   const [specialties, setSpecialties] = useState<string[]>(university?.specialties ?? []);
 
-  const [tuitionFrom, setTuitionFrom] = useState(university ? String(university.tuitionFrom) : "");
+  const [tuitionFrom, setTuitionFrom] = useState(university ? String(university.tuitionFrom ?? "") : "");
   const [tuitionTo, setTuitionTo] = useState(university ? String(university.tuitionTo) : "");
   const [tuitionCurrency, setTuitionCurrency] = useState(university?.tuitionCurrency ?? "USD");
   const [hasGrant, setHasGrant] = useState(university?.hasGrant ?? false);
@@ -216,7 +216,7 @@ export function UniversityForm({ countries, university }: { countries: Education
       programs,
       languages,
       specialties,
-      tuitionFrom: numOr0(tuitionFrom),
+      tuitionFrom: numOrNull(tuitionFrom),
       tuitionTo: numOr0(tuitionTo),
       tuitionCurrency,
       hasGrant,
@@ -297,7 +297,11 @@ export function UniversityForm({ countries, university }: { countries: Education
           <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Стамбул" className={inputClass} />
         </Field>
         <Field label="Тип вуза">
-          <select value={type} onChange={(e) => setType(e.target.value as "public" | "private")} className={inputClass}>
+          <select value={type ?? ""} onChange={(event) => {
+            const value = event.target.value;
+            setType(value === "public" || value === "private" ? value : null);
+          }} className={inputClass}>
+            <option value="">Не указано</option>
             <option value="public">Государственный</option>
             <option value="private">Частный</option>
           </select>

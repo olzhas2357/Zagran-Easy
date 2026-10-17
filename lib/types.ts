@@ -53,11 +53,11 @@ export interface University {
   longitude: number | null;
   address: string;
   googleMapsUrl: string;
-  type: "public" | "private";
+  type: "public" | "private" | null;
   programs: string[]; // уровни: "Бакалавр", "Магистр", "PhD"...
   languages: string[];
   specialties: string[]; // специальности: "IT", "Инженерия", "Медицина"... (фильтр каталога)
-  tuitionFrom: number;
+  tuitionFrom: number | null;
   tuitionTo: number;
   tuitionCurrency: string;
   hasGrant: boolean;

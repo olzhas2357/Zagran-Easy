@@ -38,7 +38,12 @@ export default async function UniversityPage(props: PageProps<"/education/[slug]
   const country = countries.find((item) => item.id === university.countryId);
   const related = allUniversities
     .filter((item) => item.id !== university.id && item.countryId === university.countryId)
-    .sort((a, b) => Math.abs(a.tuitionFrom - university.tuitionFrom) - Math.abs(b.tuitionFrom - university.tuitionFrom))
+    .sort((a, b) => {
+      const tuitionA = a.tuitionFrom ?? Number.MAX_SAFE_INTEGER;
+      const tuitionB = b.tuitionFrom ?? Number.MAX_SAFE_INTEGER;
+      const selectedTuition = university.tuitionFrom ?? Number.MAX_SAFE_INTEGER;
+      return Math.abs(tuitionA - selectedTuition) - Math.abs(tuitionB - selectedTuition);
+    })
     .slice(0, 3);
 
   return <UniversityExperience university={university} catalog={catalog} country={country ?? null} related={related} />;

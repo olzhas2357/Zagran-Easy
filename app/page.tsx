@@ -10,6 +10,7 @@ import {
   Home as HomeIcon,
   MessageCircle,
   Calendar,
+  MapPin,
   ShieldCheck,
   Zap,
   CheckCircle2,
@@ -36,6 +37,15 @@ import { TurkeyExperience } from "@/components/home/TurkeyExperience";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { FullOurWork } from "@/components/home/FullOurWork";
 
+const CHINA_SPRING_2027_SLUGS = [
+  "south-china-university-of-technology",
+  "shenzhen-university",
+  "zhejiang-international-studies-university",
+  "china-university-of-petroleum-east-china",
+  "gdufs-south-china-business-college",
+  "china-university-of-mining-and-technology",
+];
+
 export default async function HomePage() {
   const [countries, universities, reviews, tours] = await Promise.all([
     fetchEducationCountries(),
@@ -50,9 +60,15 @@ export default async function HomePage() {
   }
   const cheapestByCountry = new Map<string, number>();
   for (const u of universities) {
+    if (u.tuitionFrom === null) continue;
     const cur = cheapestByCountry.get(u.countryId);
     if (cur === undefined || u.tuitionFrom < cur) cheapestByCountry.set(u.countryId, u.tuitionFrom);
   }
+  const universitiesBySlug = new Map(universities.map((university) => [university.slug, university]));
+  const chinaSpringUniversities = CHINA_SPRING_2027_SLUGS.flatMap((slug) => {
+    const university = universitiesBySlug.get(slug);
+    return university ? [university] : [];
+  });
 
   return (
     <>
@@ -327,6 +343,67 @@ export default async function HomePage() {
           >
             Найти университет →
           </Link>
+
+          {chinaSpringUniversities.length > 0 && (
+            <div className="mt-12 rounded-[28px] border border-[#F1D8C9] bg-gradient-to-br from-[#FFF8F2] via-white to-[#FFFDF8] p-5 sm:mt-16 sm:p-8 dark:border-white/10 dark:from-white/[0.06] dark:via-white/[0.03] dark:to-white/[0.05]">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                <div className="max-w-[620px]">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#F2D7C7] bg-white px-5.5 py-2.5 text-[20.5px] font-bold text-[#B54727] dark:border-white/15 dark:bg-white/[0.06] dark:text-[#FFC29D]">
+                    <span aria-hidden="true">🇨🇳</span>
+                    Весенний набор · 2027
+                  </div>
+                  <h3 className="mt-3.5 text-[24px] font-extrabold tracking-tight text-ze-ink sm:text-[32px] dark:text-white">
+                    Университеты Китая — весна 2027
+                  </h3>
+                  <p className="mt-2.5 text-[14px] leading-relaxed text-ze-muted sm:text-[15px] dark:text-white/65">
+                    Подборка университетов и программ с набором на весенний семестр 2027 года.
+                    Откройте карточку, чтобы посмотреть условия поступления.
+                  </p>
+                </div>
+                <Link
+                  href="/education"
+                  className="inline-flex flex-none items-center gap-2 text-[14px] font-bold text-[#B54727] hover:text-[#8F321B] dark:text-[#FFC29D] dark:hover:text-white"
+                >
+                  Все университеты
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+                {chinaSpringUniversities.map((university, index) => (
+                  <FadeIn key={university.id} delay={index * 0.05} className="h-full">
+                    <Link
+                      href={`/education/${university.slug}`}
+                      className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-ze-border/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#E7BBA4] hover:shadow-[0_16px_36px_rgba(86,49,28,0.12)] dark:border-white/10 dark:bg-[#101A34] dark:hover:border-white/25"
+                    >
+                      <div className="relative aspect-[16/9] overflow-hidden bg-[#F6F0EB]">
+                        <CoverPhoto src={university.imageUrl} alt={university.name} />
+                        <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-bold text-[#A33C21] shadow-sm dark:bg-[#0B132B]/90 dark:text-[#FFC29D]">
+                          Весна 2027
+                        </span>
+                      </div>
+                      <div className="flex flex-1 flex-col p-4 sm:p-5">
+                        <h4 className="text-[16px] font-extrabold leading-snug text-ze-ink group-hover:text-[#A33C21] dark:text-white dark:group-hover:text-[#FFC29D]">
+                          {university.name}
+                        </h4>
+                        <div className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-ze-muted dark:text-white/60">
+                          <MapPin className="h-3.5 w-3.5 flex-none" aria-hidden="true" />
+                          {university.city}
+                        </div>
+                        <p className="mt-3 line-clamp-2 flex-1 text-[13px] leading-relaxed text-ze-muted dark:text-white/60">
+                          {university.description}
+                        </p>
+                        <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-bold text-ze-primary dark:text-[#8FD9F5]">
+                          Смотреть университет
+                          <span className="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+                        </span>
+                      </div>
+                    </Link>
+                  </FadeIn>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

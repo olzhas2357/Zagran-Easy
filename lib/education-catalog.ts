@@ -18,7 +18,7 @@ export interface CatalogUniversity {
   type: University["type"];
   languages: string[];
   specialties: string[];
-  tuitionFrom: number;
+  tuitionFrom: number | null;
   tuitionCurrency: string;
   ieltsRequired: boolean;
   hasGrant: boolean;
@@ -93,17 +93,20 @@ export function buildCatalog(universities: University[], countries: EducationCou
 
 // ---- Форматтеры, общие для каталога/сравнения/подбора ----
 
-export function formatTuitionAmount(amount: number, currency = "USD"): string {
+export function formatTuitionAmount(amount: number | null, currency = "USD"): string {
+  if (amount === null || !Number.isFinite(amount)) return "Уточняется";
   if (amount <= 0) return "бесплатно";
   return formatCurrency(amount, currency);
 }
 
-export function formatTuition(amount: number, currency = "USD"): string {
+export function formatTuition(amount: number | null, currency = "USD"): string {
+  if (amount === null || !Number.isFinite(amount)) return "Уточняется";
   if (amount <= 0) return "бесплатно";
   return `${formatTuitionAmount(amount, currency)} / год`;
 }
 
-export function formatMonthlyInstallment(tuitionFrom: number, currency = "USD"): string {
+export function formatMonthlyInstallment(tuitionFrom: number | null, currency = "USD"): string {
+  if (tuitionFrom === null || !Number.isFinite(tuitionFrom)) return "Уточняется";
   if (tuitionFrom <= 0) return "Уточняется";
   return `≈ ${formatCurrency(tuitionFrom / 12, currency)} / мес`;
 }

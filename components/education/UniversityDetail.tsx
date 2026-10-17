@@ -58,7 +58,7 @@ export function UniversitySidebar({ university, countryName }: { university: Uni
         <div className="text-[12px] font-semibold text-ze-muted">Стоимость обучения</div>
         <div className="mt-1 text-[28px] font-extrabold tracking-tight">
           {formatTuitionAmount(university.tuitionFrom, university.tuitionCurrency)}
-          {university.tuitionFrom > 0 && <span className="text-[14px] font-semibold text-ze-muted"> / год</span>}
+          {university.tuitionFrom !== null && university.tuitionFrom > 0 && <span className="text-[14px] font-semibold text-ze-muted"> / год</span>}
         </div>
         {/* {university.tuitionFrom > 0 && (
           <div className="mt-3 flex items-center gap-2 rounded-[11px] bg-[#F5F8FE] px-3 py-2.5 text-[13px] text-slate-700">

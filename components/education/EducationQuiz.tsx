@@ -168,7 +168,7 @@ export function EducationQuiz({ universities }: { universities: CatalogUniversit
                 <span className="flex-none text-right">
                   <span className="block text-[14.5px] font-bold">{formatTuition(m.tuitionFrom, m.tuitionCurrency)}</span>
                   <span className="mt-0.5 block text-[12px] font-semibold text-ze-muted">
-                    ★ {m.ratingStars.toFixed(1)}
+                    {m.ratingStars > 0 ? `★ ${m.ratingStars.toFixed(1)}` : "Рейтинг не указан"}
                   </span>
                 </span>
               </Link>

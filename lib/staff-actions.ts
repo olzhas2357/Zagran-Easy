@@ -388,11 +388,11 @@ export interface NewUniversityInput {
   longitude: number | null;
   address: string;
   googleMapsUrl: string;
-  type: "public" | "private";
+  type: "public" | "private" | null;
   programs: string[];
   languages: string[];
   specialties: string[];
-  tuitionFrom: number;
+  tuitionFrom: number | null;
   tuitionTo: number;
   tuitionCurrency: string;
   hasGrant: boolean;
