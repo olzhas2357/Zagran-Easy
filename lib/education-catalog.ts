@@ -14,6 +14,7 @@ export interface CatalogUniversity {
   city: string;
   country: string;
   countrySlug: string;
+  continent: string;
   flag: string;
   type: University["type"];
   languages: string[];
@@ -68,6 +69,7 @@ export function buildCatalog(universities: University[], countries: EducationCou
         city: u.city,
         country: country?.name || "",
         countrySlug: country?.slug || "",
+        continent: country?.continent || "",
         flag: country?.flag || "",
         type: u.type,
         languages: u.languages,
