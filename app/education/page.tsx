@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, GitCompareArrows } from "lucide-react";
 import { fetchAllUniversities, fetchEducationCountries } from "@/lib/data";
 import { buildCatalog } from "@/lib/education-catalog";
+import { ChinaGuide } from "@/components/education/ChinaGuide";
 import { Catalog } from "@/components/education/Catalog";
 
 export const metadata: Metadata = {
@@ -20,7 +21,11 @@ export default async function EducationPage({ searchParams }: { searchParams: Pr
   const { clientId } = await searchParams;
   const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
   const catalog = buildCatalog(universities, countries);
+  const chinaCountry = countries.find((country) => country.slug === "china");
   const totalPrograms = catalog.reduce((sum, u) => sum + u.programsCount, 0);
+  const countryCatalog = countries
+    .map((country) => ({ ...country, count: catalog.filter((university) => university.source.countryId === country.id).length }))
+    .filter((country) => country.count > 0);
 
   return (
     <div className="bg-gradient-to-b from-[#F3F7FE] to-white">
@@ -45,7 +50,7 @@ export default async function EducationPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-10">
-        <Catalog universities={catalog} clientId={clientId} />
+        <Catalog universities={catalog} clientId={clientId} chinaContent={<ChinaGuide embedded universities={universities.filter((university) => university.countryId === chinaCountry?.id)} />} />
       </div>
     </div>
   );

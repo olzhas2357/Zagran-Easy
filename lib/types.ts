@@ -72,6 +72,8 @@ export interface University {
   requirements: string[];
   description: string;
   imageUrl: string;
+  imageAttribution?: string;
+  imageAttributionUrl?: string;
   logoUrl: string;
   galleryImages?: string[]; // доп. фото кампуса — под галерею на странице вуза
   dormitoryImages?: string[]; // фото общежития

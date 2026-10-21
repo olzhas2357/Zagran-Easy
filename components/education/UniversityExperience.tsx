@@ -20,7 +20,7 @@ type Props = { university: University; catalog: UniversityCatalog; country: Educ
 
 const navItems = [
   ["overview", "Обзор"], ["offer", "Грант 1 + 4"], ["programs", "Программы"], ["admission", "Поступление"],
-  ["cost", "Стоимость"], ["scholarships", "Гранты"], ["campus", "Кампус"],
+  ["cost", "Стоимость"], ["campus", "Кампус"],
 ] as const;
 
 function text(value: unknown) { return typeof value === "string" && value.trim() ? value.trim() : ""; }
@@ -71,9 +71,8 @@ export function UniversityExperience({ university, catalog, country, related }: 
   const otherScholarships = useMemo(() => catalog.scholarships.filter((item) => !isRectorGrant(item)), [catalog.scholarships]);
   const sections = useMemo(() => navItems.filter(([id]) => {
     if (id === "offer") return Boolean(rectorGrantOffer);
-    if (id === "scholarships") return otherScholarships.length > 0;
     return true;
-  }), [otherScholarships.length, rectorGrantOffer]);
+  }), [rectorGrantOffer]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -85,33 +84,33 @@ export function UniversityExperience({ university, catalog, country, related }: 
   }, [sections]);
 
   return (
-    <main className="min-h-screen bg-[#f6f8fc] pb-24 text-ze-ink sm:pb-16">
-      <div className="mx-auto max-w-[1240px] px-4 pb-14 pt-5 sm:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#f5f7fb] pb-24 text-ze-ink sm:pb-16">
+      <div className="mx-auto max-w-[1040px] px-4 pb-7 pt-4 sm:px-7 lg:px-8">
         <Breadcrumb university={university} country={country} />
         <UniversityHero university={university} country={country} />
         <UniversityIdentity university={university} country={country} />
         <QuickFacts university={university} />
       </div>
 
-      <nav className="sticky top-0 z-30 border-y border-slate-200/80 bg-white/95 shadow-[0_6px_18px_rgba(15,23,42,.04)] backdrop-blur">
-        <div className="mx-auto flex max-w-[1240px] gap-1 overflow-x-auto px-4 sm:px-8 lg:px-10">
-          {sections.map(([id, label]) => <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })} className={`relative flex-none px-3 py-4 text-sm font-semibold transition ${active === id ? "text-ze-primary" : "text-slate-500 hover:text-slate-900"}`}>{label}{active === id && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-ze-primary" />}</button>)}
+      <nav className="sticky top-0 z-30 border-y border-slate-200/80 bg-white/95 shadow-[0_4px_14px_rgba(15,23,42,.035)] backdrop-blur">
+        <div className="mx-auto flex max-w-[1040px] gap-1 overflow-x-auto px-4 sm:px-7 lg:px-8">
+          {sections.map(([id, label]) => <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })} className={`relative flex-none px-3 py-3 text-xs font-semibold transition sm:text-sm ${active === id ? "text-ze-primary" : "text-slate-500 hover:text-slate-900"}`}>{label}{active === id && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-ze-primary" />}</button>)}
         </div>
       </nav>
 
-      <div className="mx-auto grid max-w-[1240px] gap-10 px-4 py-10 sm:px-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:px-10">
-        <div className="min-w-0 space-y-16">
+      <div className="mx-auto grid max-w-[1040px] gap-6 px-4 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_220px] lg:px-8">
+        <div className="min-w-0 space-y-9">
           <Overview university={university} />
           {rectorGrantOffer && <RectorGrantOffer university={university} offer={rectorGrantOffer} />}
           <Programs university={university} catalog={catalog} />
           <Admission university={university} catalog={catalog} />
-          {(university.youtubeUrl || university.virtualTourUrl || university.presentationUrl) && <UniversityMedia university={university} />}
           <Tuition university={university} catalog={catalog} />
+          <UniversityMedia university={university} />
           {otherScholarships.length > 0 && <Scholarships items={otherScholarships} />}
           <Campus university={university} />
           {(university.address || university.googleMapsUrl || university.city) && <Location university={university} country={country} />}
         </div>
-        <aside className="hidden lg:block"><div className="sticky top-24"><ApplicationCard university={university} catalog={catalog} /></div></aside>
+        <aside className="hidden lg:block"><div className="sticky top-20"><ApplicationCard university={university} catalog={catalog} /></div></aside>
       </div>
       {related.length > 0 && <Related universities={related} country={country} />}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-3 backdrop-blur lg:hidden"><ApplyButton university={university} className="w-full" /></div>
@@ -168,7 +167,7 @@ function UniversityHero({ university, country }: { university: University; count
   const photos = Array.from(new Set([university.imageUrl, ...(university.galleryImages ?? []), ...(university.dormitoryImages ?? [])].filter(Boolean)));
   const [gallery, setGallery] = useState<number | null>(null);
   return <>
-    <div className="relative overflow-hidden rounded-[26px] bg-slate-200 shadow-[0_22px_60px_rgba(15,23,42,.13)] aspect-[4/3] sm:aspect-[16/7]">
+    <div className="relative aspect-[16/7] overflow-hidden rounded-[18px] bg-slate-200 shadow-[0_14px_38px_rgba(15,23,42,.10)]">
       <SafeImage src={photos[0]} alt={`Кампус ${university.name}`} priority />
       <div className="absolute inset-0 bg-gradient-to-t from-blue-700/55 via-blue-300/5 to-white/10" />
       <div className="absolute bottom-5 left-5 flex flex-wrap gap-2 sm:bottom-7 sm:left-7">
@@ -176,18 +175,19 @@ function UniversityHero({ university, country }: { university: University; count
       </div>
       {photos.length > 1 && <button onClick={() => setGallery(0)} className="absolute bottom-5 right-5 flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-slate-900 shadow-lg sm:bottom-7 sm:right-7"><Maximize2 className="h-4 w-4" /> Все фото · {photos.length}</button>}
     </div>
+    {university.imageAttribution && <p className="mt-2 text-right text-xs text-slate-500">Фото: {university.imageAttribution}{university.imageAttributionUrl && <> · <a href={university.imageAttributionUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-ze-primary">источник и лицензия</a></>}</p>}
     {gallery !== null && <ImageLightbox images={photos} index={gallery} onIndex={setGallery} onClose={() => setGallery(null)} alt={`Фото ${university.name}`} />}
   </>;
 }
 
 function UniversityIdentity({ university, country }: { university: University; country: EducationCountry | null }) {
   const { ids, toggle } = useCompareList(); const compared = ids.includes(university.id);
-  return <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-center">
-    <div className="relative flex h-20 w-20 flex-none items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  return <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="relative flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       {university.logoUrl ? <SafeImage src={university.logoUrl} alt={`Логотип ${university.name}`} contain /> : <span className="text-2xl font-extrabold text-ze-primary">{university.name.split(/\s+/).slice(0, 2).map((word) => word[0]).join("")}</span>}
     </div>
-    <div className="min-w-0 flex-1"><h1 className="text-3xl font-extrabold leading-tight tracking-[-.03em] sm:text-5xl">{university.name}</h1>{university.nameLocal && <p className="mt-1 text-lg text-slate-500">{university.nameLocal}</p>}<div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600"><span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-ze-primary" /> {university.city}{country?.name ? `, ${country.name}` : ""}</span>{positive(university.ratingStars) && <span className="flex items-center gap-1.5"><Star className="h-4 w-4 fill-amber-400 text-amber-400" /> {university.ratingStars.toFixed(1)}</span>}{positive(university.rankingWorld) && <span className="flex items-center gap-1.5"><Trophy className="h-4 w-4 text-ze-primary" /> #{university.rankingWorld} в мире</span>}</div></div>
-    <div className="flex gap-2"><ApplyButton university={university} className="hidden sm:flex" /><button onClick={() => toggle(university.id)} aria-label="Добавить к сравнению" className={`flex h-12 w-12 items-center justify-center rounded-xl border ${compared ? "border-ze-primary bg-blue-50 text-ze-primary" : "border-slate-200 bg-white text-slate-600"}`}><Heart className={`h-5 w-5 ${compared ? "fill-current" : ""}`} /></button></div>
+    <div className="min-w-0 flex-1"><h1 className="text-2xl font-extrabold leading-tight tracking-[-.03em] sm:text-3xl">{university.name}</h1>{university.nameLocal && <p className="mt-0.5 text-sm text-slate-500">{university.nameLocal}</p>}<div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600 sm:text-sm"><span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-ze-primary" /> {university.city}{country?.name ? `, ${country.name}` : ""}</span>{positive(university.ratingStars) && <span className="flex items-center gap-1.5"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> {university.ratingStars.toFixed(1)}</span>}{positive(university.rankingWorld) && <span className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-ze-primary" /> #{university.rankingWorld} в мире</span>}</div></div>
+    <div className="flex gap-2"><ApplyButton university={university} className="hidden sm:flex !py-2.5 !text-xs" /><button onClick={() => toggle(university.id)} aria-label="Добавить к сравнению" className={`flex h-10 w-10 items-center justify-center rounded-xl border ${compared ? "border-ze-primary bg-blue-50 text-ze-primary" : "border-slate-200 bg-white text-slate-600"}`}><Heart className={`h-4 w-4 ${compared ? "fill-current" : ""}`} /></button></div>
   </div>;
 }
 
@@ -198,7 +198,7 @@ function QuickFacts({ university }: { university: University }) {
     [BedDouble, "Общежитие", university.hasDormitory ? "Есть" : "Не указано"],
     [BookOpen, "Программы", positive(university.programsCount) ? String(university.programsCount) : university.programs.filter(Boolean).join(", ")],
   ].filter(([, , value]) => value);
-  return <div className="mt-8 flex snap-x gap-0 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm sm:grid sm:grid-cols-4">{facts.map(([Icon, label, value], index) => { const FactIcon = Icon as typeof Building2; return <div key={String(label)} className={`min-w-[180px] snap-start px-5 py-5 ${index ? "border-l border-slate-100" : ""}`}><FactIcon className="mb-3 h-5 w-5 text-ze-primary" /><div className="text-xs font-semibold uppercase tracking-wider text-slate-400">{String(label)}</div><div className="mt-1 font-bold text-slate-800">{String(value)}</div></div>;})}</div>;
+  return <div className="mt-4 grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm sm:grid-cols-4">{facts.map(([Icon, label, value], index) => { const FactIcon = Icon as typeof Building2; return <div key={String(label)} className={`min-w-0 px-3 py-3 sm:px-4 ${index % 2 ? "border-l border-slate-100 sm:border-l-0" : ""} ${index > 1 ? "border-t border-slate-100 sm:border-t-0" : ""} ${index ? "sm:border-l" : ""}`}><FactIcon className="mb-2 h-4 w-4 text-ze-primary" /><div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{String(label)}</div><div className="mt-1 line-clamp-2 text-xs font-bold text-slate-800 sm:text-sm">{String(value)}</div></div>;})}</div>;
 }
 
 function SectionTitle({ eyebrow, title, description }: { eyebrow: string; title: string; description?: string }) { return <div className="mb-7"><div className="text-xs font-bold uppercase tracking-[.18em] text-ze-primary">{eyebrow}</div><h2 className="mt-2 text-2xl font-extrabold tracking-[-.025em] sm:text-3xl">{title}</h2>{description && <p className="mt-2 max-w-2xl text-[15px] leading-6 text-slate-500">{description}</p>}</div>; }
@@ -248,8 +248,7 @@ function ProgramModal({ program, catalog, university, onClose }: { program: Univ
 function Admission({ university, catalog }: { university: University; catalog: UniversityCatalog }) {
   const items: UniversityCatalogItem[] = catalog.requirements.length ? catalog.requirements : university.requirements.map((title, index) => ({ id: `legacy-${index}`, title }));
   const [open, setOpen] = useState(true);
-  if (!items.length) return null;
-  return <Section id="admission"><div className="flex items-start justify-between gap-4"><div><div className="text-xs font-bold uppercase tracking-[.18em] text-ze-primary">Поступление</div><h2 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Требования к поступлению</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Точные требования могут отличаться в зависимости от выбранной программы.</p></div><button onClick={() => setOpen(!open)} className="mt-5 flex flex-none items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold text-ze-primary">{open ? "Скрыть" : "Показать"}<ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} /></button></div>{open && <div className="mt-7 grid gap-3 sm:grid-cols-2">{items.map((item) => <div key={item.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4"><div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-blue-50 text-ze-primary"><FileText className="h-4 w-4" /></div><div><div className="font-bold">{text(item.title)}</div>{text(item.description) && <p className="mt-1 text-sm leading-5 text-slate-500">{text(item.description)}</p>}{positive(item.minimum_value) && <div className="mt-1 text-sm font-semibold text-ze-primary">Минимум: {item.minimum_value} {text(item.unit)}</div>}</div></div>)}</div>}</Section>;
+  return <Section id="admission"><div className="flex items-start justify-between gap-4"><div><div className="text-xs font-bold uppercase tracking-[.18em] text-ze-primary">Поступление</div><h2 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Требования к поступлению</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Точные требования могут отличаться в зависимости от выбранной программы.</p></div>{items.length > 0 && <button onClick={() => setOpen(!open)} className="mt-5 flex flex-none items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold text-ze-primary">{open ? "Скрыть" : "Показать"}<ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} /></button>}</div>{open && (items.length > 0 ? <div className="mt-7 grid gap-3 sm:grid-cols-2">{items.map((item) => <div key={item.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4"><div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-blue-50 text-ze-primary"><FileText className="h-4 w-4" /></div><div><div className="font-bold">{text(item.title)}</div>{text(item.description) && <p className="mt-1 text-sm leading-5 text-slate-500">{text(item.description)}</p>}{positive(item.minimum_value) && <div className="mt-1 text-sm font-semibold text-ze-primary">Минимум: {item.minimum_value} {text(item.unit)}</div>}</div></div>)}</div> : <div className="mt-6 rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-5 text-sm leading-6 text-amber-950">Требования к поступлению пока не добавлены в карточку. Они могут различаться по программе и году набора — уточните актуальный список у университета перед подачей.</div>)}</Section>;
 }
 
 function Tuition({ university, catalog }: { university: University; catalog: UniversityCatalog }) {
@@ -269,7 +268,27 @@ function Campus({ university }: { university: University }) {
   return <Section id="campus"><SectionTitle eyebrow="Среда" title="Кампус и проживание" description={university.hasDormitory ? "Учебные пространства и варианты проживания студентов." : undefined} />{images.length > 0 ? <><div className="grid h-[420px] grid-cols-2 gap-2 overflow-hidden rounded-[24px] sm:grid-cols-3"><button onClick={() => setOpen(0)} className="relative col-span-2 row-span-2 overflow-hidden sm:col-span-2"><SafeImage src={images[0]} alt={`Кампус ${university.name}`} /><span className="absolute bottom-4 left-4 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">Кампус</span></button>{images.slice(1, 3).map((src, index) => <button key={src} onClick={() => setOpen(index + 1)} className="relative hidden overflow-hidden sm:block"><SafeImage src={src} alt={`${university.name}, фото ${index + 2}`} /><span className="absolute bottom-3 left-3 rounded-full bg-slate-950/65 px-3 py-1.5 text-xs font-bold text-white">{index + 1 < campus.length ? "Кампус" : "Общежитие"}</span>{index === 1 && images.length > 3 && <span className="absolute inset-0 flex items-center justify-center bg-slate-950/35 text-lg font-bold text-white">+{images.length - 3} фото</span>}</button>)}</div>{open !== null && <ImageLightbox images={images} index={open} onIndex={setOpen} onClose={() => setOpen(null)} alt={`Кампус ${university.name}`} />}</> : <div className="rounded-2xl bg-slate-100 p-10 text-center text-slate-500">Фотографии скоро появятся.</div>}<div className="mt-5 flex flex-wrap gap-3">{university.hasDormitory && <InfoPill icon={BedDouble} text="Общежитие доступно" />}{positive(university.dormitoryCost) && <InfoPill icon={CircleDollarSign} text={`от ${money(university.dormitoryCost, university.dormitoryCurrency)} / мес.`} />}</div></Section>;
 }
 
-function UniversityMedia({ university }: { university: University }) { const videos = [university.youtubeUrl, university.virtualTourUrl].filter(Boolean); return <section className="mt-8"><div className="mb-4 flex items-end justify-between"><div><div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Материалы</div><h2 className="mt-1 text-xl font-extrabold">Видео и документы</h2></div></div><div className={`grid gap-4 ${videos.length && university.presentationUrl ? "lg:grid-cols-[1.4fr_.6fr]" : ""}`}>{videos.length > 0 && <VideoCard url={videos[0]} title={`Обзор ${university.name}`} imageUrl={university.imageUrl} />}{university.presentationUrl && <div className="flex min-h-[260px] flex-col justify-between overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5"><div className="relative mx-auto w-[118px] rounded-lg border border-blue-100 bg-white p-3 shadow-[0_5px_14px_rgba(50,85,173,.08)]"><div className="flex items-center justify-between"><FileText className="h-5 w-5 text-ze-primary" /><span className="rounded bg-red-50 px-1.5 py-0.5 text-[8px] font-extrabold text-red-600">PDF</span></div><div className="mt-4 h-2 w-3/4 rounded bg-blue-100" /><div className="mt-2 h-1.5 rounded bg-slate-100" /><div className="mt-1.5 h-1.5 w-5/6 rounded bg-slate-100" /><div className="mt-4 h-10 rounded bg-gradient-to-br from-blue-50 to-blue-100" /></div><div className="mt-5 text-center"><span className="block text-xs font-bold uppercase tracking-wider text-ze-primary">Связанный документ · PDF</span><span className="mt-2 block text-lg font-extrabold text-ze-ink">Презентация университета</span>{university.presentationPages && <span className="mt-1 block text-sm text-ze-muted">{university.presentationPages} страниц</span>}<a href={university.presentationUrl} target="_blank" rel="noreferrer" className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-ze-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-ze-primary-dark">Посмотреть документ <ExternalLink className="h-4 w-4" /></a></div></div>}</div>{videos.length > 1 && <div className="mt-3"><VideoCard url={videos[1]} title="Виртуальный тур" imageUrl={university.imageUrl} /></div>}</section>; }
+function UniversityMedia({ university }: { university: University }) {
+  const videos = [university.youtubeUrl, university.virtualTourUrl].filter(Boolean);
+  return <Section id="media">
+    <div className="mb-4">
+      <div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Материалы</div>
+      <h2 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Фото, видео и документы</h2>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Знакомьтесь с кампусом и материалами университета.</p>
+    </div>
+    <div className={`grid gap-4 ${videos.length && university.presentationUrl ? "lg:grid-cols-[1.4fr_.6fr]" : ""}`}>
+      {videos.length > 0
+        ? <VideoCard url={videos[0]} title={`Обзор ${university.name}`} imageUrl={university.imageUrl} />
+        : <div className="flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
+            <Play className="h-8 w-8 text-slate-300" />
+            <h3 className="mt-3 font-bold text-slate-700">Видео кампуса пока не добавлено</h3>
+            <p className="mt-1 max-w-md text-sm leading-5 text-slate-500">Если у университета есть виртуальный тур или официальный видеообзор, он появится здесь после проверки.</p>
+          </div>}
+      {university.presentationUrl && <div className="flex min-h-[260px] flex-col justify-between overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5"><div className="relative mx-auto w-[118px] rounded-lg border border-blue-100 bg-white p-3 shadow-[0_5px_14px_rgba(50,85,173,.08)]"><div className="flex items-center justify-between"><FileText className="h-5 w-5 text-ze-primary" /><span className="rounded bg-red-50 px-1.5 py-0.5 text-[8px] font-extrabold text-red-600">PDF</span></div><div className="mt-4 h-2 w-3/4 rounded bg-blue-100" /><div className="mt-2 h-1.5 rounded bg-slate-100" /><div className="mt-1.5 h-1.5 w-5/6 rounded bg-slate-100" /><div className="mt-4 h-10 rounded bg-gradient-to-br from-blue-50 to-blue-100" /></div><div className="mt-5 text-center"><span className="block text-xs font-bold uppercase tracking-wider text-ze-primary">Связанный документ · PDF</span><span className="mt-2 block text-lg font-extrabold text-ze-ink">Презентация университета</span>{university.presentationPages && <span className="mt-1 block text-sm text-ze-muted">{university.presentationPages} страниц</span>}<a href={university.presentationUrl} target="_blank" rel="noreferrer" className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-ze-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-ze-primary-dark">Посмотреть документ <ExternalLink className="h-4 w-4" /></a></div></div>}
+    </div>
+    {videos.length > 1 && <div className="mt-3"><VideoCard url={videos[1]} title="Виртуальный тур" imageUrl={university.imageUrl} /></div>}
+  </Section>;
+}
 function VideoCard({ url, title, imageUrl }: { url: string; title: string; imageUrl?: string }) { const [playing, setPlaying] = useState(false); const match = url.match(/(?:youtu\.be\/|v=|embed\/)([\w-]{6,})/); const id = match?.[1]; if (playing && id) return <div className="aspect-video overflow-hidden rounded-2xl bg-blue-100"><iframe src={`https://www.youtube.com/embed/${id}?autoplay=1`} title={title} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen className="h-full w-full" /></div>; return <button onClick={() => id ? setPlaying(true) : window.open(url, "_blank", "noopener,noreferrer")} className="group relative aspect-video overflow-hidden rounded-2xl border border-blue-100 bg-blue-50">{imageUrl && <SafeImage src={imageUrl} alt={`Видео — ${title}`} />}<span className="absolute inset-0 bg-gradient-to-t from-blue-950/55 via-blue-700/10 to-transparent" /><span className="absolute inset-0 flex items-center justify-center"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-ze-primary text-white transition group-hover:scale-105"><Play className="ml-1 h-6 w-6 fill-current" /></span></span><span className="absolute bottom-5 left-5 right-5 text-left font-extrabold text-white">{title}</span></button>; }
 
 function Location({ university, country }: { university: University; country: EducationCountry | null }) { return <section className="scroll-mt-24"><SectionTitle eyebrow="Локация" title="Город и расположение" /><div className="flex flex-col justify-between gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center"><div><div className="flex items-center gap-2 text-xl font-extrabold"><MapPin className="h-5 w-5 text-ze-primary" />{university.city}{country?.name ? `, ${country.name}` : ""}</div>{university.address && <p className="mt-2 text-sm text-slate-500">{university.address}</p>}</div>{university.googleMapsUrl && <a href={university.googleMapsUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-ze-primary">Открыть на карте <ExternalLink className="h-4 w-4" /></a>}</div></section>; }
