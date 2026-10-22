@@ -102,13 +102,13 @@ export function UniversityExperience({ university, catalog, country, related }: 
         <div className="min-w-0 space-y-9">
           <Overview university={university} />
           <UniversityMedia university={university} />
+          <Campus university={university} />
+          {(university.address || university.googleMapsUrl || university.city) && <Location university={university} country={country} />}
           {rectorGrantOffer && <RectorGrantOffer university={university} offer={rectorGrantOffer} />}
           <Programs university={university} catalog={catalog} />
           <Admission university={university} catalog={catalog} />
           <Tuition university={university} catalog={catalog} />
           {otherScholarships.length > 0 && <Scholarships items={otherScholarships} />}
-          <Campus university={university} />
-          {(university.address || university.googleMapsUrl || university.city) && <Location university={university} country={country} />}
         </div>
         <aside className="hidden lg:block"><div className="sticky top-20"><ApplicationCard university={university} catalog={catalog} /></div></aside>
       </div>
