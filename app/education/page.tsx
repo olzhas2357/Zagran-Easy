@@ -8,7 +8,7 @@ import { Catalog } from "@/components/education/Catalog";
 export const metadata: Metadata = {
   title: "Обучение за рубежом — ZagranEasy",
   description:
-    "3200+ зачислений в университеты Турции, Китая. Поиск по цене, дедлайну и специальности.",
+    "Подберите университет и город для учёбы за рубежом. Поиск по цене, дедлайну и специальности.",
   openGraph: {
     title: "Обучение за рубежом — ZagranEasy",
     description: "Каталог университетов с фильтрами, сравнением и подбором.",
@@ -37,7 +37,7 @@ export default async function EducationPage({ searchParams }: { searchParams: Pr
             Найдите свой университет за 3 минуты
           </h1>
           <p className="mt-3.5 max-w-[800px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[17px]">
-            Все программы Турции, Китая с ценами, дедлайнами и требованиями к поступлению.
+            Университеты разных стран с ценами, дедлайнами и требованиями к поступлению.
           </p>
           <Link href="/education/compare" className="group mt-7 flex max-w-[760px] flex-col gap-4 overflow-hidden rounded-[22px] border border-blue-200 bg-white p-5 shadow-[0_14px_35px_rgba(50,85,173,.09)] transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-[0_18px_42px_rgba(50,85,173,.14)] sm:flex-row sm:items-center">
             <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-ze-primary text-white shadow-[0_8px_20px_rgba(26,86,219,.22)]"><GitCompareArrows className="h-6 w-6" /></span>
@@ -48,7 +48,7 @@ export default async function EducationPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-10">
-        <Catalog universities={catalog} clientId={clientId} />
+        <Catalog universities={catalog} countries={countryCatalog} clientId={clientId} />
       </div>
     </div>
   );

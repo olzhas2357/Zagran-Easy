@@ -32,9 +32,9 @@ export const CHINA_UNIVERSITY_TIERS: ChinaUniversityTier[] = [
         focus: "Гуманитарные и общественные науки, экономика, право, медицина и естественные науки.",
         programs: ["Экономика и финансы", "Право и международные отношения", "Медицина и биология", "Компьютерные науки"],
         admissionNote: "Уточните язык обучения конкретной программы: требования к китайскому или английскому и перечень вступительных этапов различаются.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Campus_No.3%2C_Peking_University%2C_Gate.jpg",
-        photoAttribution: "Автор не указан · общественное достояние",
-        photoAttributionUrl: "https://commons.wikimedia.org/wiki/File:Campus_No.3,_Peking_University,_Gate.jpg",
+        imageUrl: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Autumn_in_Peking_University%27s_Weiming_Lake_Island_002.jpg/1280px-Autumn_in_Peking_University%27s_Weiming_Lake_Island_002.jpg",
+        photoAttribution: "星外之神 · CC BY-SA 4.0",
+        photoAttributionUrl: "https://commons.wikimedia.org/wiki/File:Autumn_in_Peking_University%27s_Weiming_Lake_Island_002.jpg",
       },
       {
         name: "Университет Цинхуа",

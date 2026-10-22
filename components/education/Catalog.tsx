@@ -2,41 +2,22 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BedDouble, Building2, Check, Globe2, Landmark, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, BedDouble, Check, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
 import type { CatalogUniversity } from "@/lib/education-catalog";
-import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
+import { formatTuition, formatMonthlyInstallment, formatUniversityCount } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { addUniversityToClient } from "@/lib/staff-actions";
+import type { EducationCountry } from "@/lib/types";
 
 type Sort = "price" | "rating";
-type Direction = "turkey" | "china" | "europe" | "asia";
 type RequirementFilter = "any" | "required" | "not_required";
 type AvailabilityFilter = "any" | "yes" | "no";
 
-const directions = [
-  { id: "turkey", title: "Турция", subtitle: "Стамбул, Анкара и другие города", flag: "🇹🇷", icon: Landmark, tint: "from-red-50 to-white", active: "border-red-300 ring-red-100" },
-  { id: "china", title: "Китай", subtitle: "Сильные программы и гранты", flag: "🇨🇳", icon: Building2, tint: "from-amber-50 to-white", active: "border-amber-300 ring-amber-100" },
-  { id: "europe", title: "Европа", subtitle: "Университеты европейских стран", flag: "🇪🇺", icon: Globe2, tint: "from-blue-50 to-white", active: "border-blue-300 ring-blue-100" },
-  { id: "asia", title: "Азия", subtitle: "Университеты азиатских стран", flag: "🌏", icon: Globe2, tint: "from-cyan-50 to-white", active: "border-cyan-300 ring-cyan-100" },
-] as const;
+type CatalogCountry = EducationCountry & { count: number };
 
-function belongsTo(direction: Direction, university: CatalogUniversity) {
-  const country = university.country.toLowerCase();
-  const slug = university.countrySlug.toLowerCase();
-  const continent = university.continent.toLowerCase();
-  const isTurkey = slug === "turkey" || /турц|turkey|türkiye/.test(country);
-  const isChina = slug === "china" || /китай|china/.test(country);
-
-  if (direction === "turkey") return isTurkey;
-  if (direction === "china") return isChina;
-  if (direction === "europe") return continent === "europe" && !isTurkey;
-  return continent === "asia" && !isChina && !isTurkey;
-}
-
-export function Catalog({ universities, clientId }: { universities: CatalogUniversity[]; clientId?: string }) {
+export function Catalog({ universities, countries, clientId }: { universities: CatalogUniversity[]; countries: CatalogCountry[]; clientId?: string }) {
   const [query, setQuery] = useState("");
-  const [direction, setDirection] = useState<Direction | null>(null);
   const [sort, setSort] = useState<Sort>("price");
   const [hsk, setHsk] = useState<RequirementFilter>("any");
   const [ielts, setIelts] = useState<RequirementFilter>("any");
@@ -44,11 +25,9 @@ export function Catalog({ universities, clientId }: { universities: CatalogUnive
   const [addedIds, setAddedIds] = useState<string[]>([]);
   const { ids: compareIds, toggle: toggleCompare } = useCompareList();
 
-  const counts = useMemo(() => Object.fromEntries(directions.map((item) => [item.id, universities.filter((university) => belongsTo(item.id, university)).length])), [universities]);
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const list = universities.filter((university) => {
-      if (direction && !belongsTo(direction, university)) return false;
       const hskRequired = university.source.requirements.some((requirement) => /\bhsk\b/i.test(requirement));
       if (hsk === "required" && !hskRequired) return false;
       if (hsk === "not_required" && hskRequired) return false;
@@ -61,13 +40,52 @@ export function Catalog({ universities, clientId }: { universities: CatalogUnive
     return [...list].sort(sort === "rating"
       ? (a, b) => (a.rankingNational ?? 999) - (b.rankingNational ?? 999)
       : (a, b) => (a.tuitionFrom ?? Number.MAX_SAFE_INTEGER) - (b.tuitionFrom ?? Number.MAX_SAFE_INTEGER));
-  }, [universities, query, direction, hsk, ielts, dormitory, sort]);
+  }, [universities, query, hsk, ielts, dormitory, sort]);
 
   return <div>
-    <section className="pt-8">
-      <div className="mb-4 flex items-end justify-between gap-4"><div><div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Направления</div><h2 className="mt-1 text-2xl font-extrabold tracking-tight">Куда хотите поступить?</h2></div>{direction && <button onClick={() => setDirection(null)} className="text-sm font-bold text-ze-primary">Показать все</button>}</div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{directions.map((item) => { const Icon = item.icon; const selected = direction === item.id; const cardClass = `group relative block w-full overflow-hidden rounded-[20px] border bg-gradient-to-br p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(15,23,42,.09)] ${item.tint} ${selected ? `${item.active} ring-4` : "border-slate-200"}`; const content = <><div className="flex items-start justify-between"><span className="text-3xl" aria-hidden>{item.flag}</span><span className={`flex h-9 w-9 items-center justify-center rounded-full transition ${selected ? "bg-ze-primary text-white" : "bg-white text-slate-500 shadow-sm group-hover:text-ze-primary"}`}><ArrowRight className="h-4 w-4" /></span></div><div className="mt-6 flex items-end justify-between gap-3"><div><div className="text-xl font-extrabold">{item.title}</div><div className="mt-1 text-sm text-slate-500">{item.subtitle}</div></div><Icon className="h-7 w-7 flex-none text-slate-300" /></div><div className="mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">{counts[item.id]} {plural(counts[item.id])}</div></>; return item.id === "china" ? <Link key={item.id} href="/education/china" aria-label="Открыть страницу университетов Китая" className={cardClass}>{content}</Link> : <button key={item.id} onClick={() => setDirection(selected ? null : item.id)} aria-label={`Показать направление: ${item.title}`} className={cardClass}>{content}</button>; })}</div>
-    </section>
+    {countries.length > 0 && <section className="pt-8" aria-labelledby="catalog-countries">
+      <div className="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+        <div>
+          <div className="text-xs font-bold uppercase tracking-[.16em] text-ze-primary">Страны</div>
+          <h2 id="catalog-countries" className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Выберите направление</h2>
+          <p className="mt-2 text-sm leading-6 text-ze-muted">Информация об обучении, городах и университетах каждой страны.</p>
+        </div>
+        <span className="text-sm font-medium text-slate-500">{countries.length} стран для поступления</span>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {countries.map((country) => (
+          <Link
+            key={country.id}
+            href={country.slug === "china" ? "/education/china" : `/education/country/${country.slug}`}
+            aria-label={`Узнать об обучении в стране: ${country.name}`}
+            className="group relative isolate flex min-h-52 flex-col justify-between overflow-hidden rounded-[24px] border border-slate-200 bg-slate-900 p-5 text-white shadow-[0_8px_24px_rgba(15,23,42,.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_rgba(15,23,42,.18)] sm:min-h-56 sm:p-6"
+          >
+            {(country.heroImageUrl.startsWith("http") || country.imageUrl.startsWith("http")) && (
+              <CoverPhoto src={country.heroImageUrl.startsWith("http") ? country.heroImageUrl : country.imageUrl} alt="" className="absolute inset-0 -z-20 transition duration-700 group-hover:scale-105" />
+            )}
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-slate-950/75 via-slate-900/45 to-blue-950/75" />
+            <div className="flex items-start justify-between gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-3xl shadow-lg backdrop-blur-sm" aria-hidden>
+                {country.flag}
+              </span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-white/10 transition group-hover:bg-white group-hover:text-ze-primary">
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </div>
+            <div className="mt-8">
+              <h3 className="text-2xl font-extrabold tracking-tight">{country.name}</h3>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium text-white/80">
+                <span>{formatUniversityCount(country.count)}</span>
+                {country.cities.length > 0 && <>
+                  <span aria-hidden className="text-white/50">·</span>
+                  <span className="inline-flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{country.cities.slice(0, 3).join(", ")}</span>
+                </>}
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>}
 
     <div className="mt-7 flex flex-col gap-3 rounded-[18px] border border-ze-border bg-white p-2.5 shadow-[0_8px_26px_rgba(15,23,42,.07)] sm:flex-row sm:items-center sm:p-2">
       <label className="flex min-w-0 flex-1 items-center gap-3 px-2"><Search className="h-5 w-5 flex-none text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Университет, город или специальность" className="min-w-0 flex-1 bg-transparent py-3 text-[15px] font-medium outline-none" /></label>
@@ -81,9 +99,9 @@ export function Catalog({ universities, clientId }: { universities: CatalogUnive
       <QuickSelect label="Общежитие" value={dormitory} onChange={(value) => setDormitory(value as AvailabilityFilter)} options={[["any", "Любое"], ["yes", "Есть"], ["no", "Нет"]]} />
     </div>
 
-    <div className="mt-8 flex flex-wrap items-center justify-between gap-3"><div><div className="text-xl font-extrabold">{filtered.length} {plural(filtered.length)}</div>{direction && <div className="mt-1 text-sm text-slate-500">Направление: {directions.find((item) => item.id === direction)?.title}</div>}</div><div className="flex items-center gap-2"><span className="hidden items-center gap-1.5 text-xs font-semibold text-slate-400 sm:flex"><SlidersHorizontal className="h-4 w-4" /> Сортировка</span><div className="flex gap-1.5 rounded-xl border border-ze-border bg-[#F4F6FA] p-1">{([ ["price", "Сначала дешевле"], ["rating", "По рейтингу"] ] as const).map(([key, label]) => <button key={key} onClick={() => setSort(key)} className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${sort === key ? "bg-white text-ze-ink shadow-sm" : "text-ze-muted"}`}>{label}</button>)}</div></div></div>
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-3"><div><div className="text-xl font-extrabold">{filtered.length} {plural(filtered.length)}</div></div><div className="flex items-center gap-2"><span className="hidden items-center gap-1.5 text-xs font-semibold text-slate-400 sm:flex"><SlidersHorizontal className="h-4 w-4" /> Сортировка</span><div className="flex gap-1.5 rounded-xl border border-ze-border bg-[#F4F6FA] p-1">{([ ["price", "Сначала дешевле"], ["rating", "По рейтингу"] ] as const).map(([key, label]) => <button key={key} onClick={() => setSort(key)} className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${sort === key ? "bg-white text-ze-ink shadow-sm" : "text-ze-muted"}`}>{label}</button>)}</div></div></div>
 
-    {filtered.length > 0 ? <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{filtered.map((university) => <UniversityCard key={university.id} u={university} clientId={clientId} added={addedIds.includes(university.id)} onAdded={() => setAddedIds((ids) => [...ids, university.id])} inCompare={compareIds.includes(university.id)} onToggleCompare={() => toggleCompare(university.id)} />)}</div> : <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center"><div className="text-lg font-bold">Университеты не найдены</div><p className="mt-2 text-sm text-slate-500">Попробуйте другой запрос или измените быстрые фильтры.</p><button onClick={() => { setQuery(""); setDirection(null); setHsk("any"); setIelts("any"); setDormitory("any"); }} className="mt-4 rounded-xl bg-ze-primary px-5 py-3 text-sm font-bold text-white">Показать все университеты</button></div>}
+    {filtered.length > 0 ? <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{filtered.map((university) => <UniversityCard key={university.id} u={university} clientId={clientId} added={addedIds.includes(university.id)} onAdded={() => setAddedIds((ids) => [...ids, university.id])} inCompare={compareIds.includes(university.id)} onToggleCompare={() => toggleCompare(university.id)} />)}</div> : <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center"><div className="text-lg font-bold">Университеты не найдены</div><p className="mt-2 text-sm text-slate-500">Попробуйте другой запрос или измените быстрые фильтры.</p><button onClick={() => { setQuery(""); setHsk("any"); setIelts("any"); setDormitory("any"); }} className="mt-4 rounded-xl bg-ze-primary px-5 py-3 text-sm font-bold text-white">Показать все университеты</button></div>}
   </div>;
 }
 

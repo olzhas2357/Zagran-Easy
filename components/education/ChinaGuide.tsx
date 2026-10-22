@@ -135,35 +135,37 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
      {!embedded && <section className="relative overflow-hidden bg-[#EFF6FF]">
 
-        <div className="pointer-events-none absolute -right-28 -top-32 h-[460px] w-[460px] rounded-full border border-[#2563EB]/25" />
-
-        <div className="pointer-events-none absolute -right-12 -top-16 h-[330px] w-[330px] rounded-full border border-[#93B4E8]/45" />
-
         <div className="mx-auto max-w-6xl px-4 pb-10 pt-7 sm:px-10 sm:pb-16 sm:pt-10">
 
-        <Link href="/education" className="inline-flex items-center gap-2 text-sm font-semibold text-[#526681] transition hover:text-[#163B75]">
+        <Link href="/education" className="inline-flex items-center gap-2 rounded-full border border-[#D7E3F5] bg-white px-4 py-2 text-sm font-semibold text-[#526681] shadow-sm transition hover:border-[#A9C5EE] hover:text-[#163B75]">
 
             <ArrowLeft className="h-4 w-4" /> Все направления обучения
 
           </Link>
 
+          <div className="relative isolate mt-6 overflow-hidden rounded-[30px] bg-gradient-to-br from-[#12336A] via-[#16458E] to-[#2872C8] px-5 py-6 shadow-[0_24px_65px_rgba(22,59,117,.2)] sm:rounded-[36px] sm:px-9 sm:py-9">
+
+            <div className="pointer-events-none absolute -right-24 -top-32 -z-10 h-96 w-96 rounded-full border border-white/10" />
+
+            <div className="pointer-events-none absolute -right-10 -top-20 -z-10 h-72 w-72 rounded-full border border-white/10" />
+
           <div className="mt-8 grid gap-9 lg:grid-cols-[1.04fr\_.96fr] lg:items-center">
 
             <div>
 
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#D7E3F5] bg-white/60 px-3 py-1.5 text-xs font-bold uppercase tracking-[.12em] text-[#365783]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[.12em] text-white/90 backdrop-blur">
 
                 <span aria-hidden>🇨🇳</span> Обучение в Китае · гид 2026
 
               </div>
 
-              <h1 className="mt-5 max-w-2xl text-[40px] font-semibold leading-[1.04] tracking-[-.045em] text-[#163B75] sm:text-[62px]">
+              <h1 className="mt-5 max-w-2xl text-[40px] font-semibold leading-[1.04] tracking-[-.045em] text-white sm:text-[62px]">
 
                 Ваш путь к учёбе в Китае начинается здесь
 
               </h1>
 
-              <p className="mt-5 max-w-xl text-base leading-7 text-[#526681] sm:text-lg">
+              <p className="mt-5 max-w-xl text-base leading-7 text-blue-50/90 sm:text-lg">
 
                 Сравните университеты, города и направления. Разберитесь, какие шаги нужны для поступления, и получите помощь на каждом этапе.
 
@@ -177,7 +179,7 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
                 </a>
 
-                <Link href="/education/quiz" className="rounded-xl border border-[#C9D9F2] bg-white/55 px-5 py-3.5 text-sm font-bold text-[#365783] transition hover:bg-white">
+                <Link href="/education/quiz" className="rounded-xl border border-white/30 bg-white/10 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-white/20">
 
                   Подобрать по параметрам
 
@@ -185,7 +187,7 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
               </div>
 
-              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#526681]">
+              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/80">
 
                 <span className="flex items-center gap-2"><Check className="h-4 w-4 text-[#2563EB]" /> Выбор программы</span>
 
@@ -243,7 +245,7 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
           </div>
 
-          <div className="mt-7 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-3">
+          <div className="mt-7 grid grid-cols-3 gap-2 sm:mt-8 sm:gap-3">
 
             {[
 
@@ -255,11 +257,11 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
             ].map(([value, label]) => (
 
-              <div key={label} className="rounded-2xl border border-[#D7E3F5] bg-white/60 px-4 py-3.5 sm:px-5">
+              <div key={label} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3.5 backdrop-blur sm:px-5">
 
-                <div className="text-2xl font-semibold tracking-tight text-[#163B75] sm:text-3xl">{value}</div>
+                <div className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{value}</div>
 
-                <div className="mt-1 text-xs font-medium text-[#647894] sm:text-sm">{label}</div>
+                <div className="mt-1 text-xs font-medium text-blue-100/85 sm:text-sm">{label}</div>
 
               </div>
 
@@ -271,7 +273,7 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
             {CHINA_UNIVERSITY_TIERS.map((tier) => (
 
-              <a key={tier.id} href={`#${tier.id}`} className="rounded-full border border-[#C9D9F2] bg-white/45 px-4 py-2 text-xs font-bold text-[#365783] transition hover:border-[#2563EB] hover:bg-white">
+              <a key={tier.id} href={`#${tier.id}`} className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white/90 transition hover:border-white/50 hover:bg-white/20">
 
                 {tier.title}
 
@@ -279,19 +281,21 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
             ))}
 
-            <a href="#support" className="rounded-full border border-[#C9D9F2] bg-white/45 px-4 py-2 text-xs font-bold text-[#365783] transition hover:border-[#2563EB] hover:bg-white">
+            <a href="#support" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white/90 transition hover:border-white/50 hover:bg-white/20">
 
               Услуги сопровождения
 
             </a>
 
-            <a href="#requirements" className="rounded-full border border-[#C9D9F2] bg-white/45 px-4 py-2 text-xs font-bold text-[#365783] transition hover:border-[#2563EB] hover:bg-white">
+            <a href="#requirements" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white/90 transition hover:border-white/50 hover:bg-white/20">
 
               Требования и документы
 
             </a>
 
           </nav>
+
+          </div>
 
         </div>
 

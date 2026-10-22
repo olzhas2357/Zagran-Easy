@@ -112,3 +112,16 @@ export function formatMonthlyInstallment(tuitionFrom: number | null, currency = 
   if (tuitionFrom <= 0) return "Уточняется";
   return `≈ ${formatCurrency(tuitionFrom / 12, currency)} / мес`;
 }
+
+export function formatUniversityCount(count: number): string {
+  const lastTwoDigits = count % 100;
+  const lastDigit = count % 10;
+  const noun = lastTwoDigits >= 11 && lastTwoDigits <= 14
+    ? "университетов"
+    : lastDigit === 1
+      ? "университет"
+      : lastDigit >= 2 && lastDigit <= 4
+        ? "университета"
+        : "университетов";
+  return `${count} ${noun}`;
+}
