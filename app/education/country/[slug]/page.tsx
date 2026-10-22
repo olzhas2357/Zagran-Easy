@@ -21,6 +21,9 @@ const SOUTH_KOREA_ALIASES = new Set([
   "한국",
 ]);
 
+const SOUTH_KOREA_DESCRIPTION =
+  "Республика Корея (кор. 대한민국 — Тэханмингук) — суверенное государство, расположенное в южной части Корейского полуострова. Это экономически развитая индустриальная держава и один из технологических, инновационных и культурных центров Азии.";
+
 const southKoreaFallback: EducationCountry = {
   id: "south-korea",
   slug: "south-korea",
@@ -71,10 +74,13 @@ export async function generateMetadata({ params }: CountryPageProps): Promise<Me
   const { slug } = await params;
   const country = await getCountry(slug);
   if (!country) return {};
+  const isSouthKorea = SOUTH_KOREA_ALIASES.has(normalizeCountrySlug(slug)) || isSouthKoreaCountry(country);
 
   return {
     title: `Университеты ${country.name}: поступление и каталог | ZagranEasy`,
-    description: country.longDescription || country.description || `Университеты ${country.name}: программы и информация о поступлении.`,
+    description: isSouthKorea
+      ? SOUTH_KOREA_DESCRIPTION
+      : country.longDescription || country.description || `Университеты ${country.name}: программы и информация о поступлении.`,
   };
 }
 
@@ -220,6 +226,9 @@ export default async function CountryEducationPage({ params }: CountryPageProps)
   if (!country) notFound();
 
   const isSouthKorea = SOUTH_KOREA_ALIASES.has(normalizeCountrySlug(slug)) || isSouthKoreaCountry(country);
+  const countryDescription = isSouthKorea
+    ? SOUTH_KOREA_DESCRIPTION
+    : country.longDescription || country.description;
   const matchingCountryIds = new Set(
     countries
       .filter((item) => isSouthKorea && isSouthKoreaCountry(item))
@@ -267,9 +276,9 @@ export default async function CountryEducationPage({ params }: CountryPageProps)
               <h1 className="mt-5 text-4xl font-extrabold leading-[1.04] tracking-tight text-balance sm:text-6xl">
                 Учёба в {country.name}
               </h1>
-              {(country.longDescription || country.description) && (
+              {countryDescription && (
                 <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-7 text-blue-50/90 sm:text-lg">
-                  {country.longDescription || country.description}
+                  {countryDescription}
                 </p>
               )}
               {country.features.length > 0 && (
