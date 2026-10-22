@@ -101,11 +101,11 @@ export function UniversityExperience({ university, catalog, country, related }: 
       <div className="mx-auto grid max-w-[1040px] gap-6 px-4 py-7 sm:px-7 lg:grid-cols-[minmax(0,1fr)_220px] lg:px-8">
         <div className="min-w-0 space-y-9">
           <Overview university={university} />
+          <UniversityMedia university={university} />
           {rectorGrantOffer && <RectorGrantOffer university={university} offer={rectorGrantOffer} />}
           <Programs university={university} catalog={catalog} />
           <Admission university={university} catalog={catalog} />
           <Tuition university={university} catalog={catalog} />
-          <UniversityMedia university={university} />
           {otherScholarships.length > 0 && <Scholarships items={otherScholarships} />}
           <Campus university={university} />
           {(university.address || university.googleMapsUrl || university.city) && <Location university={university} country={country} />}
