@@ -8,6 +8,7 @@ import {
   BookOpen,
   CalendarDays,
   ClipboardList,
+  FileCheck2,
   FileText,
   GraduationCap,
   LayoutGrid,
@@ -25,6 +26,7 @@ const NAV = [
   { href: "/account/syllabus", label: "Syllabus", Icon: FileText },
   { href: "/account/lessons", label: "Уроки", Icon: Video },
   { href: "/account/homework", label: "Домашние задания", Icon: ClipboardList },
+  { href: "/account/mock-test", label: "Mock test", Icon: FileCheck2 },
   // { href: "/account/schedule", label: "Расписание", Icon: CalendarDays },
 ];
 
