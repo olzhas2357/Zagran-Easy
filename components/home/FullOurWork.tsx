@@ -4,7 +4,7 @@ import { MEDIA_REEL_ITEMS } from "@/lib/constants";
 import { waUrl } from "@/lib/utils";
 
 const INCLUDES = [
-  "Языковой курс",
+  "Языковая подготовка — 10 месяцев",
   "Подбор университета",
   "Подбор образовательной программы",
   "Подготовка документов",
