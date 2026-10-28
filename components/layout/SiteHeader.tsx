@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [accountsOpen, setAccountsOpen] = useState(false);
   const pathname = usePathname();
   const { theme } = useTheme();
 
@@ -120,26 +121,59 @@ export function SiteHeader() {
             />
           )}
 
-          <Link
-            href="/account"
-            className={`group flex h-10 items-center gap-2 rounded-xl border px-2.5 pr-3.5 text-[13.5px] font-semibold transition-all duration-200 ${
-              isDark
-                ? "border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.09]"
-                : "border-slate-200 bg-white text-ze-ink hover:border-ze-primary/30 hover:bg-[#F8FAFF]"
-            }`}
-          >
-            <span
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold transition-transform duration-200 group-hover:scale-105 ${
+          <div className="relative">
+            <button
+              type="button"
+              aria-expanded={accountsOpen}
+              onClick={() => setAccountsOpen((value) => !value)}
+              className={`group flex h-10 items-center gap-2 rounded-xl border px-2.5 pr-3.5 text-[13.5px] font-semibold transition-all duration-200 ${
                 isDark
-                  ? "bg-white/10 text-white"
-                  : "bg-[#EBF1FE] text-ze-primary"
+                  ? "border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.09]"
+                  : "border-slate-200 bg-white text-ze-ink hover:border-ze-primary/30 hover:bg-[#F8FAFF]"
               }`}
             >
-              К
-            </span>
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold transition-transform duration-200 group-hover:scale-105 ${
+                  isDark
+                    ? "bg-white/10 text-white"
+                    : "bg-[#EBF1FE] text-ze-primary"
+                }`}
+              >
+                К
+              </span>
+              <span>Кабинет</span>
+              <span aria-hidden="true" className="text-xs">▾</span>
+            </button>
+            {accountsOpen && (
+              <div
+                className={`absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border p-1.5 shadow-lg ${
+                  isDark
+                    ? "border-white/10 bg-[#0B132B] text-white"
+                    : "border-slate-200 bg-white text-ze-ink"
+                }`}
+              >
+                {[
+                  { label: "Кабинет студента", href: "/account" },
+                  { label: "Кабинет менеджера", href: "/staff" },
+                  { label: "Кабинет учителя", href: "/teacher" },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setAccountsOpen(false)}
+                    className={`block rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      isDark
+                        ? "hover:bg-white/[0.08]"
+                        : "hover:bg-slate-50 hover:text-ze-primary"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
 
-            <span>Кабинет</span>
-          </Link>
 
           <a
             href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}
@@ -276,27 +310,57 @@ export function SiteHeader() {
                 }`}
               />
 
-              <Link
-                href="/account"
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-xl border px-3 py-3.5 text-[15px] font-semibold ${
-                  isDark
-                    ? "border-white/10 bg-white/[0.04] text-white"
-                    : "border-slate-200 bg-white text-ze-ink"
-                }`}
-              >
-                <span
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold ${
+              <div>
+                <button
+                  type="button"
+                  aria-expanded={accountsOpen}
+                  onClick={() => setAccountsOpen((value) => !value)}
+                  className={`flex w-full items-center justify-between rounded-xl border px-3 py-3.5 text-[15px] font-semibold ${
                     isDark
-                      ? "bg-white/10 text-white"
-                      : "bg-[#EBF1FE] text-ze-primary"
+                      ? "border-white/10 bg-white/[0.04] text-white"
+                      : "border-slate-200 bg-white text-ze-ink"
                   }`}
                 >
-                  К
-                </span>
-
-                Кабинет
-              </Link>
+                  <span className="flex items-center gap-3">
+                    <span
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold ${
+                        isDark
+                          ? "bg-white/10 text-white"
+                          : "bg-[#EBF1FE] text-ze-primary"
+                      }`}
+                    >
+                      К
+                    </span>
+                    Кабинет
+                  </span>
+                  <span aria-hidden="true" className="text-xs">▾</span>
+                </button>
+                {accountsOpen && (
+                  <div className="mt-1 flex flex-col gap-1 pl-11">
+                    {[
+                      { label: "Кабинет студента", href: "/account" },
+                      { label: "Кабинет менеджера", href: "/staff" },
+                      { label: "Кабинет учителя", href: "/teacher" },
+                    ].map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => {
+                          setOpen(false);
+                          setAccountsOpen(false);
+                        }}
+                        className={`rounded-lg px-3 py-2.5 text-sm ${
+                          isDark
+                            ? "text-white/80 hover:bg-white/[0.06]"
+                            : "text-slate-600 hover:bg-slate-50 hover:text-ze-primary"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <a
                 href={waUrl(
