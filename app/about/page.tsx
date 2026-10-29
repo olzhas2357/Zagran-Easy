@@ -5,11 +5,13 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { PhotoGallery } from "@/components/ui/PhotoGallery";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
-import { GraduationCap, Stamp } from "lucide-react";
+import { ArrowUpRight, GraduationCap, MapPin, MessageCircle, Phone, Stamp, Clock3, } from "lucide-react";
 import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
 import { FloatingBadge } from "@/components/ui/FloatingBadge";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
+import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
+import { reviews } from "@/data/content";
 
 export const metadata: Metadata = {
   title: PAGE_META["/about"]?.title ?? "О нас",
@@ -20,16 +22,16 @@ export const metadata: Metadata = {
 };
 
 const TEAM = [
-  { name: "Нурбол Нуркасымов", role: "Основатель, руководитель", initials: "НН" },
+{ name: "Нурбол Нуркасымов", role: "Основатель, руководитель", initials: "НН" },
+{ name: "Алия Ибраева", role: "Руководитель отдела продаж (РОП)", initials: "АИ" },
+{ name: "Данияр Султанов", role: "Проверентолог", initials: "ДС" },
+{ name: "Мадина Ахметова", role: "Старший менеджер по продажам", initials: "МА" },
+{ name: "Санжар Омаров", role: "Специалист по верификации документов", initials: "СО" },
+{ name: "Бахтияр Сулейменов", role: "Учитель английского языка", initials: "БС" },
+
 ];
 
 const RESULTS_PHOTOS = [
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/3_yhwkk8.png",
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/2_eroghg.png",
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645537/4_ddrmbj.png",
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/6_hlaqwa.png",
-  // "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
   {
     src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645536/1_hab3dq.png",
     alt: "Письмо о зачислении студента ZagranEasy",
@@ -114,12 +116,107 @@ export default function AboutPage() {
           ))}
         </div>
       </div>
+                {/* Отзывы */}
+      <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-10">
+          <ReviewsCarousel reviews={reviews} />
+        </div>
+      </section>
 
-        <div className="relative w-full min-w-0 flex-1">
-            <div className="relative aspect-4/3 max-w-lg mx-auto">
-              
-              {/* Доминирующее фото — слева сверху */}
-{/* Большое фото — слева сверху */}
+      {/* Контакты */}
+<section id="contacts" className="px-4 pb-11 sm:px-10 sm:pb-19 dark:bg-[#0B1329] bg-slate-50"> 
+  <div className="mx-auto max-w-6xl">
+    <FadeIn>
+      {/* Заменили bg-[#101D3A] на bg-white, а text-white на text-slate-900 */}
+      <div className="relative overflow-hidden rounded-[28px] bg-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.08)] border border-slate-100">
+        
+        {/* Изменили прозрачность и размытие фоновых кругов для светлого фона */}
+        <div className="pointer-events-none absolute -right-20 -top-28 h-[340px] w-[340px] rounded-full bg-[#2880DE]/10 blur-[80px]" />
+        <div className="pointer-events-none absolute -bottom-36 left-[24%] h-[300px] w-[300px] rounded-full bg-[#25D366]/10 blur-[80px]" />
+        
+        <div className="relative grid gap-8 p-6 sm:grid-cols-[1fr_0.85fr] sm:gap-12 sm:p-10 lg:p-14">
+          <div className="flex flex-col items-start">
+            {/* Адаптировали бейдж под светлую тему */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-[12px] font-semibold tracking-wide text-slate-600">
+              <MapPin className="h-3.5 w-3.5 text-[#2880DE]" />
+              Мы в Алматы
+            </div>
+            <h2 className="mt-4 max-w-[520px] text-[28px] font-extrabold leading-tight tracking-tight text-slate-900 sm:text-[40px]">
+              Давайте обсудим ваш следующий шаг
+            </h2>
+            <p className="mt-3 max-w-[480px] text-[14.5px] leading-relaxed text-slate-600 sm:text-[16px]">
+              Напишите или приходите в офис — познакомимся, ответим на вопросы и вместе наметим план.
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a
+                href={waUrl("Здравствуйте! Хочу обсудить обучение за рубежом.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-3.5 text-[14px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#1EAF55] shadow-sm"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Написать в WhatsApp
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+              {/* Перекрасили кнопку "Построить маршрут" */}
+              <a
+                href={SITE.twoGisUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3.5 text-[14px] font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Построить маршрут
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:content-center">
+            {/* Карточка телефона: замена границ и фонов на светлые */}
+            <a
+              href={`tel:${SITE.phone.replace(/\s/g, "")}`}
+              className="group rounded-2xl border border-slate-100 bg-slate-50/70 p-5 transition hover:border-slate-200 hover:bg-slate-50 sm:p-6"
+            >
+              <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                <Phone className="h-4 w-4 text-[#2880DE]" />
+                Позвоните нам
+              </div>
+              <div className="mt-2 text-[23px] font-extrabold tracking-tight text-slate-900 sm:text-[29px]">{SITE.phone}</div>
+              <div className="mt-1 text-[13px] text-slate-500 transition group-hover:text-slate-700">Нажмите, чтобы позвонить</div>
+            </a>
+            
+            {/* Карточка адреса: замена границ и фонов на светлые */}
+            <a
+              href={SITE.twoGisUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-2xl border border-slate-100 bg-slate-50/70 p-5 transition hover:border-slate-200 hover:bg-slate-50 sm:p-6"
+            >
+              <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                <MapPin className="h-4 w-4 text-[#2880DE]" />
+                Наш офис
+              </div>
+              <div className="mt-2 text-[16px] font-bold leading-relaxed text-slate-900 sm:text-[18px]">{SITE.address}</div>
+              <div className="mt-3 flex items-center justify-between gap-3 text-[13px] text-slate-500">
+                <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" /> Пн–Сб, 10:00–19:00</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-[#2880DE] transition group-hover:text-[#1A5FB4]">
+                  Открыть карту <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </FadeIn>
+  </div>
+</section>
+
+
+    <div className="relative w-full min-w-0 flex-1">
+        <div className="relative aspect-4/3 max-w-lg mx-auto">
+          {/* Доминирующее фото — слева сверху */}
+          {/* Большое фото — слева сверху */}
           {/* Фото 1 — верх слева */}
         <FloatingPhoto
           src={HERO_COLLAGE[0].src}

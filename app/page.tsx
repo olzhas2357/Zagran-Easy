@@ -11,6 +11,9 @@ import {
   MessageCircle,
   Calendar,
   MapPin,
+  Phone,
+  Clock3,
+  ArrowUpRight,
   ShieldCheck,
   Zap,
   CheckCircle2,
@@ -19,7 +22,7 @@ import {
 } from "lucide-react";
 import { fetchAllUniversities, fetchEducationCountries, fetchReviews, fetchTours } from "@/lib/data";
 import { formatDuration, formatPrice, waUrl } from "@/lib/utils";
-import { STATS, ABOUT, MEDIA_REEL_ITEMS, SERVICE_COLORS, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
+import { STATS, ABOUT, SITE, MEDIA_REEL_ITEMS, SERVICE_COLORS, HERO_COLLAGE, ACCEPTANCE_LETTER_PHOTOS, CAMPUS_LIFE_PHOTOS } from "@/lib/constants";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { TiltCard } from "@/components/ui/TiltCard";
@@ -563,26 +566,33 @@ export default async function HomePage() {
       <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-6xl px-4 sm:px-10">
           <FadeIn>
-            <h2 className="max-w-[560px] text-[22px] font-extrabold tracking-tight sm:text-[32px] dark:text-white">
-              Почему выбирают ZagranEasy
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-[12.5px] font-semibold text-ze-primary dark:border-white/15 dark:bg-white/[0.06] dark:text-[#8FD9F5]">
+              <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
+              Наши преимущества
+            </div>
+            <h2 className="mt-3.5 max-w-[560px] text-[25px] font-extrabold tracking-tight sm:text-[36px] dark:text-white">
+              Ваш путь за рубеж — с поддержкой на каждом шаге
             </h2>
+            <p className="mt-3 max-w-[580px] text-[14.5px] leading-relaxed text-ze-muted sm:text-[16px] dark:text-white/65">
+              Разбираемся в задаче, объясняем следующие шаги и остаёмся рядом, пока вы осваиваетесь в новой стране.
+            </p>
           </FadeIn>
-          <div className="mt-7 grid grid-cols-2 gap-3.5 sm:mt-9 sm:grid-cols-4 sm:gap-5">
+          <div className="mt-7 grid grid-cols-1 gap-3.5 sm:mt-9 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
             {[
-              { Icon: ShieldCheck, title: "Надёжно", text: "Работаем прозрачно и сопровождаем каждый этап.", color: "blue" },
-              { Icon: Zap, title: "Быстро", text: "Помогаем решать вопросы оперативно.", color: "amber" },
-              { Icon: CheckCircle2, title: "Удобно", text: "Все основные процессы собраны в одном месте.", color: "emerald" },
-              { Icon: HeartHandshake, title: "Рядом", text: "Остаёмся на связи после поступления.", color: "violet" },
+              { Icon: ShieldCheck, title: "Понятный план", text: "Прозрачно объясняем этапы поступления и помогаем подготовиться к каждому.", color: "blue" },
+              { Icon: Zap, title: "Без лишней суеты", text: "Помогаем сориентироваться в сроках, документах и следующих действиях.", color: "amber" },
+              { Icon: CheckCircle2, title: "Всё в одном месте", text: "Университеты, программы и сопровождение — в рамках одного маршрута.", color: "emerald" },
+              { Icon: HeartHandshake, title: "Поддержка рядом", text: "Остаёмся на связи и после поступления, когда начинается новая жизнь.", color: "violet" },
             ].map((b, i) => {
               const colors = SERVICE_COLORS[b.color];
               return (
                 <FadeIn key={b.title} delay={i * 0.05}>
-                  <div className="flex h-full flex-col items-center gap-2.5 rounded-[22px] border border-ze-border/70 bg-white p-4.5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:items-start sm:p-6 sm:text-left dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20">
+                  <div className="group flex h-full flex-col gap-3 rounded-[22px] border border-ze-border/70 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] sm:p-6 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20">
                     <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg}`}>
                       <b.Icon className={`h-6 w-6 ${colors.text}`} strokeWidth={1.75} />
                     </div>
                     <div className="text-[16px] font-bold dark:text-white">{b.title}</div>
-                    <div className="text-[13px] leading-relaxed text-ze-muted dark:text-white/60">{b.text}</div>
+                    <div className="text-[13.5px] leading-relaxed text-ze-muted dark:text-white/60">{b.text}</div>
                   </div>
                 </FadeIn>
               );
@@ -595,13 +605,6 @@ export default async function HomePage() {
       <section className="border-y border-ze-border bg-ze-surface py-11 sm:py-19 dark:border-white/10 dark:bg-[#0B132B]">
         <div className="mx-auto max-w-[800px] px-4 sm:px-10">
           <LandingQuiz />
-        </div>
-      </section>
-
-      {/* Отзывы */}
-      <section className="py-11 sm:py-19 dark:bg-[#0B132B]">
-        <div className="mx-auto max-w-6xl px-4 sm:px-10">
-          <ReviewsCarousel reviews={reviews} />
         </div>
       </section>
 
