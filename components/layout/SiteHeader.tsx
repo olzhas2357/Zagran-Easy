@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/navigation";
 import { waUrl } from "@/lib/utils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { InstagramIcon } from "@/components/ui/InstagramIcon";
+import { MapPin } from "lucide-react";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -109,9 +112,41 @@ export function SiteHeader() {
           })}
         </nav>
 
+          
+          {/* <a
+            href={SITE.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram ZagranEasy"
+            title="Instagram"
+            className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 ${
+              isDark
+                ? "border-white/10 bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white"
+                : "border-slate-400 bg-white text-slate-500 hover:border-ze-primary/30 hover:text-ze-primary"
+            }`}
+          >
+            <InstagramIcon className="h-[18px] w-[18px]" />
+          </a>
+
+          <a
+            href={SITE.twoGisUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="2ГИС ZagranEasy"
+            title="2ГИС"
+            className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 ${
+              isDark
+                ? "border-white/10 bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white"
+                : "border-slate-400 bg-white text-slate-500 hover:border-ze-primary/30 hover:text-ze-primary"
+            }`}
+          >
+            <MapPin className="h-[18px] w-[18px]" />
+          </a> */}
+
+
         {/* RIGHT ACTIONS */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          {isThemedRoute && (
+          {/* {isThemedRoute && (
             <ThemeToggle
               className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 ${
                 isDark
@@ -119,7 +154,7 @@ export function SiteHeader() {
                   : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-ze-ink"
               }`}
             />
-          )}
+          )} */}
 
           <div className="relative">
             <button
@@ -173,7 +208,6 @@ export function SiteHeader() {
               </div>
             )}
           </div>
-
 
           <a
             href={waUrl("Здравствуйте! Хочу оставить заявку на консультацию.")}

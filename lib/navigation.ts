@@ -14,6 +14,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: "Университеты", href: "/education" },
   { label: "Языковые курсы", href: "/language" },
+  { label: "Пакеты", href: "/education/packages" },
   { label: "О нас", href: "/about" },
 ];
 // Меню портала сотрудников
@@ -29,6 +30,7 @@ export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
   "/education": "Университеты",
   "/language": "Языковые курсы",
+  "/education/packages": "Пакеты",
   "/about": "О нас",
   "/faq": "FAQ",
 };
@@ -57,6 +59,11 @@ export const PAGE_META: Record<
     title: "Языковые курсы — ZagranEasy",
     description:
       "Онлайн-курсы английского языка: General English, IELTS Preparation, English for University, Speaking Club.",
+  },
+  "/education/packages": {
+    title: "Пакеты полного сопровождения — ZagranEasy",
+    description:
+      "Пакеты полного сопровождения: учёба в Чехии и Китае, этапы, сроки и стоимость.",
   },
   "/about": {
     title: "О компании — ZagranEasy",

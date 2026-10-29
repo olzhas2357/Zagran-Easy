@@ -21,6 +21,29 @@ export interface EducationCountry {
   sortOrder: number;
 }
 
+export interface EducationPackageExtraCost {
+  title: string;
+  amount: number | null;
+  currency: string | null;
+  period: string | null;
+}
+
+export interface EducationPackage {
+  id: string;
+  countryId: string;
+  slug: string;
+  name: string;
+  description: string;
+  stages: string[];
+  priceFrom: number | null;
+  priceCurrency: string | null;
+  priceNote: string;
+  extraCosts: EducationPackageExtraCost[];
+  selectionGuide: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
 export interface UniversityProgram {
   name: string;
   meta: string;

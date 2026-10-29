@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/navigation";
+import { MapPin } from "lucide-react";
+import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { waUrl } from "@/lib/utils";
 
 export function SiteFooter() {
@@ -80,7 +82,17 @@ export function SiteFooter() {
                 rel="noopener noreferrer"
                 className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold transition hover:border-blue-500 hover:text-blue-600"
               >
+                <InstagramIcon className="mr-1.5 inline h-4 w-4 align-[-3px]" />
                 Instagram
+              </a>
+              <a
+                href={SITE.twoGisUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold transition hover:border-blue-500 hover:text-blue-600"
+              >
+                <MapPin className="mr-1.5 inline h-4 w-4 align-[-3px]" />
+                2ГИС
               </a>
             </div>
           </div>

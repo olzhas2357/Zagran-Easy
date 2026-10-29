@@ -9,7 +9,7 @@ import { cache } from "react";
 import { apiGet } from "./api";
 import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions, faqItems } from "@/data/content";
 import { tours as staticTours, getTourBySlug } from "@/data/tours";
-import type { EducationCountry, University, UniversityCatalog, Tour, WorkCountry, Property, Review } from "./types";
+import type { EducationCountry, EducationPackage, EducationPackageExtraCost, University, UniversityCatalog, Tour, WorkCountry, Property, Review } from "./types";
 import type { LanguageTeacher, RealLanguageCourse, CourseModule, CourseLesson } from "./language-data";
 
 // ===================== EDUCATION =====================
@@ -112,6 +112,31 @@ export async function fetchEducationCountry(slug: string): Promise<EducationCoun
   const countries = await fetchEducationCountries();
   return countries.find((c) => c.slug === slug) || null;
 }
+
+function mapPackageRow(row: Record<string, unknown>): EducationPackage {
+  return {
+    id: row.id as string,
+    countryId: row.country_id as string,
+    slug: row.slug as string,
+    name: row.name as string,
+    description: (row.description as string) || "",
+    stages: (row.stages as string[]) || [],
+    priceFrom: row.price_from === null || row.price_from === undefined ? null : Number(row.price_from),
+    priceCurrency: (row.price_currency as string) ?? null,
+    priceNote: (row.price_note as string) || "",
+    extraCosts: (row.extra_costs as EducationPackageExtraCost[]) || [],
+    selectionGuide: (row.selection_guide as string) || "",
+    isActive: row.is_active === undefined ? true : Boolean(row.is_active),
+    sortOrder: (row.sort_order as number) ?? 0,
+  };
+}
+
+// Пакеты полного сопровождения. Группировка по стране — на стороне приложения.
+export const fetchEducationPackages = cache(async (): Promise<EducationPackage[]> => {
+  const res = await apiGet<Record<string, unknown>[]>("/education-packages?limit=100");
+  if (res.error || !res.data) return [];
+  return res.data.map(mapPackageRow).filter((p) => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
+});
 
 export const fetchUniversities = cache(async (country: { id: string; slug: string }): Promise<University[]> => {
   const res = await apiGet<Record<string, unknown>[]>(`/universities?country=${country.id}&limit=100`);

@@ -11,6 +11,7 @@ export const SITE = {
   email: "ZagranEasy.office@gmail.com",
   instagram: "zagraneasyy",
   instagramUrl: "https://www.instagram.com/zagraneasyy",
+  twoGisUrl: "https://2gis.kz/almaty/gallery/firm/70000001116326678",
   address: "г. Алматы, ул. Сатпаева 30/8, офис Блок С 3 этаж 148",
   url: "https://zagraneasy.kz",
 } as const;
