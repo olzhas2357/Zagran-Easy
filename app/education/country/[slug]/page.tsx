@@ -274,7 +274,7 @@ export default async function CountryEducationPage({ params }: CountryPageProps)
                 <GraduationCap className="h-4 w-4" /> Обучение за рубежом
               </div>
               <h1 className="mt-5 text-4xl font-extrabold leading-[1.04] tracking-tight text-balance sm:text-6xl">
-                Учёба в {country.name}
+                {country.name}
               </h1>
               {countryDescription && (
                 <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-7 text-blue-50/90 sm:text-lg">
