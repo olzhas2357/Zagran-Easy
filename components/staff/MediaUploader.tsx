@@ -19,6 +19,8 @@ export function ImageListUploader({
   const [isPending, startTransition] = useTransition();
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -26,13 +28,17 @@ export function ImageListUploader({
     startTransition(async () => {
       const uploaded: string[] = [];
       for (const file of Array.from(files)) {
-        const fd = new FormData();
-        fd.set("file", file);
-        const res = await uploadUniversityFile(fd);
-        if (res.success && res.url) uploaded.push(res.url);
-        else setError(res.error || "Не удалось загрузить файл");
+        try {
+          const fd = new FormData();
+          fd.set("file", file);
+          const res = await uploadUniversityFile(fd);
+          if (res.success && res.url) uploaded.push(res.url);
+          else setError(res.error || "Не удалось загрузить файл");
+        } catch {
+          setError("Не удалось загрузить файл. Проверьте соединение и размер файла.");
+        }
       }
-      if (uploaded.length > 0) onChange([...value, ...uploaded]);
+      if (uploaded.length > 0) onChange([...valueRef.current, ...uploaded]);
     });
   }
 
@@ -105,11 +111,15 @@ export function SingleFileUploader({
     if (!file) return;
     setError(null);
     startTransition(async () => {
-      const fd = new FormData();
-      fd.set("file", file);
-      const res = await uploadUniversityFile(fd);
-      if (res.success && res.url) onChange(res.url);
-      else setError(res.error || "Не удалось загрузить файл");
+      try {
+        const fd = new FormData();
+        fd.set("file", file);
+        const res = await uploadUniversityFile(fd);
+        if (res.success && res.url) onChange(res.url);
+        else setError(res.error || "Не удалось загрузить файл");
+      } catch {
+        setError("Не удалось загрузить файл. Проверьте соединение и размер файла.");
+      }
     });
   }
 
