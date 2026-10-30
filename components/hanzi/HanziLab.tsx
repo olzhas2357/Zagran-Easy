@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import HanziWriter from "hanzi-writer";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { loadCharacterData } from "./character-data";
 
 const TEST_CHARACTERS = [
@@ -52,7 +51,6 @@ export function HanziLab() {
           <div><p className="mb-2 text-sm font-semibold text-ze-primary dark:text-blue-300">ZagranEasy · Китайский язык · Тестовая страница</p>
             <h1 className="text-3xl font-bold sm:text-4xl">Лаборатория иероглифов</h1>
             <p className="mt-3 text-slate-500 dark:text-slate-400">Изучайте порядок черт и тренируйте написание китайских иероглифов</p></div>
-          <ThemeToggle className={`${button} shrink-0`} />
         </header>
 
         <section className={card} aria-label="Выбор иероглифа">

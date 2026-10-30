@@ -5,23 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { SITE } from "@/lib/constants";
 import { NAV_ITEMS } from "@/lib/navigation";
 import { waUrl } from "@/lib/utils";
-import { useTheme } from "@/components/theme/ThemeProvider";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { InstagramIcon } from "@/components/ui/InstagramIcon";
-import { MapPin } from "lucide-react";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
   const pathname = usePathname();
-  const { theme } = useTheme();
 
   const isLanguage = pathname?.startsWith("/language");
-  const isThemedRoute = pathname === "/" || isLanguage;
-  const isDark = isThemedRoute && theme === "dark";
+  const isDark = false;
 
   const navItems = NAV_ITEMS.filter((item) => item.href !== "/");
 
@@ -146,16 +139,6 @@ export function SiteHeader() {
 
         {/* RIGHT ACTIONS */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          {/* {isThemedRoute && (
-            <ThemeToggle
-              className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 ${
-                isDark
-                  ? "border-white/10 bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white"
-                  : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-ze-ink"
-              }`}
-            />
-          )} */}
-
           <div className="relative">
             <button
               type="button"
@@ -228,17 +211,6 @@ export function SiteHeader() {
             <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-0" />
           </a>
         </div>
-
-        {/* MOBILE THEME */}
-        {isThemedRoute && (
-          <ThemeToggle
-            className={`ml-auto flex h-10 w-10 items-center justify-center rounded-xl border md:hidden ${
-              isDark
-                ? "border-white/10 bg-white/[0.05] text-white/80"
-                : "border-slate-200 bg-white text-slate-500"
-            }`}
-          />
-        )}
 
         {/* MOBILE MENU */}
         <button

@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
-/* Ручной переключатель темы (не prefers-color-scheme): dark: применяется,
-   только когда на <html> (или предке) стоит data-theme="dark" — см.
-   components/theme/ThemeProvider.tsx. Сейчас используется только на /language,
-   остальные страницы data-theme игнорируют (dark:-классов там нет). */
+/* Стили dark: оставлены для совместимости, но тема сайта закреплена в светлом режиме:
+   приложение больше не устанавливает data-theme="dark". */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {

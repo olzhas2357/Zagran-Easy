@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { SiteHeader } from "./SiteHeader";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { AuthProvider } from "@/lib/auth-context";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
 // Админ-панель, кабинет менеджера, кабинет преподавателя и личный кабинет
 // студента ведут свою навигацию и хедер (см. их layout.tsx), поэтому публичный
@@ -19,11 +18,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     isAdmin || pathname?.startsWith("/staff") || pathname?.startsWith("/teacher") || pathname?.startsWith("/account");
 
   const content = (
-    <ThemeProvider>
+    <>
       {!isDashboard && <SiteHeader />}
       <main className="flex flex-1 flex-col">{children}</main>
       {!isDashboard && <WhatsAppButton />}
-    </ThemeProvider>
+    </>
   );
 
   return isAdmin ? <AuthProvider>{content}</AuthProvider> : content;

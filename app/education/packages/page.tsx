@@ -58,7 +58,7 @@ export default async function EducationPackagesPage() {
           );
         })}
       </div>
-      <FullOurWork/>   
+      {/* <FullOurWork/>    */}
       {countriesWithPackages.length === 0 && <p className="mt-8 text-sm text-slate-500">Пакеты пока не опубликованы.</p>}
     </main>
   );
