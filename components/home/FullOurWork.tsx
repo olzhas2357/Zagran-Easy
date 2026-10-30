@@ -24,18 +24,8 @@ const PHOTOS = [
     src: "https://images.unsplash.com/photo-1559554498-62d7b63d7da5?q=80&w=1285&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "Милан, Италия",
   },
-  // {
-  //   src: "https://images.unsplash.com/photo-1591685909937-9a53ffd85f46?q=80&w=1365&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  //   alt: "Франция",
-  // },
 ];
 
-// const PROGRAM_PRICE = 1_200_000;
-// const SUPPORT_PRICE = 850_000;
-// const EXTRA_PRICE = 150_000;
-// const DISCOUNT = 100_000;
-
-// const TOTAL = PROGRAM_PRICE + SUPPORT_PRICE + EXTRA_PRICE - DISCOUNT;
 const TOTAL = 1_790_000;
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU").format(price);
@@ -68,7 +58,7 @@ export function FullOurWork() {
 
                 {/* Heading */}
                 <h2 className="mt-2.5 text-[25px] font-extrabold leading-[1.15] tracking-tight text-ze-text sm:text-[32px] dark:text-white">
-                  Поступление в Италию / Страны Европы
+                  Поступление в Италию 
                   <br />
                   без лишних забот
                 </h2>
@@ -127,43 +117,8 @@ export function FullOurWork() {
 
                 {/* Pricing */}
                 <div className="mt-5 rounded-2xl bg-ze-primary/[0.06] p-4 sm:p-5 dark:bg-white/[0.05]">
-                  <div className="space-y-2.5 text-[13.5px]">
-                    {/* <div className="flex items-center justify-between gap-4">
-                      <span className="text-ze-muted dark:text-white/60">
-                        Стоимость программы
-                      </span>
-                      <span className="font-semibold text-ze-text dark:text-white">
-                        {formatPrice(PROGRAM_PRICE)} ₸
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-ze-muted dark:text-white/60">
-                        Полное сопровождение
-                      </span>
-                      <span className="font-semibold text-ze-text dark:text-white">
-                        {formatPrice(SUPPORT_PRICE)} ₸
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-ze-muted dark:text-white/60">
-                        Дополнительные расходы
-                      </span>
-                      <span className="font-semibold text-ze-text dark:text-white">
-                        {formatPrice(EXTRA_PRICE)} ₸
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-ze-muted dark:text-white/60">
-                        Скидка
-                      </span>
-                      <span className="font-semibold text-ze-primary dark:text-[#8FD9F5]">
-                        − {formatPrice(DISCOUNT)} ₸
-                      </span>
-                    </div> */}
-                  </div> 
+                  {/* <div className="space-y-2.5 text-[13.5px]">
+                  </div>  */}
 
                   <div className="my-1 h-px bg-ze-border dark:bg-white/10" />
 

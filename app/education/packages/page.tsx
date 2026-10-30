@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, MapPin, Package } from "lucide-react";
 import { CoverPhoto } from "@/components/ui/CoverPhoto";
 import { fetchEducationCountries, fetchEducationPackages } from "@/lib/data";
 import { formatTuitionAmount } from "@/lib/education-catalog";
+import { FullOurWork } from "@/components/home/FullOurWork";
 
 export const metadata: Metadata = {
   title: "Пакеты полного сопровождения: университеты и языковые курсы | ZagranEasy",
@@ -57,7 +58,7 @@ export default async function EducationPackagesPage() {
           );
         })}
       </div>
-
+      <FullOurWork/>   
       {countriesWithPackages.length === 0 && <p className="mt-8 text-sm text-slate-500">Пакеты пока не опубликованы.</p>}
     </main>
   );
