@@ -4,8 +4,6 @@
 
 begin;
 
-alter table education_packages add column if not exists selection_guide text not null default '';
-
 create table if not exists education_packages (
   id uuid primary key default gen_random_uuid(),
   country_id uuid not null references education_countries(id) on delete cascade,
@@ -24,6 +22,8 @@ create table if not exists education_packages (
   updated_at timestamptz not null default now()
 );
 
+alter table education_packages add column if not exists selection_guide text not null default '';
+
 create index if not exists education_packages_country_idx on education_packages (country_id);
 
 alter table education_packages enable row level security;
@@ -31,23 +31,42 @@ alter table education_packages enable row level security;
 drop policy if exists "public read active packages" on education_packages;
 create policy "public read active packages" on education_packages for select using (is_active = true);
 
+-- В slug стран могли попасть пробелы/переносы строк ('czech ', 'south-korea\n').
+update education_countries set slug = btrim(slug, E' \t\r\n') where slug <> btrim(slug, E' \t\r\n');
+
+-- Если ранее появился дубль страны czech-republic, переносим пакеты в czech и удаляем дубль.
+do $$
+declare
+  keep_id uuid;
+  dup_id uuid;
+begin
+  select id into keep_id from education_countries where slug = 'czech';
+  select id into dup_id from education_countries where slug = 'czech-republic';
+  if keep_id is not null and dup_id is not null then
+    update education_packages set country_id = keep_id where country_id = dup_id;
+    delete from education_countries where id = dup_id;
+  elsif keep_id is null and dup_id is not null then
+    update education_countries set slug = 'czech' where id = dup_id;
+  end if;
+end $$;
+
 -- Страна Чехия (если ещё не добавлена).
 insert into education_countries (slug, name, name_en, flag, continent, cities, description, badge_color, is_active, sort_order)
-values ('czech-republic', 'Чехия', 'Czech Republic', '🇨🇿', 'Europe', array['Прага','Брно','Острава'],
+values ('czech', 'Чехия', 'Czech Republic', '🇨🇿', 'Europe', array['Прага','Брно','Острава'],
         'Языковая подготовка и поступление в чешские вузы.', 'blue', true, 3)
 on conflict (slug) do nothing;
 
 with seed (country_slug, slug, name, description, stages, price_from, price_currency, price_note, sort_order) as (
   values
-    ('czech-republic', 'czech-foundation', 'Foundation в Чехии',
+    ('czech', 'czech-foundation', 'Foundation в Чехии',
      'Очная языковая подготовка в Чехии. Полугодовой курс: 3 000 € за чешский язык. Годовой курс: 4 600 € за чешский язык или 5 500 € с профильными предметами. Подача на визу ориентировочно через 1,5 месяца после договора. Указанный организатором визовый показатель: 95–98% (не официальная статистика и не гарантия).',
      array['Полугодовой курс: январь','Годовой курс: сентябрь'],
      3000, 'EUR', 'Полугодовой курс за чешский язык. Годовой: 4 600 € или 5 500 € с профильными предметами.', 1),
-    ('czech-republic', 'czech-fully-online', 'Полностью онлайн',
+    ('czech', 'czech-fully-online', 'Полностью онлайн',
      'Онлайн-подготовка с преподавателями из Чехии, сопровождение включено. В презентации указано ожидание записи на визу около 2 месяцев и повышенный визовый риск, оценённый организатором как 50/50; оценки не являются официальной статистикой или гарантией.',
      array['Онлайн-курс','Поступление обычно в июле','Запись на визу после поступления','Выезд осенью при одобрении визы: сентябрь, октябрь или ноябрь'],
      1700000, 'KZT', null, 2),
-    ('czech-republic', 'czech-vsb-project', 'Проект VŠB',
+    ('czech', 'czech-vsb-project', 'Проект VŠB',
      'Подготовка с ранним выездом. Возможно досрочное завершение обучения при выполнении требований школы. При отказе в визе может оставаться время для повторной подачи. Указанный организатором визовый показатель: 98–99% (не официальная статистика и не гарантия).',
      array['Подготовка','Подача на визу планируется в январе','Ранний выезд в Чехию с апреля','Поступление в вуз без потери года при выполнении требований'],
      2200000, 'KZT', null, 3),

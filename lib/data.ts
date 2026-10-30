@@ -18,7 +18,7 @@ import type { LanguageTeacher, RealLanguageCourse, CourseModule, CourseLesson } 
 function mapCountryRow(row: Record<string, unknown>): EducationCountry {
   return {
     id: row.id as string,
-    slug: row.slug as string,
+    slug: String(row.slug ?? "").trim(),
     name: row.name as string,
     nameEn: (row.name_en as string) || "",
     flag: row.flag as string,
