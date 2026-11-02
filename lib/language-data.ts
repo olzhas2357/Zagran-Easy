@@ -224,17 +224,40 @@ export interface LanguagePricingPlan {
 
 export const LANGUAGE_PRICING: LanguagePricingPlan[] = [
   {
+    id: "standard_ielts",
+    name: "Standard",
+    description: "IELTS 9-10 человек Онлайн + преподаватель.",
+    price: "115990 / месяц",
+    cta: "Выбрать",
+  },
+  {
+    id: "pro_ielts",
+    name: "Pro",
+    description: "IELTS Офлайн-группа 7–8 человек + преподаватель.",
+    price: "125990 / месяц",
+    cta: "Выбрать",
+    highlighted: true,
+  },
+  {
+    id: "premium_ielts",
+    name: "Premium",
+    description: "IELTS Индивидуальный формат с преподавателем.",
+    price: "159990 / месяц",
+    cta: "Выбрать",
+  },
+  
+  {
     id: "standard_english",
     name: "Standard",
     description: "Английский язык 9-10 человек Онлайн + преподаватель.",
-    price: "39990 / месяц",
+    price: "49990 / месяц",
     cta: "Выбрать",
   },
   {
     id: "pro_english",
     name: "Pro",
     description: "Английский язык Офлайн-группа 7–8 человек + преподаватель.",
-    price: "49990 / месяц",
+    price: "59990 / месяц",
     cta: "Выбрать",
     highlighted: true,
   },
@@ -242,13 +265,14 @@ export const LANGUAGE_PRICING: LanguagePricingPlan[] = [
     id: "premium_english",
     name: "Premium",
     description: "Английский язык Индивидуальный формат с преподавателем.",
-    price: "79990 / месяц",
+    price: "89990 / месяц",
     cta: "Выбрать",
   },
-    {
+  
+  {
     id: "standard_chinese",
     name: "Standard",
-    description: "Китайский язык 8-9 Онлайн + преподаватель.",
+    description: "Китайский язык 5-6 человек Онлайн + преподаватель.",
     price: "49990 / месяц",
     cta: "Выбрать",
   },
@@ -265,6 +289,13 @@ export const LANGUAGE_PRICING: LanguagePricingPlan[] = [
     name: "Premium",
     description: "Китайский язык Индивидуальный формат с преподавателем.",
     price: "89990 / месяц",
+    cta: "Выбрать",
+  },
+  {
+    id: "csca_chinese",
+    name: "CSCA",
+    description: "Подготовка к экзамену CSCA",
+    price: "299990 два месяца",
     cta: "Выбрать",
   },
 ];
