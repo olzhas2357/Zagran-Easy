@@ -35,17 +35,17 @@ export default async function LanguagePage() {
   return (
     <div className="bg-[#F5F8FF] pb-16 sm:pb-0 dark:bg-[#0B132B]">
       <LanguageHero />
-      <TrustBar />
+      <Pricing />
+      <Teachers teachers={teachers} />
       <LearningPaths />
       <ExamAnnouncement />
       <Problems />
       <MotivationMarquee />
       <HowItWorks />
-      <Teachers teachers={teachers} />
       <Courses courses={courses}/> 
       <Results />
+      <TrustBar />
       <Reviews />
-      <Pricing />
       <FinalCTA />
       <LanguageFaq />
       <LanguageFooter />

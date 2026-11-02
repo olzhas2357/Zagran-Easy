@@ -25,7 +25,7 @@ export function LanguageHero() {
                 </span>
               ))}
             </div>
-            <h1 className="mt-4 text-[32px] font-extrabold leading-[1.08] tracking-tight text-balance text-ze-ink sm:text-[54px] dark:text-white">
+            <h1 className="mt-4 text-[32px] font-extrabold leading-[1.08] tracking-tight text-balance text-ze-ink sm:text-[44px] dark:text-white">
               Подготовьтесь к HSK, IELTS с преподавателем, который поможет достичь результата
             </h1>
             <p className="mt-4 max-w-[540px] text-[15px] leading-relaxed text-slate-600 sm:text-[17.5px] dark:text-white/65">
