@@ -85,7 +85,7 @@ export default async function CountryPackagesPage({ params }: CountryPackagesPag
           <dl className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3">
             {[
               { label: "Пакетов", value: String(packages.length) },
-              { label: "Формат", value: "Под ключ" },
+              { label: "Формат", value: "Помогаем с полным сопровождением" },
               { label: "Сопровождение", value: "От договора до выезда" },
             ].map((stat) => (
               <div key={stat.label} className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur">
