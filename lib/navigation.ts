@@ -15,6 +15,8 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Университеты", href: "/education" },
   { label: "Языковые курсы", href: "/language" },
   { label: "Пакеты", href: "/education/packages" },
+  { label: "Отзывы", href: "/reviews" },
+  { label: "Контакты", href: "/contacts" },
   { label: "О нас", href: "/about" },
 ];
 // Меню портала сотрудников
@@ -31,6 +33,8 @@ export const BREADCRUMBS: Record<string, string> = {
   "/education": "Университеты",
   "/language": "Языковые курсы",
   "/education/packages": "Пакеты",
+  "/reviews": "Отзывы",
+  "/contacts": "Контакты",
   "/about": "О нас",
   "/faq": "FAQ",
 };
@@ -69,6 +73,16 @@ export const PAGE_META: Record<
     title: "О компании — ZagranEasy",
     description:
       "ИП «ZAGRANEASY». Более 3200 клиентов, 98% успешных виз. Алматы.",
+  },
+  "/reviews": {
+    title: "Отзывы клиентов — ZagranEasy",
+    description:
+      "Истории и отзывы клиентов ZagranEasy об обучении и поступлении за рубежом.",
+  },
+  "/contacts": {
+    title: "Контакты — ZagranEasy",
+    description:
+      "Адрес офиса ZagranEasy в Алматы, карта Google Maps, телефон и способы связи.",
   },
   "/faq": {
     title: "Частые вопросы — ZagranEasy",

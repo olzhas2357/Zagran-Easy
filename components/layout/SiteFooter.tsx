@@ -8,7 +8,7 @@ import { waUrl } from "@/lib/utils";
 
 export function SiteFooter() {
   const services = NAV_ITEMS.filter(
-    ({ href }) => !["/", "/about", "/faq"].includes(href),
+    ({ href }) => !["/", "/about", "/contacts", "/faq", "/reviews"].includes(href),
   );
 
   return (
@@ -31,6 +31,19 @@ export function SiteFooter() {
             <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500">
               Обучение и поступление за рубеж с полным сопровождением.
             </p>
+            <nav aria-label="Информация о компании" className="mt-4 flex gap-4">
+              {NAV_ITEMS.filter(({ href }) =>
+                ["/about", "/contacts", "/reviews"].includes(href),
+              ).map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-sm text-slate-500 transition hover:text-blue-600"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
           </div>
 
           {/* Услуги */}

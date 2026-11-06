@@ -4,7 +4,13 @@ import { useRef } from "react";
 import { ArrowLeft, ArrowRight, Quote, Star } from "lucide-react";
 import type { Review } from "@/lib/types";
 
-export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
+export function ReviewsCarousel({
+  reviews,
+  showRatingSummary = true,
+}: {
+  reviews: Review[];
+  showRatingSummary?: boolean;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const averageRating = reviews.length
     ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length
@@ -33,7 +39,7 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
           </p>
         </div>
         <div className="flex flex-none items-center justify-between gap-4 sm:justify-end">
-          {averageRating !== null && (
+          {showRatingSummary && averageRating !== null && (
             <div className="flex items-center gap-2 rounded-xl border border-amber-200/80 bg-amber-50/80 px-3.5 py-2 dark:border-amber-300/15 dark:bg-amber-300/[0.07]">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
               <span className="text-[14px] font-extrabold text-ze-ink dark:text-white">{averageRating.toFixed(1)}</span>
