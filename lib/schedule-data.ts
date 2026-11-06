@@ -42,6 +42,11 @@ export type ScheduleSlot = {
   enrollments: ScheduleEnrollment[];
 };
 
+export type ScheduleResult = {
+  slots: ScheduleSlot[];
+  error: string | null;
+};
+
 export type ScheduleGroupStatus = "draft" | "active" | "completed" | "cancelled";
 
 export type ScheduleRule = {
@@ -101,7 +106,7 @@ export async function getSchedule(input?: {
   to?: string;
   language?: ScheduleLanguage;
   format?: ScheduleFormat;
-}): Promise<ScheduleSlot[]> {
+}): Promise<ScheduleResult> {
   const token = await getToken();
   const params = new URLSearchParams();
   if (input?.from) params.set("from", input.from);
@@ -110,6 +115,7 @@ export async function getSchedule(input?: {
   if (input?.format) params.set("format", input.format);
   const query = params.size ? `?${params.toString()}` : "";
   const response = await apiGet<ScheduleSlot[]>(`/schedule${query}`, token);
-  if (response.error || !response.data) return [];
-  return response.data;
+  if (response.error) return { slots: [], error: response.error };
+  if (!response.data) return { slots: [], error: "Сервер не вернул расписание" };
+  return { slots: response.data, error: null };
 }

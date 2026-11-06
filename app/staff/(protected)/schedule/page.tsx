@@ -3,7 +3,8 @@ import { getSchedule, getScheduleResources } from "@/lib/schedule-data";
 import { getCurrentProfile } from "@/lib/staff-data";
 
 export default async function StaffSchedulePage() {
-  const [profile, slots, resources] = await Promise.all([getCurrentProfile(), getSchedule(), getScheduleResources()]);
+  const [profile, schedule, resources] = await Promise.all([getCurrentProfile(), getSchedule(), getScheduleResources()]);
   if (!profile) return null;
-  return <StaffScheduleBackend profile={profile} slots={slots} resources={resources} />;
+  if (schedule.error) return <div role="alert" className="m-8 rounded-xl bg-red-50 p-4 text-sm text-red-700">{schedule.error}</div>;
+  return <StaffScheduleBackend profile={profile} slots={schedule.slots} resources={resources} />;
 }

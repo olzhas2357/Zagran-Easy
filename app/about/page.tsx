@@ -10,8 +10,7 @@ import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
 import { FloatingBadge } from "@/components/ui/FloatingBadge";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
 import { MediaReel } from "@/components/home/MediaReel";
-import { ReviewsCarousel } from "@/components/home/ReviewsCarousel";
-import { reviews } from "@/data/content";
+
 
 export const metadata: Metadata = {
   title: PAGE_META["/about"]?.title ?? "О нас",
@@ -464,37 +463,6 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
-
-      {/* Contact block */}
-      {/* <div className="mx-auto max-w-6xl px-4 py-14 sm:px-10 sm:py-19">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
-          <FadeIn>
-            <div className="text-[13px] font-semibold uppercase tracking-wide text-ze-primary">Контакты</div>
-            <div className="mt-3 text-[20px] font-bold text-ze-ink">{SITE.phone}</div>
-            <div className="mt-2 text-[14.5px] leading-relaxed text-ze-muted">{SITE.address}</div>
-            <div className="mt-1 text-[14.5px] text-ze-muted">Пн–Сб, 10:00–19:00</div>
-            <a href={`mailto:${SITE.email}`} className="mt-1 block text-[14.5px] text-ze-primary hover:underline">
-              {SITE.email}
-            </a>
-          </FadeIn>
-          <FadeIn delay={0.06}>
-            <div className="rounded-2xl border border-ze-border bg-white p-6">
-              <div className="text-[16px] font-bold">Хотите узнать больше?</div>
-              <div className="mt-1.5 text-[13.5px] text-ze-muted">
-                Напишите нам — ответим в течение 15 минут в рабочее время.
-              </div>
-              <a
-                href={waUrl("Здравствуйте! Хочу узнать больше о ZagranEasy.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 block rounded-xl bg-ze-whatsapp px-5 py-3.5 text-center text-[14.5px] font-bold text-white hover:bg-ze-whatsapp-dark"
-              >
-                Написать в WhatsApp
-              </a>
-            </div>
-          </FadeIn>
-        </div>
-      </div> */}
 
       <SiteFooter />
     </div>
