@@ -5,7 +5,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { PhotoGallery } from "@/components/ui/PhotoGallery";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PAGE_META } from "@/lib/navigation";
-import { ArrowUpRight, GraduationCap, MapPin, MessageCircle, Phone, Stamp, Clock3, } from "lucide-react";
+import { ArrowUpRight, FileText, GraduationCap, MapPin, MessageCircle, Phone, Stamp, Clock3, } from "lucide-react";
 import { FloatingPhoto } from "@/components/ui/FloatingPhoto";
 import { FloatingBadge } from "@/components/ui/FloatingBadge";
 import { HeroCelebration } from "@/components/home/HeroCelebration";
@@ -56,6 +56,38 @@ const RESULTS_PHOTOS = [
     src: "https://res.cloudinary.com/dwq9aesrb/image/upload/q_auto/f_auto/v1776645538/5_s0r8hf.png",
     alt: "Результат поступления через ZagranEasy",
   }
+];
+
+const invitations = [
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/20260600120_BAKHTYBEK_MARZHAN_%E7%BE%8E%E7%8F%8D_%E5%BD%95%E5%8F%96%E9%80%9A%E7%9F%A5%E4%B9%A6%EF%BC%88%E7%94%B5%E5%AD%90%E7%AB%A0%EF%BC%89.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/20260800045%20SAMATULY%20ADIL%20%E5%BD%95%E5%8F%96%E9%80%9A%E7%9F%A5%E4%B9%A6%EF%BC%88%E7%94%B5%E5%AD%90%E7%AB%A0%EF%BC%89.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/20260909142451627.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/25.SAILAUBEKKYZY%20ARAILYM.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/BEKTURGAN%20ABLAIKHAN%E5%BD%95%E5%8F%96%E9%80%9A%E7%9F%A5%E4%B9%A6.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/CamScanner%2020.10.2026%2011.56.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  {
+    src: "https://pub-2e1e883050ea4a18ae36c1570baa0dee.r2.dev/invitation/N11892793.pdf",
+    alt: "Приглашение студента ZagranEasy"
+  },
+  
 ];
 
 export default function AboutPage() {
@@ -116,7 +148,7 @@ export default function AboutPage() {
           ))}
         </div>
       </div>
-      
+
     <div className="relative w-full min-w-0 flex-1">
         <div className="relative aspect-4/3 max-w-lg mx-auto">
         <FloatingPhoto
@@ -371,6 +403,67 @@ export default function AboutPage() {
       </FadeIn>
     </div>          
         </section>
+
+      <section id="invitations" aria-labelledby="invitations-heading" className="relative overflow-hidden bg-gradient-to-b from-white to-[#F3F7FE] px-4 py-16 sm:px-10 sm:py-24">
+        <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-blue-100/60 blur-3xl" />
+        <div className="relative mx-auto max-w-6xl">
+          <FadeIn>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-ze-primary">
+                  <GraduationCap className="h-4 w-4" />
+                  Результаты поступления
+                </span>
+                <h2 id="invitations-heading" className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+                  Приглашения наших студентов
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                  Документы о поступлении наших студентов. Выберите карточку, чтобы открыть оригинал в формате PDF.
+                </p>
+              </div>
+              <span className="w-fit rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-500">
+                {invitations.length} документов · PDF
+              </span>
+            </div>
+          </FadeIn>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {invitations.map((invitation, index) => (
+              <a
+                key={invitation.src}
+                href={invitation.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${invitation.alt} ${index + 1} — открыть PDF в новой вкладке`}
+                className="group relative flex min-h-48 flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_40px_rgba(37,99,235,0.12)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 sm:p-6"
+              >
+                <span aria-hidden="true" className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-blue-50 transition duration-300 group-hover:scale-125" />
+                <span className="relative flex items-start justify-between">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-ze-primary">
+                    <FileText className="h-6 w-6" />
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-bold tracking-wider text-slate-500">
+                    PDF · {String(index + 1).padStart(2, "0")}
+                  </span>
+                </span>
+                <span className="relative mt-5 block text-base font-bold text-slate-900">
+                  Приглашение студента
+                </span>
+                <span className="relative mt-1 block text-sm text-slate-500">
+                  Документ о поступлении
+                </span>
+                <span className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-ze-primary">
+                  Открыть документ
+                  <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </span>
+              </a>
+            ))}
+          </div>
+          <p className="mt-5 text-sm text-slate-500">
+            PDF открывается в новой вкладке. Документы представлены с разрешения студентов.
+          </p>
+        </div>
+      </section>
 
       {/* Contact block */}
       {/* <div className="mx-auto max-w-6xl px-4 py-14 sm:px-10 sm:py-19">
