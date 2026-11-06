@@ -30,12 +30,12 @@ export const STAFF_NAV_ITEMS: NavItem[] = [
 // Breadcrumb маппинг
 export const BREADCRUMBS: Record<string, string> = {
   "/": "Главная",
+  "/about": "О нас",
   "/education": "Университеты",
   "/language": "Языковые курсы",
   "/education/packages": "Пакеты",
   "/reviews": "Отзывы",
   "/contacts": "Контакты",
-  "/about": "О нас",
   "/faq": "FAQ",
 };
 
