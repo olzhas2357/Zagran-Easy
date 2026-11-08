@@ -25,8 +25,8 @@ export const SERVICES = [
 ] as const;
 
 export const STATS = [
-  { value: 3200, suffix: "+", label: "Клиентов" },
-  { value: 50,   suffix: "+", label: "Университетов" },
+  { value: 600, suffix: "+", label: "Клиентов" },
+  { value: 350,   suffix: "+", label: "Университетов" },
   { value: 98,   suffix: "%", label: "Успешных виз" },
 ] as const;
 
