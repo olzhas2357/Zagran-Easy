@@ -5,10 +5,29 @@
 // через NestJS API (роль teacher проверяется на бэкенде).
 // ============================================================
 
-import { revalidatePath } from "next/cache";
-import { apiDelete, apiPatch, apiPost } from "./api";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
 import { getSessionUser, getToken } from "./session-data";
 import { mapCourseSyllabus, type CourseSyllabus } from "./course-syllabus";
+import { CACHE_TAGS } from "./cache-tags";
+
+async function getCourseSlug(courseId: string, token: string | null) {
+  if (!token) return { error: "Не авторизован" };
+  const res = await apiGet<{ slug: string }>(`/courses/manage/${courseId}`, token);
+  if (res.error || !res.data?.slug) return { error: res.error || "Не удалось получить адрес курса" };
+  return { slug: res.data.slug };
+}
+
+function revalidateCourses() {
+  revalidateTag(CACHE_TAGS.courses, { expire: 0 });
+  revalidatePath("/language");
+  revalidatePath("/courses/[slug]", "page");
+}
+
+function revalidateCourseSections(courseId: string, slug: string) {
+  revalidateTag(CACHE_TAGS.courseSections(courseId), { expire: 0 });
+  revalidatePath(`/courses/${slug}`);
+}
 
 export interface UpdateLessonInput {
   title: string;
@@ -196,12 +215,15 @@ export async function createCourse(input: NewCourseInput): Promise<{ success: bo
   if (res.error || !res.data) return { success: false, error: res.error || "Не удалось создать курс" };
 
   revalidatePath("/teacher/courses");
-  revalidatePath("/courses/[slug]", "page");
+  revalidateCourses();
+  revalidatePath(`/courses/${input.slug.trim().toLowerCase()}`);
   return { success: true, id: res.data.id, slug: input.slug.trim().toLowerCase() };
 }
 
 export async function updateCourse(courseId: string, input: NewCourseInput): Promise<{ success: boolean; slug?: string; error?: string }> {
   const token = await getToken();
+  const course = await getCourseSlug(courseId, token);
+  if (!course.slug) return { success: false, error: course.error };
   const res = await apiPatch(
     `/courses/${courseId}`,
     {
@@ -222,6 +244,8 @@ export async function updateCourse(courseId: string, input: NewCourseInput): Pro
   if (res.error) return { success: false, error: res.error };
   revalidatePath("/teacher/courses");
   revalidatePath(`/teacher/courses/${courseId}/edit`);
+  revalidateCourses();
+  revalidatePath(`/courses/${course.slug}`);
   revalidatePath(`/courses/${input.slug.trim().toLowerCase()}`);
   return { success: true, slug: input.slug.trim().toLowerCase() };
 }
@@ -235,6 +259,8 @@ export interface CourseSectionInput {
 
 export async function createCourseSection(courseId: string, input: CourseSectionInput) {
   const token = await getToken();
+  const course = await getCourseSlug(courseId, token);
+  if (!course.slug) return { success: false, error: course.error };
   const res = await apiPost(`/courses/${courseId}/sections`, {
     slug: input.slug,
     title: input.title,
@@ -243,12 +269,15 @@ export async function createCourseSection(courseId: string, input: CourseSection
   }, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath(`/teacher/courses/${courseId}/edit`);
-  revalidatePath(`/courses/${input.slug}`);
+  revalidateCourseSections(courseId, course.slug);
+  revalidateCourses();
   return { success: true };
 }
 
 export async function updateCourseSection(courseId: string, sectionId: string, input: CourseSectionInput) {
   const token = await getToken();
+  const course = await getCourseSlug(courseId, token);
+  if (!course.slug) return { success: false, error: course.error };
   const res = await apiPatch(`/courses/${courseId}/sections/${sectionId}`, {
     slug: input.slug,
     title: input.title,
@@ -257,14 +286,20 @@ export async function updateCourseSection(courseId: string, sectionId: string, i
   }, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath(`/teacher/courses/${courseId}/edit`);
+  revalidateCourseSections(courseId, course.slug);
+  revalidateCourses();
   return { success: true };
 }
 
 export async function deleteCourseSection(courseId: string, sectionId: string) {
   const token = await getToken();
+  const course = await getCourseSlug(courseId, token);
+  if (!course.slug) return { success: false, error: course.error };
   const res = await apiDelete(`/courses/${courseId}/sections/${sectionId}`, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath(`/teacher/courses/${courseId}/edit`);
+  revalidateCourseSections(courseId, course.slug);
+  revalidateCourses();
   return { success: true };
 }
 

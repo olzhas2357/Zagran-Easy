@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { fetchAllUniversities, fetchEducationCountries } from "@/lib/data";
-import { buildCatalog } from "@/lib/education-catalog";
+import { buildCatalog, toCompareUniversity } from "@/lib/education-catalog";
 import { Compare } from "@/components/education/Compare";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, GitCompareArrows } from "lucide-react";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default async function ComparePage() {
   const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
-  const catalog = buildCatalog(universities, countries);
+  const catalog = buildCatalog(universities, countries).map(toCompareUniversity);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#eef4ff] via-[#f8faff] to-white">

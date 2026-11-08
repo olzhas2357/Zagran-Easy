@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import type { CatalogUniversity } from "@/lib/education-catalog";
+import type { CompareUniversity } from "@/lib/education-catalog";
 import { formatTuition, formatMonthlyInstallment } from "@/lib/education-catalog";
 import { useCompareList } from "@/lib/hooks/useCompareList";
 
 const ROW_LABELS = ["Цена за год", "Рассрочка", "Дедлайн", "IELTS", "Грант", "Общежитие", "Язык"];
 
-export function Compare({ universities }: { universities: CatalogUniversity[] }) {
+export function Compare({ universities }: { universities: CompareUniversity[] }) {
   const { ids, remove } = useCompareList();
-  const items = ids.map((id) => universities.find((u) => u.id === id)).filter((u): u is CatalogUniversity => Boolean(u));
+  const items = ids.map((id) => universities.find((u) => u.id === id)).filter((u): u is CompareUniversity => Boolean(u));
 
   if (items.length === 0) {
     return (

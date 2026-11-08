@@ -36,6 +36,26 @@ export interface CatalogUniversity {
   source: University;
 }
 
+export type CompareUniversity = Pick<CatalogUniversity,
+  "id" | "name" | "city" | "flag" | "rankingNational" | "tuitionFrom" | "tuitionCurrency" |
+  "deadlineLabel" | "ieltsRequired" | "hasGrant" | "hasDormitory" | "languages"
+>;
+
+export type QuizUniversity = Pick<CatalogUniversity,
+  "id" | "slug" | "name" | "country" | "city" | "flag" | "tuitionFrom" | "tuitionCurrency" |
+  "ieltsRequired" | "ratingStars" | "needsVerification"
+>;
+
+export function toCompareUniversity(u: CatalogUniversity): CompareUniversity {
+  const { id, name, city, flag, rankingNational, tuitionFrom, tuitionCurrency, deadlineLabel, ieltsRequired, hasGrant, hasDormitory, languages } = u;
+  return { id, name, city, flag, rankingNational, tuitionFrom, tuitionCurrency, deadlineLabel, ieltsRequired, hasGrant, hasDormitory, languages };
+}
+
+export function toQuizUniversity(u: CatalogUniversity): QuizUniversity {
+  const { id, slug, name, country, city, flag, tuitionFrom, tuitionCurrency, ieltsRequired, ratingStars, needsVerification } = u;
+  return { id, slug, name, country, city, flag, tuitionFrom, tuitionCurrency, ieltsRequired, ratingStars, needsVerification };
+}
+
 // Карточка не проверялась менеджером >90 дней — CMS помечает "требует уточнения"
 // (см. app/staff/universities), и такой вуз не должен попадать в рекомендации квиза.
 const VERIFICATION_STALE_DAYS = 90;

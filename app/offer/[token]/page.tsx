@@ -4,6 +4,8 @@ import { apiGet } from "@/lib/api";
 import { PrintOfferButton } from "@/components/public/PrintOfferButton";
 import { OfferResponseActions } from "@/components/public/OfferResponseActions";
 
+export const dynamic = "force-dynamic";
+
 type Row = Record<string, unknown>;
 
 const ADMISSION_STEPS = [
@@ -30,6 +32,8 @@ export default async function PublicOfferPage({
   const { token } = await params;
   const res = await apiGet<Record<string, unknown>>(
     `/cost-calculations/public/${token}`,
+    null,
+    { cache: "no-store" },
   );
   if (!res.data) notFound();
   const offer = res.data;

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import type { CatalogUniversity } from "@/lib/education-catalog";
+import type { QuizUniversity } from "@/lib/education-catalog";
 import { formatTuition } from "@/lib/education-catalog";
 import { createLead } from "@/lib/actions";
 import { formatKazakhstanPhone, isValidPhone, KAZAKHSTAN_PHONE_START } from "@/lib/utils";
@@ -12,7 +12,7 @@ interface Question {
   opts: string[];
 }
 
-export function EducationQuiz({ universities }: { universities: CatalogUniversity[] }) {
+export function EducationQuiz({ universities }: { universities: QuizUniversity[] }) {
   const countries = useMemo(() => Array.from(new Set(universities.map((u) => u.country))).sort(), [universities]);
 
   const questions: Question[] = useMemo(

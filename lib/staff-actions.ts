@@ -5,14 +5,38 @@
 // через NestJS API (роли admin/manager проверяются на бэкенде).
 // ============================================================
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
 import { getToken } from "./session-data";
 import { getLeadActivities } from "./staff-data";
+import { CACHE_TAGS } from "./cache-tags";
 import type { Lead, UniversityProgram, AdmissionStory } from "./types";
 import type { UniversityCatalogItem, UniversityCatalogKind } from "./types";
 import type { KnowledgeArticleStatus, ManagerTaskPriority, ManagerTaskStatus, ManagerTaskType, StaffResourceCategory, StaffResourceStatus, StaffResourceType } from "./types";
+
+async function getUniversitySlug(universityId: string, token: string | null) {
+  if (!token) return { error: "Не авторизован" };
+  const res = await apiGet<{ slug: string }>(`/admin/universities/${universityId}`, token);
+  if (res.error || !res.data?.slug) return { error: res.error || "Не удалось получить адрес университета" };
+  return { slug: res.data.slug };
+}
+
+function revalidateUniversityLists() {
+  revalidateTag(CACHE_TAGS.universityLists, { expire: 0 });
+  revalidatePath("/");
+  revalidatePath("/education");
+  revalidatePath("/education/china");
+  revalidatePath("/education/compare");
+  revalidatePath("/education/quiz");
+  revalidatePath("/education/country/[slug]", "page");
+  revalidatePath("/education/[slug]", "page");
+}
+
+function revalidateUniversity(slug: string) {
+  revalidateTag(CACHE_TAGS.university(slug), { expire: 0 });
+  revalidatePath(`/education/${slug}`);
+}
 
 // Ленивая подгрузка заметок по лиду — вызывается из клиентского LeadCard
 // при первом разворачивании, чтобы не тянуть все заметки на списке лидов сразу.
@@ -140,9 +164,13 @@ export async function updateClientUniversity(clientId: string, selectionId: stri
 
 export async function markUniversityVerified(universityId: string) {
   const token = await getToken();
+  const university = await getUniversitySlug(universityId, token);
+  if (!university.slug) return { success: false, error: university.error };
   const res = await apiPatch(`/admin/universities/${universityId}/verify`, {}, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath("/admin/universities");
+  revalidateUniversityLists();
+  revalidateUniversity(university.slug);
   return { success: true };
 }
 
@@ -307,10 +335,13 @@ export async function getStaffResourceAccess(resourceId: string) {
 
 export async function toggleUniversityActive(universityId: string, isActive: boolean) {
   const token = await getToken();
+  const university = await getUniversitySlug(universityId, token);
+  if (!university.slug) return { success: false, error: university.error };
   const res = await apiPatch(`/admin/universities/${universityId}/active`, { is_active: isActive }, token);
   if (res.error) return { success: false, error: res.error };
   revalidatePath("/admin/universities");
-  revalidatePath("/education");
+  revalidateUniversityLists();
+  revalidateUniversity(university.slug);
   return { success: true };
 }
 
@@ -374,7 +405,8 @@ export async function commitUniversityImport(importId: string, mapping: Record<s
   if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось выполнить импорт" };
   revalidatePath("/admin/universities");
   revalidatePath("/admin/universities/import");
-  revalidatePath("/education");
+  revalidateTag(CACHE_TAGS.universities, { expire: 0 });
+  revalidateUniversityLists();
   return { success: true as const, result: res.data };
 }
 
@@ -505,7 +537,8 @@ export async function createUniversity(input: NewUniversityInput): Promise<{ suc
   if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/admin/universities");
-  revalidatePath("/education");
+  revalidateUniversityLists();
+  revalidateUniversity(input.slug.trim());
   redirect("/admin/universities");
 }
 
@@ -516,12 +549,15 @@ export async function updateUniversity(universityId: string, input: NewUniversit
   }
 
   const token = await getToken();
+  const university = await getUniversitySlug(universityId, token);
+  if (!university.slug) return { success: false, error: university.error };
   const res = await apiPatch(`/admin/universities/${universityId}`, universityInputToBody(input), token);
   if (res.error) return { success: false, error: res.error };
 
   revalidatePath("/admin/universities");
-  revalidatePath("/education");
-  revalidatePath("/education/[slug]", "page");
+  revalidateUniversityLists();
+  revalidateUniversity(university.slug);
+  if (university.slug !== input.slug.trim()) revalidateUniversity(input.slug.trim());
   redirect("/admin/universities");
 }
 
@@ -532,20 +568,26 @@ export async function saveUniversityCatalogItem(
   itemId?: string
 ) {
   const token = await getToken();
+  const university = await getUniversitySlug(universityId, token);
+  if (!university.slug) return { success: false as const, error: university.error || "Не удалось получить адрес университета" };
   const path = `/admin/universities/${universityId}/catalog/${kind}${itemId ? `/${itemId}` : ""}`;
   const res = itemId
     ? await apiPatch<UniversityCatalogItem>(path, { data }, token)
     : await apiPost<UniversityCatalogItem>(path, { data }, token);
   if (res.error || !res.data) return { success: false as const, error: res.error || "Не удалось сохранить запись" };
   revalidatePath(`/admin/universities/${universityId}/edit`);
+  revalidateUniversity(university.slug);
   return { success: true as const, item: res.data };
 }
 
 export async function deleteUniversityCatalogItem(universityId: string, kind: UniversityCatalogKind, itemId: string) {
   const token = await getToken();
+  const university = await getUniversitySlug(universityId, token);
+  if (!university.slug) return { success: false as const, error: university.error || "Не удалось получить адрес университета" };
   const res = await apiDelete(`/admin/universities/${universityId}/catalog/${kind}/${itemId}`, token);
   if (res.error) return { success: false as const, error: res.error };
   revalidatePath(`/admin/universities/${universityId}/edit`);
+  revalidateUniversity(university.slug);
   return { success: true as const };
 }
 

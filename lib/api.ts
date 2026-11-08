@@ -1,6 +1,6 @@
 // ============================================================
 // ZagranEasy — клиент для NestJS API (админ-панель).
-// Публичный каталог (вузы, туры) идёт напрямую в Supabase — см. lib/data.ts.
+// Публичный каталог также идёт через NestJS — см. lib/data.ts.
 // Приватные данные (users, students, leads, payments...) — через этот клиент.
 //
 // Бэкенд оборачивает каждый ответ в TransformInterceptor: { success, data }.
@@ -17,12 +17,16 @@ function getApiUrl() {
   return typeof window === "undefined" ? API_URL : "/api/backend";
 }
 
-interface ApiOptions {
+interface ApiCacheOptions {
+  revalidate?: number | false;
+  tags?: string[];
+  cache?: "no-store";
+}
+
+interface ApiOptions extends ApiCacheOptions {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
-  /** Секунд до ревалидации Next Data Cache. Игнорируется для мутаций и авторизованных запросов (всегда no-store — иначе Data Cache отдаст чужой ответ по тому же URL другому пользователю). */
-  revalidate?: number;
 }
 
 export interface ApiResponse<T = unknown> {
@@ -51,16 +55,15 @@ function isPaginated(payload: unknown): payload is { data: unknown[]; total: num
 }
 
 export async function api<T = unknown>(path: string, options: ApiOptions = {}): Promise<ApiResponse<T>> {
-  const { method = "GET", body, token, revalidate } = options;
+  const { method = "GET", body, token, revalidate, tags, cache } = options;
 
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  // Авторизованные запросы и мутации — всегда no-store (Data Cache не учитывает
-  // заголовок Authorization, кеш по URL мог бы отдать чужие данные). Публичный
-  // каталог (без токена, GET) кешируется и ревалидируется в фоне.
-  const cacheInit: RequestInit =
-    token || method !== "GET" ? { cache: "no-store" } : { next: { revalidate: revalidate ?? 300 } };
+  // Кэш opt-in: отсутствие Authorization не означает отсутствие персональных данных.
+  const cacheInit: RequestInit = token || method !== "GET" || cache === "no-store" || revalidate === 0 || (revalidate === undefined && !tags?.length)
+    ? { cache: "no-store" }
+    : { ...(revalidate === undefined ? { cache: "force-cache" as const } : {}), next: { revalidate, tags } };
 
   let res: Response;
   try {
@@ -103,7 +106,8 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
   return { data: json.data as T };
 }
 
-export const apiGet = <T>(path: string, token?: string | null) => api<T>(path, { token });
+export const apiGet = <T>(path: string, token?: string | null, cacheOptions?: ApiCacheOptions) =>
+  api<T>(path, { token, ...cacheOptions });
 
 export const apiPost = <T>(path: string, body: unknown, token?: string | null) =>
   api<T>(path, { method: "POST", body, token });

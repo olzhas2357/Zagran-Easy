@@ -7,6 +7,7 @@
 
 import { cache } from "react";
 import { apiGet } from "./api";
+import { CACHE_TAGS, PUBLIC_CACHE_TTL } from "./cache-tags";
 import { workCountries, properties, reviews, visaSteps, visaServices, realEstateRegions, faqItems } from "@/data/content";
 import { tours as staticTours, getTourBySlug } from "@/data/tours";
 import type { EducationCountry, EducationPackage, EducationPackageExtraCost, University, UniversityCatalog, Tour, WorkCountry, Property, Review } from "./types";
@@ -103,7 +104,7 @@ function mapUniversityRow(row: Record<string, unknown>): University {
 // cache() дедуплицирует вызовы с одинаковыми аргументами в рамках одного
 // рендера (например layout + page на одну и ту же страницу).
 export const fetchEducationCountries = cache(async (): Promise<EducationCountry[]> => {
-  const res = await apiGet<Record<string, unknown>[]>("/countries");
+  const res = await apiGet<Record<string, unknown>[]>("/countries", null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.countries] });
   if (res.error || !res.data) return [];
   return res.data.filter((c) => c.is_active).map(mapCountryRow).sort((a, b) => a.sortOrder - b.sortOrder);
 });
@@ -133,33 +134,33 @@ function mapPackageRow(row: Record<string, unknown>): EducationPackage {
 
 // Пакеты полного сопровождения. Группировка по стране — на стороне приложения.
 export const fetchEducationPackages = cache(async (): Promise<EducationPackage[]> => {
-  const res = await apiGet<Record<string, unknown>[]>("/education-packages?limit=100");
+  const res = await apiGet<Record<string, unknown>[]>("/education-packages?limit=100", null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.packages] });
   if (res.error || !res.data) return [];
   return res.data.map(mapPackageRow).filter((p) => p.isActive).sort((a, b) => a.sortOrder - b.sortOrder);
 });
 
 export const fetchUniversities = cache(async (country: { id: string; slug: string }): Promise<University[]> => {
-  const res = await apiGet<Record<string, unknown>[]>(`/universities?country=${country.id}&limit=100`);
+  const res = await apiGet<Record<string, unknown>[]>(`/universities?country=${country.id}&limit=100`, null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.universityLists, CACHE_TAGS.universities] });
   if (res.error || !res.data) return [];
   return res.data.map(mapUniversityRow).sort((a, b) => a.sortOrder - b.sortOrder);
 });
 
 // Плоский каталог вузов по всем странам — для /education (поиск + фильтры) и /education/compare.
 export const fetchAllUniversities = cache(async (): Promise<University[]> => {
-  const res = await apiGet<Record<string, unknown>[]>("/universities?limit=100");
+  const res = await apiGet<Record<string, unknown>[]>("/universities?limit=100", null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.universityLists, CACHE_TAGS.universities] });
   if (res.error || !res.data) return [];
   return res.data.map(mapUniversityRow);
 });
 
 // Один вуз по глобальному slug (не привязан к стране в URL) — для /education/[slug].
 export const fetchUniversityBySlug = cache(async (slug: string): Promise<University | null> => {
-  const res = await apiGet<Record<string, unknown>>(`/universities/${slug}`);
+  const res = await apiGet<Record<string, unknown>>(`/universities/${slug}`, null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.university(slug), CACHE_TAGS.universities] });
   if (res.error || !res.data) return null;
   return mapUniversityRow(res.data);
 });
 
 export const fetchUniversityCatalogBySlug = cache(async (slug: string): Promise<UniversityCatalog> => {
-  const res = await apiGet<UniversityCatalog>(`/universities/${slug}/catalog`);
+  const res = await apiGet<UniversityCatalog>(`/universities/${slug}/catalog`, null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.university(slug), CACHE_TAGS.universities] });
   return res.data || { programs: [], intakes: [], requirements: [], costs: [], scholarships: [] };
 });
 
@@ -209,14 +210,14 @@ export function mapPublicCourseRow(
 }
 
 export const fetchPublicTeachers = cache(async (): Promise<LanguageTeacher[]> => {
-  const res = await apiGet<Record<string, unknown>[]>("/teachers/public");
+  const res = await apiGet<Record<string, unknown>[]>("/teachers/public", null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.teachers] });
   if (res.error || !res.data) return [];
   return res.data.map(mapPublicTeacherRow);
 });
 
 export const fetchPublicCourses = cache(
   async (): Promise<RealLanguageCourse[]> => {
-    const res = await apiGet<Record<string, unknown>[]>("/courses");
+    const res = await apiGet<Record<string, unknown>[]>("/courses", null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.courses] });
 
     if (res.error || !res.data) {
       return [];
@@ -230,7 +231,7 @@ export const fetchPublicCourses = cache(
 export const getCourseModules = cache(
   async (courseId: string): Promise<CourseModule[]> => {
     const res = await apiGet<Record<string, unknown>[]>(
-      `/courses/${courseId}/sections`
+      `/courses/${courseId}/sections`, null, { revalidate: PUBLIC_CACHE_TTL, tags: [CACHE_TAGS.courseSections(courseId)] }
     );
 
     if (res.error || !res.data) {
