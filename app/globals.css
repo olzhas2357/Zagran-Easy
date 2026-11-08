@@ -151,3 +151,35 @@ body {
 .leaflet-container {
   font-family: var(--font-inter), sans-serif;
 }
+
+.leaflet-control-zoom.leaflet-bar {
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(22, 59, 117, 0.18);
+}
+
+.leaflet-control-zoom.leaflet-bar a,
+.leaflet-touch .leaflet-control-zoom.leaflet-bar a {
+  width: 52px;
+  height: 52px;
+  line-height: 52px;
+  font-size: 30px;
+  font-weight: 600;
+  color: #163b75;
+}
+
+.leaflet-control-zoom.leaflet-bar a:hover {
+  background-color: #eaf2ff;
+  color: #2563eb;
+}
+
+@media (max-width: 640px) {
+  .leaflet-control-zoom.leaflet-bar a,
+  .leaflet-touch .leaflet-control-zoom.leaflet-bar a {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 34px;
+  }
+}
