@@ -13,12 +13,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ChinaEducationPage() {
+export default async function ChinaEducationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
+  const { q } = await searchParams;
   const [universities, countries] = await Promise.all([fetchAllUniversities(), fetchEducationCountries()]);
   const chinaCountry = countries.find((country) => country.slug === "china");
   const chinaUniversities = chinaCountry
     ? universities.filter((university) => university.countryId === chinaCountry.id)
     : [];
 
-  return <ChinaGuide universities={chinaUniversities} />;
+  return <ChinaGuide universities={chinaUniversities} searchQuery={Array.isArray(q) ? q[0] ?? "" : q ?? ""} />;
 }

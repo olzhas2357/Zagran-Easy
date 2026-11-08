@@ -1,10 +1,12 @@
 import Link from "next/link";
 
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Check, ClipboardList, Compass, FileCheck2, GraduationCap, MapPin, MessageCircle, Plane, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Check, ClipboardList, Compass, FileCheck2, GraduationCap, MapPin, MapPinned, MessageCircle, Plane, Search, Sparkles } from "lucide-react";
 
 import { CHINA_UNIVERSITY_TIERS } from "@/lib/china-universities";
 
 import type { University } from "@/lib/types";
+
+import { ChinaUniversitiesMap } from "@/components/education/ChinaUniversitiesMap";
 
 import { waUrl } from "@/lib/utils";
 
@@ -84,6 +86,17 @@ function normalizeName(value: string) {
 
 }
 
+function matchesSearch(query: string, values: Array<string | string[] | undefined>) {
+  const tokens = query.trim().split(/\s+/).map(normalizeName).filter(Boolean);
+  if (tokens.length === 0) return true;
+
+  const searchableText = normalizeName(
+    values.flatMap((value) => (typeof value === "string" ? [value] : value ?? [])).join(" "),
+  );
+
+  return tokens.every((token) => searchableText.includes(token));
+}
+
 function findCatalogUniversity(chinaNames: string[], universities: University[]) {
 
   const names = new Set(
@@ -106,8 +119,16 @@ function findCatalogUniversity(chinaNames: string[], universities: University[])
 
 }
 
-export function ChinaGuide({ universities, embedded = false }: { universities: University[]; embedded?: boolean }) {
-
+export function ChinaGuide({
+  universities,
+  embedded = false,
+  searchQuery = "",
+}: {
+  universities: University[];
+  embedded?: boolean;
+  searchQuery?: string;
+}) {
+  const normalizedQuery = searchQuery.trim();
   const curatedUniversities = CHINA_UNIVERSITY_TIERS.flatMap((tier) => tier.universities);
 
   const curatedIds = new Set(
@@ -116,9 +137,90 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
       .filter((id): id is string => Boolean(id)),
   );
 
+  const visibleTiers = CHINA_UNIVERSITY_TIERS.map((tier) => ({
+    ...tier,
+    universities: tier.universities.filter((university) => {
+      const catalogUniversity = findCatalogUniversity(
+        [university.name, ...university.chineseName.split("·").map((name) => name.trim())],
+        universities,
+      );
+
+      return matchesSearch(normalizedQuery, [
+        university.name,
+        university.chineseName,
+        university.city,
+        university.focus,
+        university.programs,
+        university.admissionNote,
+        catalogUniversity?.name,
+        catalogUniversity?.nameLocal,
+        catalogUniversity?.description,
+        catalogUniversity?.specialties,
+        catalogUniversity?.programs,
+        catalogUniversity?.languages,
+        catalogUniversity?.requirements,
+      ]);
+    }),
+  })).filter((tier) => tier.universities.length > 0);
+
   const otherUniversities = universities
     .filter((university) => university.isActive && !curatedIds.has(university.id))
+    .filter((university) =>
+      matchesSearch(normalizedQuery, [
+        university.name,
+        university.nameLocal,
+        university.city,
+        university.description,
+        university.specialties,
+        university.programs,
+        university.languages,
+        university.requirements,
+      ]),
+    )
     .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const visibleUniversityIds = new Set(otherUniversities.map((university) => university.id));
+  visibleTiers.forEach((tier) => {
+    tier.universities.forEach((university) => {
+      const catalogUniversity = findCatalogUniversity(
+        [university.name, ...university.chineseName.split("·").map((name) => name.trim())],
+        universities,
+      );
+      if (catalogUniversity?.isActive) visibleUniversityIds.add(catalogUniversity.id);
+    });
+  });
+
+  const visibleCatalogUniversities = universities.filter(
+    (university) => university.isActive && visibleUniversityIds.has(university.id),
+  );
+  const mapUniversities = visibleCatalogUniversities.flatMap((university) => {
+    if (
+      typeof university.latitude !== "number" ||
+      typeof university.longitude !== "number" ||
+      !Number.isFinite(university.latitude) ||
+      !Number.isFinite(university.longitude) ||
+      university.latitude < 18 ||
+      university.latitude > 54 ||
+      university.longitude < 73 ||
+      university.longitude > 135
+    ) {
+      return [];
+    }
+
+    return [{
+      slug: university.slug,
+      name: university.name,
+      city: university.city,
+      latitude: university.latitude,
+      longitude: university.longitude,
+      googleMapsUrl: university.googleMapsUrl,
+    }];
+  });
+
+  const universitiesWithoutCoordinates = visibleCatalogUniversities.length - mapUniversities.length;
+
+  const searchResultCount =
+    visibleTiers.reduce((count, tier) => count + tier.universities.length, 0) + otherUniversities.length;
 
   const totalUniversities = Math.max(curatedUniversities.length, universities.filter((university) => university.isActive).length);
 
@@ -179,11 +281,11 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
                 </a>
 
-                <Link href="/education/quiz" className="rounded-xl border border-white/30 bg-white/10 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-white/20">
+                {/* <Link href="/education/quiz" className="rounded-xl border border-white/30 bg-white/10 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-white/20">
 
                   Подобрать по параметрам
 
-                </Link>
+                </Link> */}
 
               </div>
 
@@ -199,7 +301,7 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
             </div>
 
-            <div className="relative min-h-[310px] overflow-hidden rounded-[28px] bg-[#DBEAFE] shadow-[0_24px_60px_rgba(22,59,117,.15)] sm:min-h-[430px]">
+            <div className="relative min-h-[240px] overflow-hidden rounded-[28px] bg-[#DBEAFE] shadow-[0_24px_60px_rgba(22,59,117,.15)] sm:min-h-[280px]">
 
               <CoverPhoto src={featuredUniversity.imageUrl} alt={`Кампус: ${featuredUniversity.name}`} className="object-cover" loading="eager" />
 
@@ -271,12 +373,13 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
           <nav aria-label="Разделы университетов Китая" className="mt-6 flex flex-wrap gap-2">
 
-            {CHINA_UNIVERSITY_TIERS.map((tier) => (
-
+            {normalizedQuery ? (
+              <a href="#university-results" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white/90 transition hover:border-white/50 hover:bg-white/20">
+                Результаты поиска
+              </a>
+            ) : CHINA_UNIVERSITY_TIERS.map((tier) => (
               <a key={tier.id} href={`#${tier.id}`} className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white/90 transition hover:border-white/50 hover:bg-white/20">
-
                 {tier.title}
-
               </a>
 
             ))}
@@ -319,9 +422,90 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
 
         </section>
 
-        <section className="pt-14" aria-label="Подборка университетов">
+        <section
+          id="university-map"
+          className="mt-8 scroll-mt-24 overflow-hidden rounded-[26px] border border-[#D7E3F5] bg-white shadow-[0_12px_35px_rgba(22,59,117,.07)]"
+          aria-labelledby="university-map-title"
+        >
+          <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-[#647894]">
+                <MapPinned className="h-4 w-4 text-[#2563EB]" /> Карта университетов Китая
+              </div>
+              <h2 id="university-map-title" className="mt-2 text-2xl font-semibold tracking-[-.03em] text-[#163B75] sm:text-3xl">
+                Найдите вуз по городу
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[#647894]">
+                Нажмите на отметку, чтобы посмотреть университеты в этом месте и перейти к их карточкам.
+              </p>
+            </div>
+            <div className="w-fit rounded-full border border-[#D7E3F5] bg-[#F5F8FF] px-3.5 py-2 text-xs font-bold text-[#365783]">
+              {mapUniversities.length} {mapUniversities.length === 1 ? "вуз на карте" : "вузов на карте"}
+            </div>
+          </div>
+          <div className="overflow-hidden border-y border-[#D7E3F5]">
+            <ChinaUniversitiesMap universities={mapUniversities} />
+          </div>
+          <div className="flex flex-col gap-2 px-5 py-4 text-xs leading-5 text-[#647894] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <span>Карта и отметки автоматически обновляются вместе с результатами поиска.</span>
+            {universitiesWithoutCoordinates > 0 && (
+              <span>
+                Для {universitiesWithoutCoordinates}{" "}
+                {universitiesWithoutCoordinates === 1 ? "университета пока нет координат" : "университетов пока нет координат"} —
+                они доступны в списке ниже.
+              </span>
+            )}
+          </div>
+        </section>
 
-          {CHINA_UNIVERSITY_TIERS.map((tier) => (
+        <section
+          id="university-search"
+          className="mt-7 scroll-mt-24 rounded-[24px] border border-[#D7E3F5] bg-white p-4 shadow-[0_12px_35px_rgba(22,59,117,.06)] sm:p-6"
+          aria-label="Поиск университетов Китая"
+        >
+          <form action="/education/china#university-search" method="get">
+            <label htmlFor="china-university-query" className="block text-lg font-semibold text-[#163B75] sm:text-xl">
+              Найдите университет в Китае
+            </label>
+            <p className="mt-1 text-sm text-[#647894]">По названию, городу или направлению обучения</p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <div className="relative min-w-0 flex-1">
+                <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#647894]" />
+                <input
+                  id="china-university-query"
+                  name="q"
+                  type="search"
+                  defaultValue={searchQuery}
+                  placeholder="Например: Пекин, медицина, Tsinghua"
+                  className="h-12 w-full rounded-xl border border-[#D7E3F5] bg-[#F8FAFF] pl-11 pr-4 text-sm text-[#163B75] outline-none transition placeholder:text-[#8AA2C4] focus:border-[#7EA7E8] focus:ring-4 focus:ring-[#DBEAFE]"
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#163B75] px-6 text-sm font-bold text-white transition hover:bg-[#102D59] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#BFDBFE]"
+              >
+                <Search aria-hidden="true" className="h-4 w-4" /> Найти
+              </button>
+              {normalizedQuery && (
+                <Link
+                  href="/education/china#university-search"
+                  className="inline-flex h-12 items-center justify-center rounded-xl border border-[#D7E3F5] px-5 text-sm font-semibold text-[#526681] transition hover:bg-[#F5F8FF] hover:text-[#163B75]"
+                >
+                  Сбросить
+                </Link>
+              )}
+            </div>
+            {normalizedQuery && (
+              <p className="mt-3 text-sm font-medium text-[#526681]" aria-live="polite">
+                Найдено университетов: <span className="font-bold text-[#163B75]">{searchResultCount}</span>
+              </p>
+            )}
+          </form>
+        </section>
+
+        <section id="university-results" className="pt-14" aria-label="Подборка университетов">
+
+          {visibleTiers.map((tier) => (
 
             <div key={tier.id} id={tier.id} className="scroll-mt-28 pt-2 [&+div]:mt-16">
 
@@ -560,6 +744,13 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
           ))}
 
         </section>
+        {normalizedQuery && searchResultCount === 0 && (
+          <div className="mt-8 rounded-2xl border border-dashed border-[#A9C5EE] bg-white/70 px-5 py-10 text-center">
+            <Search aria-hidden="true" className="mx-auto h-7 w-7 text-[#8AA2C4]" />
+            <h2 className="mt-3 text-lg font-semibold text-[#163B75]">Ничего не найдено</h2>
+            <p className="mt-1 text-sm text-[#647894]">Попробуйте изменить запрос или указать только название города.</p>
+          </div>
+        )}
 
         {otherUniversities.length > 0 && (
           <section id="other-universities" className="mt-16 scroll-mt-28">
@@ -577,7 +768,17 @@ export function ChinaGuide({ universities, embedded = false }: { universities: U
                   <div className="p-5">
                     <h3 className="font-semibold leading-tight text-[#163B75]">{university.name}</h3>
                     {university.nameLocal && <p className="mt-1 text-xs text-[#647894]">{university.nameLocal}</p>}
-                    <p className="mt-3 flex items-center gap-1.5 text-sm text-[#647894]"><MapPin className="h-4 w-4" />{university.city}</p>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="flex items-center gap-1.5 text-sm text-[#647894]"><MapPin className="h-4 w-4" />{university.city}</p>
+                      <a
+                        href={university.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${university.name} ${university.city} China`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex flex-none items-center gap-1 rounded-lg bg-[#EFF6FF] px-2.5 py-2 text-xs font-bold text-[#365783] transition hover:bg-[#DBEAFE] hover:text-[#163B75]"
+                      >
+                        <MapPin className="h-3.5 w-3.5" /> Карта <ArrowUpRight className="h-3 w-3" />
+                      </a>
+                    </div>
                     {university.description && <p className="mt-2 line-clamp-3 text-sm leading-5 text-[#526681]">{university.description}</p>}
                     {university.specialties.length > 0 && <p className="mt-3 text-xs text-[#647894]">{university.specialties.slice(0, 3).join(" · ")}</p>}
                     <Link href={`/education/${university.slug}`} className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#2563EB] hover:underline">
