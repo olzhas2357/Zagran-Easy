@@ -38,9 +38,8 @@ function SidebarContent({ email, onNavigate }: { email?: string; onNavigate?: ()
   return (
     <div className="flex h-full w-[260px] flex-none flex-col border-r border-ze-border bg-white p-4 text-ze-ink">
       <Link href="/account" onClick={onNavigate} className="flex flex-none items-center gap-2.5 px-1.5 py-1.5">
-        <Image src="/logo-icon.png" alt="ZagranEasy" width={669} height={477} priority className="h-8 w-auto" />
+        <Image src="/zagraneasy-logo.png" alt="ZagranEasy" width={1080} height={650} priority className="h-10 w-auto object-contain" />
         <div>
-          <div className="text-[15px] font-extrabold tracking-tight">ZagranEasy</div>
           <div className="text-[10.5px] font-semibold uppercase tracking-[0.13em] text-ze-muted">Кабинет студента</div>
         </div>
       </Link>
@@ -108,9 +107,8 @@ export function StudentSidebar({ email }: { email?: string }) {
       </div>
 
       <div className="flex items-center justify-between border-b border-ze-border bg-white px-4 py-3 md:hidden">
-        <Link href="/account" className="flex items-center gap-2">
-          <Image src="/logo-icon.png" alt="ZagranEasy" width={669} height={477} priority className="h-7 w-auto" />
-          <span className="text-[14.5px] font-extrabold">ZagranEasy</span>
+        <Link href="/account" className="flex items-center">
+          <Image src="/zagraneasy-logo.png" alt="ZagranEasy" width={1080} height={650} priority className="h-9 w-auto object-contain" />
         </Link>
         <button
           type="button"

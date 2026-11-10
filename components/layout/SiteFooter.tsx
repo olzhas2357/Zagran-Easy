@@ -17,15 +17,14 @@ export function SiteFooter() {
         <div className="grid gap-8 sm:grid-cols-[1.4fr_1fr_1.2fr]">
           {/* Компания */}
           <div>
-            <Link href="/" className="inline-flex items-center gap-2.5">
+            <Link href="/" className="inline-flex items-center">
               <Image
-                src="/logo-icon.png"
+                src="/zagraneasy-logo.png"
                 alt={SITE.name}
-                width={669}
-                height={477}
-                className="h-9 w-auto object-contain"
+                width={1080}
+                height={650}
+                className="h-14 w-auto object-contain"
               />
-              <span className="text-lg font-bold">{SITE.name}</span>
             </Link>
 
             <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500">

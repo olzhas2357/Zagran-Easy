@@ -31,43 +31,17 @@ export function SiteHeader() {
         <Link
           href="/"
           onClick={() => setOpen(false)}
-          className="group flex shrink-0 items-center gap-2.5"
+          className="group flex shrink-0 items-center"
         >
-          <div
-            className={`relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-[12px] transition-all duration-300 group-hover:scale-105 ${
-              isDark
-                ? "bg-white/[0.08] ring-1 ring-white/10"
-                : "bg-[#F5F8FF] ring-1 ring-slate-200"
-            }`}
-          >
             <Image
-              src="/logo-icon.png"
+              src="/zagraneasy-logo.png"
               alt="ZagranEasy"
-              width={669}
-              height={477}
+              width={1080}
+              height={650}
               priority
-              className="h-8 w-auto object-contain"
+              className="h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03] sm:h-12 lg:h-[54px]"
             />
-          </div>
-
-          <div className="hidden sm:block">
-            <div
-              className={`text-[17px] font-bold leading-none tracking-[-0.02em] ${
-                isDark ? "text-white" : "text-ze-ink"
-              }`}
-            >
-              ZagranEasy
-            </div>
-
-            <div
-              className={`mt-1 text-[9px] font-semibold uppercase tracking-[0.16em] ${
-                isDark ? "text-white/40" : "text-slate-400"
-              }`}
-            >
-              Education abroad
-            </div>
-          </div>
-        </Link>
+          </Link>
 
         {/* DESKTOP NAV */}
         <nav className="ml-8 hidden items-center gap-1 lg:flex">

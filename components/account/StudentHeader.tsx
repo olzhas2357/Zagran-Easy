@@ -24,9 +24,8 @@ export function StudentHeader({ email }: { email?: string }) {
   return (
     <header className="sticky top-0 z-40 border-b border-ze-border bg-white/92 backdrop-blur-md">
       <div className="mx-auto flex h-[62px] max-w-6xl items-center gap-3 px-4 sm:h-[68px] sm:px-10">
-        <Link href="/account" className="flex flex-none items-center gap-2">
-          <Image src="/logo-icon.png" alt="ZagranEasy" width={669} height={477} priority className="h-7 w-auto sm:h-8" />
-          <span className="hidden text-[16px] font-bold tracking-tight text-ze-ink sm:inline">ZagranEasy</span>
+        <Link href="/account" className="flex flex-none items-center">
+          <Image src="/zagraneasy-logo.png" alt="ZagranEasy" width={1080} height={650} priority className="h-10 w-auto object-contain sm:h-11" />
         </Link>
 
         <nav className="ml-4 hidden items-center gap-1 md:flex">

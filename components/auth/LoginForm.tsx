@@ -64,14 +64,14 @@ export function LoginForm({
       <div className="relative z-10 my-auto w-full max-w-[400px] rounded-[28px] border border-white/60 bg-white p-7 shadow-[0_18px_48px_rgba(15,23,42,0.08)] sm:p-9">
         
         {/* Компактный и изящный логотип */}
-        <div className="mx-auto flex h-14 w-14 items-center justify-center filter drop-shadow-[0_10px_20px_rgba(26,86,219,0.14)]">
+        <div className="mx-auto flex h-14 w-32 items-center justify-center filter drop-shadow-[0_10px_20px_rgba(26,86,219,0.14)]">
           <Image
-            src="/logo-icon.png"
+            src="/zagraneasy-logo.png"
             alt="ZagranEasy"
-            width={669}
-            height={477}
+            width={1080}
+            height={650}
             priority
-            className="h-auto w-full object-contain"
+            className="h-full w-full object-contain"
           />
         </div>
 
