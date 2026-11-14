@@ -22,6 +22,34 @@ const EXAM_PRICES = [
   ["HSKK 高级", "19 000 ₸"],
 ] as const;
 
+const EXAM_DATES = [
+  {
+    examDate: "13 декабря 2026",
+    pbtDeadline: "16 ноября 2026",
+    ibtDeadline: "3 декабря 2026",
+  },
+  {
+    examDate: "9 января 2027",
+    pbtDeadline: "13 декабря 2026",
+    ibtDeadline: "30 декабря 2026",
+  },
+  {
+    examDate: "14 марта 2027",
+    pbtDeadline: "15 февраля 2027",
+    ibtDeadline: "4 марта 2027",
+  },
+  {
+    examDate: "10 апреля 2027",
+    pbtDeadline: "14 марта 2027",
+    ibtDeadline: "31 марта 2027",
+  },
+  {
+    examDate: "16 мая 2027",
+    pbtDeadline: "19 апреля 2027",
+    ibtDeadline: "6 мая 2027",
+  },
+] as const;
+
 const REQUIRED_DOCUMENTS = [
   "Фото 3×4 (портрет)",
   "Электронный формат паспорта (страница с данными)",
@@ -40,6 +68,23 @@ const TEST_CENTERS = [
   {
     name: "Казахский университет международных отношений и мировых языков имени Абылай хана",
     address: "Алматы, улица Муратбаева, 200",
+  },
+  {
+    name: "Институт Конфуция при Евразийском национальном университете им. Л.Н. Гумилева",
+    address: "Астана, пр. Бауыржана Момышулы, 19а",
+  },
+
+  {
+    name: "Институт Конфуция при Карагандинском техническом университете",
+    address: "Караганда, пр. Нурсултана Назарбаева, 56/1",
+  },
+  {
+    name: "Shakarim University",
+    address: "Семей, ул. Кашаганова, 2",
+  },
+  {
+    name: "Института Конфуция при АРУ им. К. Жубанова",
+    address: "Актобе, ул. Жангельдина, 40",
   },
 ] as const;
 
@@ -81,19 +126,55 @@ export function ExamAnnouncement() {
               <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
                 <div>
                   <p className="text-[13px] font-bold uppercase tracking-[0.1em] text-[#70829A] dark:text-white/50">
-                    Расписание экзаменов
+                    Даты экзаменов HSK и HSKK
                   </p>
 
                   <p className="mt-1 text-[20px] font-black tracking-tight text-[#101828] dark:text-white sm:text-[25px]">
-                    Уточняйте у центра
+                    Декабрь 2026 — май 2027
                   </p>
                 </div>
 
                 <div className="inline-flex w-fit items-center gap-2 rounded-2xl bg-[#EEF5FF] px-4 py-3 text-[14px] font-bold text-[#2563EB] dark:bg-blue-400/10 dark:text-[#8DDDF5]">
                   <CalendarDays className="h-4 w-4" />
-                  Даты могут различаться
+                  5 экзаменационных сессий
                 </div>
               </div>
+
+              <div className="mt-6 space-y-3">
+                {EXAM_DATES.map(({ examDate, pbtDeadline, ibtDeadline }) => (
+                  <div
+                    key={examDate}
+                    className="rounded-[16px] border border-[#E8EEF7] bg-[#F8FAFD] p-4 dark:border-white/10 dark:bg-white/[0.04]"
+                  >
+                    <p className="text-[15px] font-extrabold text-[#172033] dark:text-white">
+                      {examDate}
+                    </p>
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-[#70829A] dark:text-white/45">
+                          Дедлайн PBT
+                        </p>
+                        <p className="mt-1 text-[13px] font-semibold text-[#405269] dark:text-white/75">
+                          {pbtDeadline}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-[#70829A] dark:text-white/45">
+                          Дедлайн iBT
+                        </p>
+                        <p className="mt-1 text-[13px] font-semibold text-[#405269] dark:text-white/75">
+                          {ibtDeadline}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-3 text-[12px] leading-5 text-[#70829A] dark:text-white/50">
+                PBT — бумажный формат, iBT — компьютерный формат. Уточните
+                доступность формата и места в выбранном центре перед регистрацией.
+              </p>
 
               <div className="mt-6">
                 <h3 className="text-[20px] font-extrabold tracking-tight text-[#101828] dark:text-white">
