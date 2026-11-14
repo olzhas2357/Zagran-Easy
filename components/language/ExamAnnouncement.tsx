@@ -2,7 +2,9 @@ import {
   AlertTriangle,
   CalendarDays,
   Check,
+  ExternalLink,
   FileText,
+  MapPin,
   MessageCircle,
 } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -27,6 +29,19 @@ const REQUIRED_DOCUMENTS = [
   "Электронная почта",
   "Уровень HSK и HSKK, который вы планируете сдавать",
 ];
+
+const TEST_CENTERS = [
+  {
+    name: "Институт Конфуция КазНУ имени аль-Фараби",
+    address: "Алматы, улица Карасай батыра, 95а",
+    href: "https://www.instagram.com/conf.kaznu/",
+    linkLabel: "Страница института",
+  },
+  {
+    name: "Казахский университет международных отношений и мировых языков имени Абылай хана",
+    address: "Алматы, улица Муратбаева, 200",
+  },
+] as const;
 
 export function ExamAnnouncement() {
   return (
@@ -66,17 +81,17 @@ export function ExamAnnouncement() {
               <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
                 <div>
                   <p className="text-[13px] font-bold uppercase tracking-[0.1em] text-[#70829A] dark:text-white/50">
-                    Дата проведения
+                    Расписание экзаменов
                   </p>
 
-                  <p className="mt-1 text-[25px] font-black tracking-tight text-[#101828] dark:text-white">
-                    16 мая 2026
+                  <p className="mt-1 text-[20px] font-black tracking-tight text-[#101828] dark:text-white sm:text-[25px]">
+                    Уточняйте у центра
                   </p>
                 </div>
 
                 <div className="inline-flex w-fit items-center gap-2 rounded-2xl bg-[#EEF5FF] px-4 py-3 text-[14px] font-bold text-[#2563EB] dark:bg-blue-400/10 dark:text-[#8DDDF5]">
                   <CalendarDays className="h-4 w-4" />
-                  16.05.2026
+                  Даты могут различаться
                 </div>
               </div>
 
@@ -153,25 +168,23 @@ export function ExamAnnouncement() {
               {/* deadline */}
               <div className="mt-7 rounded-[20px] bg-white p-5 shadow-[0_8px_30px_rgba(60,100,140,0.08)] dark:bg-white/[0.07] dark:shadow-none">
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.13em] text-[#6A7D94] dark:text-white/45">
-                  Крайний срок регистрации
+                  Срок регистрации
                 </p>
 
                 <div className="mt-1 flex items-end justify-between gap-3">
-                  <p className="text-[25px] font-black tracking-tight text-[#101828] dark:text-white">
-                    до 17 апреля
+                  <p className="text-[20px] font-black tracking-tight text-[#101828] dark:text-white sm:text-[25px]">
+                    Уточните у центра
                   </p>
 
-                  <span className="rounded-full bg-red-50 px-3 py-1 text-[11px] font-bold text-red-500 dark:bg-red-400/10 dark:text-red-300">
-                    Не пропустите
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-600 dark:bg-blue-400/10 dark:text-blue-300">
+                    Перед записью
                   </span>
                 </div>
               </div>
 
               {/* CTA */}
               <a
-                href={waUrl(
-                  "Здравствуйте! Хочу зарегистрироваться на экзамен HSK/HSKK 16.05.2026."
-                )}
+                href={waUrl("Здравствуйте! Подскажите, пожалуйста, актуальные даты и порядок регистрации на экзамен HSK/HSKK в Казахстане.")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-5 inline-flex min-h-[54px] items-center justify-center gap-2 rounded-[16px] bg-gradient-to-r from-[#2586E6] to-[#26C7DD] px-6 text-[15px] font-extrabold text-white shadow-[0_12px_30px_rgba(37,134,230,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(37,134,230,0.3)]"
@@ -185,6 +198,55 @@ export function ExamAnnouncement() {
                 Поможем с регистрацией и ответим на вопросы
               </p>
             </div>
+          </div>
+
+          <div className="mt-8 rounded-[28px] border border-[#E3EAF5] bg-white p-5 shadow-[0_20px_60px_rgba(35,70,120,0.06)] sm:p-7 dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
+            <div className="flex items-start gap-3">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-[#EEF5FF] text-[#2586D8] dark:bg-blue-400/10 dark:text-[#8DDDF5]">
+                <MapPin className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-[20px] font-extrabold tracking-tight text-[#101828] dark:text-white">
+                  Где можно сдать HSK в Казахстане
+                </h3>
+                <p className="mt-1 text-[14px] leading-6 text-[#70829A] dark:text-white/55">
+                  По предоставленной информации, экзамен можно сдать в Алматы:
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {TEST_CENTERS.map((center) => (
+                <div
+                  key={center.name}
+                  className="rounded-[18px] border border-[#E8EEF7] bg-[#F8FAFD] p-4 dark:border-white/10 dark:bg-white/[0.04]"
+                >
+                  <h4 className="text-[15px] font-bold leading-6 text-[#172033] dark:text-white">
+                    {center.name}
+                  </h4>
+                  <p className="mt-2 flex items-start gap-2 text-[14px] leading-6 text-[#52637A] dark:text-white/65">
+                    <MapPin className="mt-1 h-4 w-4 flex-none text-[#2586D8] dark:text-[#8DDDF5]" />
+                    {center.address}
+                  </p>
+                  {"href" in center && (
+                    <a
+                      href={center.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold text-[#2586D8] hover:underline dark:text-[#8DDDF5]"
+                    >
+                      {center.linkLabel}
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-4 text-[13px] leading-6 text-[#70829A] dark:text-white/50">
+              Перед регистрацией уточните в выбранном центре доступные даты,
+              уровни экзамена, формат сдачи и актуальный адрес проведения.
+            </p>
           </div>
         </FadeIn>
       </div>
