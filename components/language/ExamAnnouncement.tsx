@@ -239,7 +239,7 @@ export function ExamAnnouncement() {
             </div>
 
             {/* RIGHT — registration */}
-            <div className="flex flex-col rounded-[28px] border border-[#DCE8F7] bg-gradient-to-b from-[#EFF7FF] to-[#EAF8FC] p-5 shadow-[0_20px_60px_rgba(35,70,120,0.07)] sm:p-7 dark:border-white/10 dark:from-[#152A3A] dark:to-[#18384A] dark:shadow-none">
+          <div className="flex flex-col self-start rounded-[28px] border border-[#DCE8F7] bg-gradient-to-b from-[#EFF7FF] to-[#EAF8FC] p-5 shadow-[0_20px_60px_rgba(35,70,120,0.07)] sm:p-7 dark:border-white/10 dark:from-[#152A3A] dark:to-[#18384A] dark:shadow-none">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#2586D8] shadow-sm dark:bg-white/10 dark:text-[#8DDDF5]">
                 <FileText className="h-5 w-5" />
               </div>
@@ -269,7 +269,7 @@ export function ExamAnnouncement() {
               </ul>
 
               {/* deadline */}
-              <div className="mt-7 rounded-[20px] bg-white p-5 shadow-[0_8px_30px_rgba(60,100,140,0.08)] dark:bg-white/[0.07] dark:shadow-none">
+              {/* <div className="mt-7 rounded-[20px] bg-white p-5 shadow-[0_8px_30px_rgba(60,100,140,0.08)] dark:bg-white/[0.07] dark:shadow-none">
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.13em] text-[#6A7D94] dark:text-white/45">
                   Срок регистрации
                 </p>
@@ -283,7 +283,7 @@ export function ExamAnnouncement() {
                     Перед записью
                   </span>
                 </div>
-              </div>
+              </div> */}
 
               {/* CTA */}
               <a
