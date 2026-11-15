@@ -172,6 +172,12 @@ export interface LanguageTeacher {
   bio: string;
   experience: string;
   certificateUrl: string;
+  experienceYears?: number;
+  studentsCount?: number;
+  lessonDuration?: number;
+  schedule?: Partial<Record<"Пн" | "Вт" | "Ср" | "Чт" | "Пт" | "Сб" | "Вс", string[]>>;
+  timezone?: string;
+  experienceItems?: { period: string; title: string; place?: string }[];
 }
 
 export interface LanguageReview {

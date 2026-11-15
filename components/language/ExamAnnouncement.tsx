@@ -122,7 +122,7 @@ export function ExamAnnouncement() {
           {/* Main content */}
           <div className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             {/* LEFT — prices */}
-            <div className="rounded-[28px] border border-[#E3EAF5] bg-white p-5 shadow-[0_20px_60px_rgba(35,70,120,0.08)] sm:p-7 dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
+            {/* <div className="rounded-[28px] border border-[#E3EAF5] bg-white p-5 shadow-[0_20px_60px_rgba(35,70,120,0.08)] sm:p-7 dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none">
               <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
                 <div>
                   <p className="text-[13px] font-bold uppercase tracking-[0.1em] text-[#70829A] dark:text-white/50">
@@ -236,7 +236,7 @@ export function ExamAnnouncement() {
                   на письменный экзамен для этих уровней не принимается.
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {/* RIGHT — registration */}
           <div className="flex flex-col self-start rounded-[28px] border border-[#DCE8F7] bg-gradient-to-b from-[#EFF7FF] to-[#EAF8FC] p-5 shadow-[0_20px_60px_rgba(35,70,120,0.07)] sm:p-7 dark:border-white/10 dark:from-[#152A3A] dark:to-[#18384A] dark:shadow-none">
