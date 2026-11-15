@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { apiDelete, apiGet, apiPatch, apiPost } from "./api";
 import { getToken } from "./session-data";
-import type { ScheduleFormat, ScheduleLanguage } from "./schedule-data";
+import type { ScheduleFormat, ScheduleLanguage, TrialBookingStatus } from "./schedule-data";
 
 async function result<T>(request: Promise<{ data: T; error?: string }>) {
   const response = await request;
@@ -216,7 +216,11 @@ export async function createTrialBooking(input: { sessionId: string; clientId?: 
   }, token));
 }
 
-export async function updateTrialBookingStatus(id: string, status: string) {
+export async function updateTrialBookingStatus(id: string, status: TrialBookingStatus) {
   const token = await getToken();
   return result(apiPatch(`/schedule/trials/${id}`, { status }, token));
+}
+
+export async function cancelTrialBooking(id: string) {
+  return updateTrialBookingStatus(id, "cancelled");
 }

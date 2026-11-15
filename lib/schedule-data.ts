@@ -3,6 +3,7 @@ import { getToken } from "./session-data";
 
 export type ScheduleLanguage = "english" | "chinese";
 export type ScheduleFormat = "offline" | "online";
+export type TrialBookingStatus = "booked" | "attended" | "enrolled" | "thinking" | "declined" | "no_show" | "cancelled";
 
 export type ScheduleEnrollment = {
   id: string;
@@ -11,7 +12,7 @@ export type ScheduleEnrollment = {
   student_phone: string | null;
   enrolled_at: string;
   enrollment_type?: "group" | "trial";
-  trial_status?: "booked" | "attended" | "enrolled" | "thinking" | "declined" | "no_show" | "cancelled";
+  trial_status?: TrialBookingStatus;
   duration_minutes?: number;
 };
 

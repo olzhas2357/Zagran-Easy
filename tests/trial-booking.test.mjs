@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { trialUnavailableReason } from "../lib/trial-booking.ts";
+import { isTrialEnrollment, trialUnavailableReason } from "../lib/trial-booking.ts";
 
 const available = { group_id: "group", status: "scheduled", free_places: 1 };
+
+test("trial enrollments are identified separately from group enrollments", () => {
+  assert.equal(isTrialEnrollment({ enrollment_type: "trial" }), true);
+  assert.equal(isTrialEnrollment({ trial_status: "booked" }), true);
+  assert.equal(isTrialEnrollment({ enrollment_type: "group" }), false);
+});
 
 test("a scheduled group lesson with a free place can be booked", () => {
   assert.equal(trialUnavailableReason(available), "");
