@@ -10,6 +10,7 @@ export type ScheduleEnrollment = {
   student_id: string | null;
   student_name: string;
   student_phone: string | null;
+  notes?: string | null;
   enrolled_at: string;
   enrollment_type?: "group" | "trial";
   trial_status?: TrialBookingStatus;

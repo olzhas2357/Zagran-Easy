@@ -68,6 +68,7 @@ function EnrollmentBadge({ type, status }: { type?: "group" | "trial"; status?: 
 }
 
 function StudentInfo({ student, index }: { student: ScheduleEnrollment; index?: number }) {
+  const isTrial = isTrialEnrollment(student);
   return <div className="min-w-0">
     <div className="flex flex-wrap items-center gap-1.5">
       <b className="break-words">{index !== undefined ? `${index + 1}. ` : ""}{student.student_name}</b>
@@ -76,6 +77,7 @@ function StudentInfo({ student, index }: { student: ScheduleEnrollment; index?: 
     <div className="mt-1 text-xs text-ze-muted">Телефон: {student.student_phone?.trim()
       ? <a href={`tel:${student.student_phone.replace(/[^+\d]/g, "")}`} className="break-all underline underline-offset-2">{student.student_phone}</a>
       : "не указан"}</div>
+    {isTrial && student.notes?.trim() && <div className="mt-1 break-words text-xs text-ze-muted">Комментарий: {student.notes}</div>}
   </div>;
 }
 
